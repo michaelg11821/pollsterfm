@@ -1,9 +1,11 @@
+import { auth } from "@/auth";
+
 import Nav from "./components/nav/nav";
 
-import styles from "./page.module.css";
-import MobileMenu from "./components/nav/mobile-menu/mobile-menu";
-import { auth } from "@/auth";
+import MobileMenu from "./components/mobile-menu/mobile-menu";
 import ProfileIcon from "./components/profile-icon/profile-icon";
+
+import styles from "./page.module.css";
 
 async function Home() {
   const session = await auth();
