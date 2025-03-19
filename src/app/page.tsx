@@ -1,8 +1,9 @@
-import { auth } from "@/auth";
-
 import Nav from "./components/nav/nav";
 
 import styles from "./page.module.css";
+import MobileMenu from "./components/nav/mobile-menu/mobile-menu";
+import { auth } from "@/auth";
+import ProfileIcon from "./components/profile-icon/profile-icon";
 
 async function Home() {
   const session = await auth();
@@ -11,7 +12,11 @@ async function Home() {
   return (
     <>
       <header className={styles.homeHeader}>
-        <Nav profileIcon={user?.image} />
+        <Nav />
+        {/* shows on desktop */}
+        <ProfileIcon profileIcon={user?.image} />
+        {/* shows on mobile */}
+        <MobileMenu profileIcon={user?.image} />
       </header>
       <main>
         <p>coming soon</p>

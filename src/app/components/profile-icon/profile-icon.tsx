@@ -1,7 +1,5 @@
 "use client";
 
-// should be profile icon dropdown
-
 import { signOut } from "next-auth/react";
 
 import Image from "next/image";
@@ -18,19 +16,23 @@ function ProfileIcon({ profileIcon }: ProfileIconProps) {
     await signOut();
   };
 
-  return profileIcon ? (
-    <button
-      type="button"
-      title="Your profile"
-      className={styles.profileIcon}
-      onClick={handleSignOut}
-    >
-      <Image src={profileIcon} width={40} height={40} alt="Profile" />
-    </button>
-  ) : (
-    <button type="button">
-      <Link href="/sign-in">Sign in</Link>
-    </button>
+  return (
+    <div className={styles.profileIconWrapper}>
+      {profileIcon ? (
+        <button
+          type="button"
+          title="Your profile"
+          className={styles.profileIcon}
+          onClick={handleSignOut}
+        >
+          <Image src={profileIcon} width={40} height={40} alt="Profile" />
+        </button>
+      ) : (
+        <button type="button">
+          <Link href="/sign-in">Sign in</Link>
+        </button>
+      )}
+    </div>
   );
 }
 
