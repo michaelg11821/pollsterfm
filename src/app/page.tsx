@@ -15,7 +15,7 @@ async function Home() {
       </header>
       <main>
         <p>coming soon</p>
-        <p>see the mobile layout</p>
+        <p>sign in, then see the mobile layout</p>
       </main>
     </>
   );

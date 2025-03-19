@@ -41,7 +41,7 @@ function ProviderLogins() {
           setTurnstileStatus("expired");
           setError("Security check expired.");
         }}
-        onVerify={(token: string) => {
+        onVerify={() => {
           setTurnstileStatus("success");
           setError("");
         }}
