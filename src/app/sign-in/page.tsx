@@ -5,6 +5,7 @@ import ProviderLogins from "../components/provider-logins";
 
 async function SignIn() {
   const session = await auth();
+
   const user = session?.user;
 
   if (user) return redirect("/profile");
