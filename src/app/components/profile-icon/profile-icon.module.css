@@ -1,0 +1,11 @@
+.profileIcon,
+.profileIcon > img {
+  border-radius: 50%;
+}
+
+.profileIcon {
+  background: none;
+  border: none;
+
+  cursor: pointer;
+}

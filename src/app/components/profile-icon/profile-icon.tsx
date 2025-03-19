@@ -1,23 +1,28 @@
 "use client";
 
-import { User } from "next-auth";
 import { signOut } from "next-auth/react";
 
 import Image from "next/image";
 import Link from "next/link";
 
+import styles from "./profile-icon.module.css";
+
 interface ProfileIconProps {
-  user: User | undefined;
+  profileIcon: string | null | undefined;
 }
 
-function ProfileIcon({ user }: ProfileIconProps) {
+function ProfileIcon({ profileIcon }: ProfileIconProps) {
   const handleSignOut = async () => {
     await signOut();
   };
 
-  return user ? (
-    <button type="button" onClick={handleSignOut}>
-      <Image src={String(user.image)} width={30} height={30} alt="Profile" />
+  return profileIcon ? (
+    <button
+      type="button"
+      className={styles.profileIcon}
+      onClick={handleSignOut}
+    >
+      <Image src={profileIcon} width={40} height={40} alt="Profile" />
     </button>
   ) : (
     <button type="button">
