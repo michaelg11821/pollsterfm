@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 
-import ProfileIcon from "./components/profile-icon";
+import Nav from "./components/nav/nav";
 
 import styles from "./page.module.css";
 
@@ -10,8 +10,13 @@ async function Home() {
 
   return (
     <>
-      <ProfileIcon user={user} />
-      <p>baby britain</p>
+      <header className={styles.homeHeader}>
+        <Nav profileIcon={user?.image} />
+      </header>
+      <main>
+        <p>coming soon</p>
+        <p>see the mobile layout</p>
+      </main>
     </>
   );
 }
