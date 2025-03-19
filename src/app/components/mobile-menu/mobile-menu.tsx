@@ -48,7 +48,7 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
                   </button>
                 ) : (
                   <button type="button">
-                    <Link href="profile">Sign In</Link>
+                    <Link href="sign-in">Sign In</Link>
                   </button>
                 )}
               </li>
