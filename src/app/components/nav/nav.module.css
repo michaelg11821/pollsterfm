@@ -1,0 +1,104 @@
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+}
+
+.logoAndLinks {
+  display: flex;
+}
+
+.logoText {
+  font-size: 2em;
+}
+
+.navLinks,
+.searchBar,
+.profileIconWrapper {
+  display: none;
+}
+
+.mobileMenuToggle,
+.mobileMenuToggleActive {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  background: inherit;
+
+  transition: background-color 0.15s ease-in;
+
+  width: 40px;
+  height: 40px;
+
+  position: relative;
+
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+
+  cursor: pointer;
+}
+
+.mobileMenuToggle:hover,
+.mobileMenuToggleActive:hover {
+  background-color: #1b1b1b;
+}
+
+.mobileMenuToggle span,
+.mobileMenuToggleActive span {
+  display: block;
+  position: absolute;
+
+  width: 28px;
+  height: 3px;
+
+  background-color: #b1aaa0;
+
+  transition: all 0.3s ease;
+
+  margin-top: -2px;
+}
+
+.mobileMenuToggle span:nth-child(1) {
+  top: 10px;
+}
+
+.mobileMenuToggle span:nth-child(2) {
+  top: 20px;
+}
+
+.mobileMenuToggle span:nth-child(3) {
+  top: 30px;
+}
+
+.mobileMenuToggleActive span:nth-child(1) {
+  transform: rotate(45deg);
+  top: 20px;
+}
+
+.mobileMenuToggleActive span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobileMenuToggleActive span:nth-child(3) {
+  transform: rotate(-45deg);
+  top: 20px;
+}
+
+@media only screen and (min-width: 950px) {
+  .navLinks {
+    display: flex;
+  }
+
+  .profileIconWrapper {
+    display: block;
+  }
+
+  .mobileMenuToggleWrapper {
+    display: none;
+  }
+}
