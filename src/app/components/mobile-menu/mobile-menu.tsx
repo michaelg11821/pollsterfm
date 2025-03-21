@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -13,6 +14,10 @@ type MobileMenuProps = {
 
 function MobileMenu({ profileIcon }: MobileMenuProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <>
@@ -35,33 +40,37 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
         <div className={styles.mobileMenu}>
           <div className={styles.mobileMenuInteriorWrapper}>
             <ul className={styles.accountOptions}>
-              <li>
-                {profileIcon ? (
-                  <button type="button" className={styles.profileBtn}>
-                    <Image
-                      src={profileIcon ? profileIcon : ""}
-                      width={35}
-                      height={35}
-                      alt=""
-                    />
-                    <Link href="profile">Your Profile</Link>
-                  </button>
-                ) : (
+              {profileIcon ? (
+                <>
+                  <li>
+                    <button type="button" className={styles.profileBtn}>
+                      <Image
+                        src={profileIcon ? profileIcon : ""}
+                        width={35}
+                        height={35}
+                        alt=""
+                      />
+                      <Link href="profile">Your Profile</Link>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button">
+                      <Link href="">Account Settings</Link>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" onClick={handleSignOut}>
+                      <Link href="">Sign Out</Link>
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li>
                   <button type="button">
                     <Link href="sign-in">Sign In</Link>
                   </button>
-                )}
-              </li>
-              <li>
-                <button type="button">
-                  <Link href="">Account Settings</Link>
-                </button>
-              </li>
-              <li>
-                <button type="button">
-                  <Link href="">Log Out</Link>
-                </button>
-              </li>
+                </li>
+              )}
             </ul>
             <ul className={styles.navLinks}>
               <li>
