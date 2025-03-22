@@ -43,6 +43,7 @@ async function Home() {
             </button>
           </div>
         </section>
+        <section className={styles.statsSection}>stats go here</section>
       </main>
     </>
   );
