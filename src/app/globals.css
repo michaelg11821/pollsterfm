@@ -36,6 +36,16 @@ a {
   text-decoration: none;
 }
 
+header {
+  display: flex;
+
+  position: relative;
+
+  padding: 20px;
+
+  width: 100%;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

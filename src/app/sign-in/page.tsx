@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-import ProviderLogins from "../components/provider-logins";
+import ProviderLogins from "../components/provider-logins/provider-logins";
 
 async function SignIn() {
   const session = await auth();
