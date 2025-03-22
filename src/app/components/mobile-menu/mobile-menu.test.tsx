@@ -18,7 +18,7 @@ describe("mobile menu (logged in)", () => {
     await user.click(menuToggle);
 
     expect(screen.queryByText("Sign In")).not.toBeInTheDocument();
-    expect(screen.queryByText("Sign Out")).toBeInTheDocument();
+    expect(screen.getByText("Sign Out")).toBeInTheDocument();
   });
 });
 
