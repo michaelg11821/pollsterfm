@@ -63,13 +63,13 @@
 
 .animatedCircleOne,
 .animatedCircleThree {
-  composes: circle;
+  composes: animatedCircle;
   background: rgba(139, 92, 246, 0.2);
   animation: float 6s ease-in-out infinite;
 }
 
 .animatedCircleTwo {
-  composes: circle;
+  composes: animatedCircle;
 
   background: rgba(29, 78, 216, 0.2);
   animation: float 6s ease-in-out infinite 2s;
