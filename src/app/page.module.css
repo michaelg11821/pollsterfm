@@ -114,6 +114,7 @@
   background-color: #7c3aed;
 
   font-weight: bold;
+  font-family: inherit;
   font-size: 1.2em;
 
   cursor: pointer;
