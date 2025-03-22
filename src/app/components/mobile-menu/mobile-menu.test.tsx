@@ -17,8 +17,11 @@ describe("mobile menu (logged in)", () => {
 
     await user.click(menuToggle);
 
-    expect(screen.queryByText("Sign In")).not.toBeInTheDocument();
-    expect(screen.getByText("Sign Out")).toBeInTheDocument();
+    const signInBtn = screen.queryByRole("button", { name: "Sign In" });
+    const signOutBtn = screen.getByRole("button", { name: "Sign Out" });
+
+    expect(signInBtn).not.toBeInTheDocument();
+    expect(signOutBtn).toBeInTheDocument();
   });
 });
 
@@ -32,7 +35,10 @@ describe("mobile menu (logged out)", () => {
 
     await user.click(menuToggle);
 
-    expect(screen.queryByText("Sign Out")).not.toBeInTheDocument();
-    expect(screen.queryByText("Sign In")).toBeInTheDocument();
+    const signOutBtn = screen.queryByRole("button", { name: "Sign Out" });
+    const signInBtn = screen.getByRole("button", { name: "Sign In" });
+
+    expect(signOutBtn).not.toBeInTheDocument();
+    expect(signInBtn).toBeInTheDocument();
   });
 });

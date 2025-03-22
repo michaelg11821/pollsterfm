@@ -6,6 +6,8 @@ describe("navbar", () => {
   it("renders correctly", async () => {
     render(<Nav />);
 
-    expect(screen.getByText("Pollster.fm")).toBeInTheDocument();
+    const header = screen.getByRole("heading", { level: 1 });
+
+    expect(header).toBeInTheDocument();
   });
 });
