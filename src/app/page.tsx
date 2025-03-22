@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import Nav from "./components/nav/nav";
 
 import MobileMenu from "./components/mobile-menu/mobile-menu";
-import ProfileIcon from "./components/profile-icon/profile-icon";
+import DesktopMenu from "./components/desktop-menu/desktop-menu";
 
 import styles from "./page.module.css";
 
@@ -15,9 +15,7 @@ async function Home() {
     <>
       <header className={styles.homeHeader}>
         <Nav />
-        {/* shows on desktop */}
-        <ProfileIcon profileIcon={user?.image} />
-        {/* shows on mobile */}
+        <DesktopMenu profileIcon={user?.image} />
         <MobileMenu profileIcon={user?.image} />
       </header>
       <main>

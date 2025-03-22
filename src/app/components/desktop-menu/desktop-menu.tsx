@@ -5,13 +5,13 @@ import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
-import styles from "./profile-icon.module.css";
+import styles from "./desktop-menu.module.css";
 
-interface ProfileIconProps {
+interface DesktopMenuProps {
   profileIcon: string | null | undefined;
 }
 
-function ProfileIcon({ profileIcon }: ProfileIconProps) {
+function DesktopMenu({ profileIcon }: DesktopMenuProps) {
   const handleSignOut = async () => {
     await signOut();
   };
@@ -21,19 +21,19 @@ function ProfileIcon({ profileIcon }: ProfileIconProps) {
       {profileIcon ? (
         <button
           type="button"
-          title="Your profile"
+          title="Menu"
           className={styles.profileIcon}
           onClick={handleSignOut}
         >
-          <Image src={profileIcon} width={40} height={40} alt="Profile" />
+          <Image src={profileIcon} width={40} height={40} alt="Profile Icon" />
         </button>
       ) : (
         <button type="button">
-          <Link href="/sign-in">Sign in</Link>
+          <Link href="/sign-in">Sign In</Link>
         </button>
       )}
     </div>
   );
 }
 
-export default ProfileIcon;
+export default DesktopMenu;
