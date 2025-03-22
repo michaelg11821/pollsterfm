@@ -8,10 +8,27 @@
 
 .logoAndLinks {
   display: flex;
+  align-items: center;
+
+  gap: 50px;
 }
 
 .logoText {
-  font-size: 2em;
+  font-size: 1.5em;
+}
+
+.navLinks {
+  list-style-type: none;
+}
+
+.navLinks > li {
+  color: rgb(161, 161, 161);
+
+  text-align: center;
+}
+
+.navLinks > li:hover {
+  color: var(--foreground);
 }
 
 .navLinks,
@@ -23,6 +40,7 @@
 @media only screen and (min-width: 950px) {
   .navLinks {
     display: flex;
+    gap: 25px;
   }
 
   .profileIconWrapper {

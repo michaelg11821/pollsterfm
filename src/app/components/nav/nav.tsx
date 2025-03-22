@@ -9,24 +9,13 @@ function Nav() {
         <h1 className={styles.logoText}>Pollster.fm</h1>
         <ul className={styles.navLinks}>
           <li>
-            <button type="button">
-              <Link href="">Discover</Link>
-            </button>
+            <Link href="">Polls</Link>
           </li>
           <li>
-            <button type="button">
-              <Link href="">Polls</Link>
-            </button>
+            <Link href="">Reviews</Link>
           </li>
           <li>
-            <button type="button">
-              <Link href="">Reviews</Link>
-            </button>
-          </li>
-          <li>
-            <button type="button">
-              <Link href="">Community</Link>
-            </button>
+            <Link href="">Community</Link>
           </li>
         </ul>
       </div>
