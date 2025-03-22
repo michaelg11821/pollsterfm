@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Pollster",
+  title: "Home | Pollster.fm",
   description: "A poll-based music social platform",
 };
 
