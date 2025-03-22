@@ -29,6 +29,8 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
               ? styles.mobileMenuToggleActive
               : styles.mobileMenuToggle
           }
+          title="Toggle menu"
+          aria-label={`${mobileMenuOpen ? "Close" : "Open"} menu`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           <span></span>
