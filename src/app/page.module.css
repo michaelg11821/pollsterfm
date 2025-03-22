@@ -1,0 +1,173 @@
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  position: relative;
+
+  height: 500px;
+}
+
+.backgroundLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gradientOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(88, 28, 135, 0.2),
+    rgba(30, 64, 175, 0.2)
+  );
+  animation: gradient 5s ease infinite;
+}
+
+.radialOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    rgba(120, 40, 200, 0.1) 0%,
+    transparent 100%
+  );
+  animation: pulse 3s ease infinite;
+}
+
+.gridOverlay {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 16px;
+  opacity: 0.2;
+  transform: rotate(12deg) scale(1.5);
+}
+
+.animatedCircle {
+  height: 16rem;
+  border-radius: 9999px;
+  filter: blur(6rem);
+}
+
+.animatedCircleOne,
+.animatedCircleThree {
+  composes: circle;
+  background: rgba(139, 92, 246, 0.2);
+  animation: float 6s ease-in-out infinite;
+}
+
+.animatedCircleTwo {
+  composes: circle;
+
+  background: rgba(29, 78, 216, 0.2);
+  animation: float 6s ease-in-out infinite 2s;
+}
+
+.heroContentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+
+  margin-top: -30px;
+  margin-left: auto;
+  margin-right: auto;
+
+  text-align: center;
+
+  padding: 20px;
+
+  position: relative;
+  z-index: 10;
+
+  max-width: 1200px;
+  width: 100%;
+}
+
+.slogan {
+  color: #799cfa;
+  font-weight: bold;
+  font-size: 2.5em;
+}
+
+.pollsterSummary {
+  max-width: 600px;
+}
+
+.getStarted {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 40px;
+
+  background-color: #7c3aed;
+
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+@media only screen and (min-width: 950px) {
+  .heroContentWrapper {
+    margin-top: -60px;
+
+    align-items: flex-start;
+    text-align: left;
+
+    gap: 40px;
+  }
+
+  .slogan {
+    font-size: 3.3em;
+  }
+
+  .pollsterSummary {
+    max-width: 700px;
+
+    font-size: 1.2em;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
