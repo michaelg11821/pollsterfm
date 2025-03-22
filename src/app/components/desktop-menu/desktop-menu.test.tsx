@@ -11,7 +11,7 @@ describe("desktop menu (logged in)", () => {
   it("renders correctly", async () => {
     render(<DesktopMenu profileIcon={PROFILE_ICON} />);
 
-    const signInBtn = screen.queryByRole("button", { name: "Sign In" });
+    const signInBtn = screen.queryByRole("link", { name: "Sign In" });
     const desktopMenu = screen.getByTitle("Menu");
 
     expect(signInBtn).not.toBeInTheDocument();
@@ -24,7 +24,7 @@ describe("desktop menu (logged out)", () => {
     render(<DesktopMenu profileIcon={null} />);
 
     const desktopMenu = screen.queryByTitle("Menu");
-    const signInBtn = screen.getByRole("button", { name: "Sign In" });
+    const signInBtn = screen.getByRole("link", { name: "Sign In" });
 
     expect(desktopMenu).not.toBeInTheDocument();
     expect(signInBtn).toBeInTheDocument();
