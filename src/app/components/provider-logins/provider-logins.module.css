@@ -1,0 +1,38 @@
+.providerLogins {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 23px;
+}
+
+.providerLogins > button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 8px 40px;
+  border: 1px solid #414141;
+  border-radius: 8px;
+
+  transition: border-color 0.08s linear;
+
+  font-size: 0.9em;
+
+  background-color: inherit;
+}
+
+.providerLogins > button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+.providerLogins > button:enabled {
+  cursor: pointer;
+}
+
+.providerLogins > button:enabled:hover {
+  border-color: #656565;
+}

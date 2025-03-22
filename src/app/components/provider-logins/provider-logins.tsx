@@ -4,6 +4,12 @@ import { signIn } from "next-auth/react";
 import { Turnstile } from "next-turnstile";
 import { useState } from "react";
 
+import Image from "next/image";
+
+import SpotifySvg from "../../../../public/spotify.svg";
+
+import styles from "./provider-logins.module.css";
+
 function ProviderLogins() {
   const [turnstileStatus, setTurnstileStatus] = useState<
     "success" | "error" | "expired" | "required"
@@ -11,10 +17,10 @@ function ProviderLogins() {
   const [error, setError] = useState<string>("");
 
   return (
-    <>
+    <div className={styles.providerLogins}>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <button
-        type="submit"
+        type="button"
         onClick={
           turnstileStatus !== "success"
             ? () => setError("Please complete the challenge first.")
@@ -22,6 +28,7 @@ function ProviderLogins() {
         }
         disabled={turnstileStatus !== "success"}
       >
+        <Image src={SpotifySvg} width={30} height={30} alt="" priority />
         Sign in with Spotify
       </button>
       <Turnstile
@@ -46,7 +53,7 @@ function ProviderLogins() {
           setError("");
         }}
       />
-    </>
+    </div>
   );
 }
 

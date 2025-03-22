@@ -1,0 +1,15 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.platformName {
+  text-align: center;
+  font-size: 2em;
+
+  margin-bottom: 50px;
+}

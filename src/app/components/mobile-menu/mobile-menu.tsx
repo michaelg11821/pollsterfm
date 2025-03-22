@@ -67,7 +67,7 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
                   </li>
                 </>
               ) : (
-                <li>
+                <li style={{ marginBottom: "-20px" }}>
                   <button type="button">
                     <Link href="sign-in">Sign In</Link>
                   </button>

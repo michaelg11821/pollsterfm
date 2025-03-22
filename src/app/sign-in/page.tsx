@@ -10,7 +10,11 @@ async function SignIn() {
 
   if (user) return redirect("/profile");
 
-  return <ProviderLogins />;
+  return (
+    <main>
+      <ProviderLogins />
+    </main>
+  );
 }
 
 export default SignIn;
