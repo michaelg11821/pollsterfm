@@ -1,5 +1,5 @@
 :root {
-  --background: #ffffff;
+  --background: #ededed;
   --foreground: #171717;
 }
 
@@ -38,11 +38,21 @@ a {
 
 header {
   display: flex;
+  justify-content: center;
+  align-items: center;
 
   position: relative;
 
-  padding: 20px;
+  width: 100%;
 
+  padding: 15px 20px;
+  border-bottom: 1px solid #1f2937;
+}
+
+.header-content-wrapper {
+  display: flex;
+
+  max-width: 1200px;
   width: 100%;
 }
 
