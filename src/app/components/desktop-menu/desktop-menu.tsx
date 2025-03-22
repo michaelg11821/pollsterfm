@@ -28,9 +28,9 @@ function DesktopMenu({ profileIcon }: DesktopMenuProps) {
           <Image src={profileIcon} width={40} height={40} alt="Profile Icon" />
         </button>
       ) : (
-        <button type="button">
-          <Link href="/sign-in">Sign In</Link>
-        </button>
+        <Link href="/sign-in" className={styles.signInBtn}>
+          Sign In
+        </Link>
       )}
     </div>
   );

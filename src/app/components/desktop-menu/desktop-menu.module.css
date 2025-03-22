@@ -14,6 +14,28 @@
   cursor: pointer;
 }
 
+.signInBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 120px;
+
+  padding: 8px;
+  border: 1px solid #414141;
+  border-radius: 8px;
+
+  transition: border-color 0.08s linear;
+
+  font-size: 0.9em;
+
+  background-color: inherit;
+}
+
+.signInBtn:hover {
+  border-color: #656565;
+}
+
 @media only screen and (min-width: 950px) {
   .profileIconWrapper {
     display: block;
