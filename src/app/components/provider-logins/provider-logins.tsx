@@ -1,8 +1,9 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { Turnstile } from "next-turnstile";
 import { useState } from "react";
+
+import { Turnstile } from "@marsidev/react-turnstile";
 
 import Image from "next/image";
 
@@ -11,58 +12,39 @@ import SpotifySvg from "../../../../public/spotify.svg";
 import styles from "./provider-logins.module.css";
 
 function ProviderLogins() {
-  const [turnstileStatus, setTurnstileStatus] = useState<
-    "success" | "error" | "expired" | "required"
-  >("required");
-  const [error, setError] = useState<string>("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignIn = async () => {
+    if (!turnstileToken) {
+      return setError("Please complete the verification.");
+    }
+
+    const verification = await fetch("/api/verify-turnstile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: turnstileToken }),
+    });
+
+    const result = await verification.json();
+
+    if (result.success) {
+      signIn("spotify", { callbackUrl: "/profile" });
+    } else {
+      setError("Verification failed");
+    }
+  };
 
   return (
     <div className={styles.providerLogins}>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <button
-        type="button"
-        onClick={
-          turnstileStatus !== "success"
-            ? () => setError("Please complete the challenge first.")
-            : () => {
-                const token = (
-                  document.querySelector(
-                    "input[name='cf-turnstile-response']"
-                  ) as HTMLInputElement
-                )?.value;
-                if (!token) {
-                  return setError("Verification token missing.");
-                }
-
-                signIn("spotify", { turnstileToken: token });
-              }
-        }
-        disabled={turnstileStatus !== "success"}
-      >
+      <button type="button" onClick={handleSignIn} disabled={!turnstileToken}>
         <Image src={SpotifySvg} width={30} height={30} alt="" priority />
         Sign in with Spotify
       </button>
       <Turnstile
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-        retry="auto"
-        refreshExpired="auto"
-        sandbox={process.env.NODE_ENV === "development"}
-        onLoad={() => {
-          setTurnstileStatus("required");
-          setError("");
-        }}
-        onError={() => {
-          setTurnstileStatus("error");
-          setError("Please try again.");
-        }}
-        onExpire={() => {
-          setTurnstileStatus("expired");
-          setError("Security check expired.");
-        }}
-        onVerify={() => {
-          setTurnstileStatus("success");
-          setError("");
-        }}
+        onSuccess={(token) => setTurnstileToken(token)}
       />
     </div>
   );
