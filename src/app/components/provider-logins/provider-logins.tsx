@@ -24,7 +24,18 @@ function ProviderLogins() {
         onClick={
           turnstileStatus !== "success"
             ? () => setError("Please complete the challenge first.")
-            : () => signIn("spotify")
+            : () => {
+                const token = (
+                  document.querySelector(
+                    "input[name='cf-turnstile-response']"
+                  ) as HTMLInputElement
+                )?.value;
+                if (!token) {
+                  return setError("Verification token missing.");
+                }
+
+                signIn("spotify", { turnstileToken: token });
+              }
         }
         disabled={turnstileStatus !== "success"}
       >
