@@ -25,6 +25,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body:has(.centered-main) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
