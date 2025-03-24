@@ -13,6 +13,7 @@ import styles from "./provider-logins.module.css";
 
 function ProviderLogins() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSignIn = async () => {
@@ -20,24 +21,35 @@ function ProviderLogins() {
       return setError("Please complete the verification.");
     }
 
-    const verification = await fetch("/api/verify-turnstile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: turnstileToken }),
-    });
+    try {
+      setLoading(true);
 
-    const result = await verification.json();
+      const verification = await fetch("/api/verify-turnstile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
 
-    if (result.success) {
-      signIn("spotify", { callbackUrl: "/profile" });
-    } else {
-      setError("Verification failed");
+      const result = await verification.json();
+
+      if (result.success) {
+        return signIn("spotify", { callbackUrl: "/profile" });
+      } else {
+        return setError("Verification failed. Please try again.");
+      }
+    } catch (err: unknown) {
+      console.error(err);
+
+      return setError("Verification failed. Please try again.");
+    } finally {
+      return setLoading(false);
     }
   };
 
   return (
     <div className={styles.providerLogins}>
       {error && <p style={{ color: "red" }}>{error}</p>}
+      {loading && <p>Please wait...</p>}
       <button type="button" onClick={handleSignIn} disabled={!turnstileToken}>
         <Image src={SpotifySvg} width={30} height={30} alt="" priority />
         Sign in with Spotify
