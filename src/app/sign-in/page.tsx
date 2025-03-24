@@ -1,7 +1,13 @@
 import { auth } from "@/auth";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import ProviderLogins from "../components/provider-logins/provider-logins";
+
+export const metadata: Metadata = {
+  title: "Sign In | Pollster.fm",
+  description: "Sign in to Pollster.fm",
+};
 
 async function SignIn() {
   const session = await auth();
@@ -11,7 +17,7 @@ async function SignIn() {
   if (user) return redirect("/profile");
 
   return (
-    <main>
+    <main className="centered-main">
       <ProviderLogins />
     </main>
   );
