@@ -10,6 +10,7 @@
     "test": "vitest --config vitest.config.ts"
   },
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-alpha.7",
     "@marsidev/react-turnstile": "^1.1.0",
     "@prisma/client": "^6.5.0",
     "next": "15.2.2",
