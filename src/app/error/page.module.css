@@ -1,0 +1,15 @@
+.errorTitle,
+.errorText {
+  text-align: center;
+}
+
+.errorTitle {
+  font-size: 2em;
+
+  margin-bottom: 20px;
+}
+
+.errorText {
+  font-size: 1.2em;
+  max-width: 400px;
+}

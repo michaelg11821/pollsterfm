@@ -1,22 +1,21 @@
-import Nav from "../components/nav/nav";
+import { Metadata } from "next";
+
 import styles from "./page.module.css";
 
-async function Error() {
+export const metadata: Metadata = {
+  title: "Error | Pollster.fm",
+  description: "An error has occurred.",
+};
+
+function Error() {
   return (
-    <>
-      <header>
-        <div className="header-content-wrapper">
-          <Nav />
-        </div>
-      </header>
-      <main>
-        <h2 className={styles.errorTitle}>Error</h2>
-        <p className={styles.errorText}>
-          There was an error loading this page. Please check the URL or contact
-          an admin if the issue persists.
-        </p>
-      </main>
-    </>
+    <main className="centered-main">
+      <h2 className={styles.errorTitle}>Error ⚠️</h2>
+      <p className={styles.errorText}>
+        A major error has occurred. Please contact an admin if the issue
+        persists.
+      </p>
+    </main>
   );
 }
 
