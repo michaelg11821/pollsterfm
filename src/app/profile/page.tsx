@@ -1,8 +1,15 @@
+import { Metadata } from "next";
+
 import { auth } from "@/auth";
 
 import Image from "next/image";
 
 import styles from "./page.module.css";
+
+export const metadata: Metadata = {
+  title: "(username) | Pollster.fm",
+  description: "Check out (username)'s profile on Pollster.fm!",
+};
 
 async function Profile() {
   const session = await auth();
