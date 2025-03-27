@@ -95,7 +95,7 @@ describe("ProviderLogins errors", () => {
     server.use(verifyTurnstileHandler);
   });
 
-  it("shows error when sign-in is attempted without a Turnstile token", async () => {
+  it("sign in without turnstile token fails", async () => {
     const user = userEvent.setup();
 
     render(<ProviderLogins />);
