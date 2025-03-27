@@ -19,7 +19,7 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const handleSignOut = async () => {
-    await signOut();
+    await signOut({ redirectTo: "/ " });
   };
 
   return (
