@@ -42,7 +42,10 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
       </div>
       {mobileMenuOpen && (
         <div className={styles.mobileMenu}>
-          <div className={styles.mobileMenuInteriorWrapper}>
+          <div
+            className={styles.mobileMenuInteriorWrapper}
+            onClick={() => setMobileMenuOpen(false)}
+          >
             <ul className={styles.accountOptions}>
               {profileIcon ? (
                 <>
