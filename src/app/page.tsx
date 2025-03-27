@@ -19,7 +19,7 @@ function Home() {
         </div>
         <div className={styles.container}>
           <div className={styles.content}>
-            <h1 className={styles.title}>Your taste, your opinion.</h1>
+            <h2 className={styles.title}>Your taste, your opinion.</h2>
             <p className={styles.description}>
               Discover yourself through the rhythm of your choices.
             </p>
