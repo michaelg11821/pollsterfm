@@ -131,30 +131,40 @@
 .buttonContainer {
   display: flex;
   justify-content: center;
+
+  font-family: inherit;
+  font-weight: bold;
+
   gap: 1rem;
 }
 
 .primaryButton {
   padding: 0.75rem 2rem;
-  background: linear-gradient(to right, #9333ea, #ec4899);
   border-radius: 9999px;
-  font-weight: bold;
   border: none;
+
+  background: linear-gradient(to right, #9333ea, #ec4899);
+
+  font-weight: bold;
   color: white;
+
   cursor: pointer;
 }
 
 .primaryButton:hover {
-  opacity: 0.9;
+  opacity: 0.75;
 }
 
 .secondaryButton {
   padding: 0.75rem 2rem;
-  background: rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
-  font-weight: bold;
   border: none;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  font-weight: bold;
   color: white;
+
   cursor: pointer;
 }
 
