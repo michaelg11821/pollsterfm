@@ -1,0 +1,98 @@
+.profileHeader {
+  width: 100%;
+}
+
+.profilePage {
+  padding: 0 20px;
+  margin-top: 20px;
+}
+
+.profilePageWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  max-width: var(--max-wrapper-width);
+  width: 100%;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profileIcon {
+  height: 73px;
+  width: 73px;
+
+  position: relative;
+}
+
+.profileIcon > img {
+  border-radius: 50%;
+}
+
+.displayAndUser {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  max-width: 200px;
+
+  font-weight: bold;
+}
+
+.displayAndPronouns {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.displayName,
+.username {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.displayName {
+  font-size: 1.35em;
+}
+
+.username {
+  color: #939589;
+  font-size: 0.85em;
+}
+
+.pronouns {
+  color: #939589;
+}
+
+@media only screen and (min-width: 950px) {
+  .profilePage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profilePageWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  .profileIcon {
+    height: 110px;
+    width: 110px;
+  }
+
+  .displayAndUser {
+    width: 100%;
+    max-width: 450px;
+  }
+}
