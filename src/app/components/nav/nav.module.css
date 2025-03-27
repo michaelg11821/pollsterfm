@@ -7,7 +7,7 @@
 
   width: 100%;
 
-  padding: 15px 20px;
+  padding: 13px 20px;
   border-bottom: 1px solid #363b3d;
 
   background: var(--background);
@@ -19,7 +19,7 @@
 .pageHeaderContentWrapper {
   display: flex;
 
-  max-width: 1200px;
+  max-width: var(--max-wrapper-width);
   width: 100%;
 }
 
