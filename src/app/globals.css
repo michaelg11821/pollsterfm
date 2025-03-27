@@ -1,6 +1,7 @@
 :root {
   --background: #e8e6e3;
   --foreground: #171717;
+  --max-wrapper-width: 1200px;
 }
 
 @media (prefers-color-scheme: dark) {
