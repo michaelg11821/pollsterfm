@@ -15,7 +15,7 @@ interface DesktopMenuProps {
 
 function DesktopMenu({ profileIcon }: DesktopMenuProps) {
   const handleSignOut = async () => {
-    await signOut();
+    await signOut({ redirectTo: "/ " });
   };
 
   return (
@@ -28,15 +28,15 @@ function DesktopMenu({ profileIcon }: DesktopMenuProps) {
           <Menu.Portal>
             <Menu.Positioner
               className={styles.Positioner}
-              sideOffset={19}
-              alignOffset={-50}
+              sideOffset={7}
+              alignOffset={-45}
             >
               <Menu.Popup className={styles.Popup}>
                 <Menu.Item
                   className={styles.Item}
                   render={<Link href="profile">My Profile</Link>}
                 />
-                <Menu.Item className={styles.Item}>Account Settings</Menu.Item>
+                <Menu.Item className={styles.Item}>Settings</Menu.Item>
                 <Menu.Separator className={styles.Separator} />
                 <Menu.Item className={styles.Item} onClick={handleSignOut}>
                   Sign Out
