@@ -8,9 +8,9 @@
   width: 100%;
 
   padding: 15px 20px;
-  border-bottom: 1px solid #1f2937;
-  
-  background-color: #0a0a0a;
+  border-bottom: 1px solid #363b3d;
+
+  background: var(--background);
 
   top: 0;
   z-index: 1;

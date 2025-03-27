@@ -6,6 +6,9 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 
+import MenuSvg from "../../../../../public/ellipsis.svg";
+import CloseMenuSvg from "../../../../../public/x.svg";
+
 import styles from "./mobile-menu.module.css";
 
 type MobileMenuProps = {
@@ -24,18 +27,17 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
       <div className={styles.mobileMenuToggleWrapper}>
         <button
           type="button"
-          className={
-            mobileMenuOpen
-              ? styles.mobileMenuToggleActive
-              : styles.mobileMenuToggle
-          }
+          className={styles.mobileMenuToggle}
           title="Toggle menu"
           aria-label={`${mobileMenuOpen ? "Close" : "Open"} menu`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <Image
+            src={mobileMenuOpen ? CloseMenuSvg : MenuSvg}
+            width={30}
+            height={30}
+            alt=""
+          />
         </button>
       </div>
       {mobileMenuOpen && (
@@ -75,11 +77,6 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
               )}
             </ul>
             <ul className={styles.navLinks}>
-              <li>
-                <button type="button">
-                  <Link href="">Discover</Link>
-                </button>
-              </li>
               <li>
                 <button type="button">
                   <Link href="">Polls</Link>
