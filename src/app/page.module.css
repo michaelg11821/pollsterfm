@@ -132,10 +132,13 @@
   display: flex;
   justify-content: center;
 
+  gap: 1rem;
+}
+
+.primaryButton,
+.secondaryButton {
   font-family: inherit;
   font-weight: bold;
-
-  gap: 1rem;
 }
 
 .primaryButton {
