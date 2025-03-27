@@ -23,8 +23,6 @@ function ProviderLogins() {
       return setError("Please complete the verification.");
     }
 
-    console.log("Token sent:", turnstileToken);
-
     try {
       setLoading(true);
 
