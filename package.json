@@ -31,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "^15.2.3",
     "jsdom": "^26.0.0",
+    "msw": "^2.7.3",
     "prisma": "^6.5.0",
     "typescript": "^5",
     "vitest": "^3.0.9"

@@ -11,6 +11,8 @@ import SpotifySvg from "../../../../public/spotify.svg";
 
 import styles from "./provider-logins.module.css";
 
+import providerLoginsConfig from "./config";
+
 function ProviderLogins() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -20,6 +22,8 @@ function ProviderLogins() {
     if (!turnstileToken) {
       return setError("Please complete the verification.");
     }
+
+    console.log("Token sent:", turnstileToken);
 
     try {
       setLoading(true);
@@ -33,7 +37,9 @@ function ProviderLogins() {
       const result = await verification.json();
 
       if (result.success) {
-        return signIn("spotify", { callbackUrl: "/profile" });
+        const { callbackUrl } = providerLoginsConfig;
+
+        return signIn("spotify", { callbackUrl });
       } else {
         return setError("Verification failed. Please try again.");
       }
@@ -57,6 +63,7 @@ function ProviderLogins() {
       <Turnstile
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
         onSuccess={(token) => setTurnstileToken(token)}
+        onError={() => setError("Verification failed. Please try again.")}
       />
     </div>
   );
