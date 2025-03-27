@@ -8,8 +8,6 @@ async function Profile() {
   const session = await auth();
   const user = session?.user;
 
-  console.log(user);
-
   return (
     <main className={styles.profilePage}>
       <div className={styles.profilePageWrapper}>
