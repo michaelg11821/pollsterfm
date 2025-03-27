@@ -3,26 +3,31 @@ import styles from "./page.module.css";
 function Home() {
   return (
     <main>
-      <section className={styles.hero}>
-        <div className={styles.backgroundLayer}>
-          <div className={styles.gradientOverlay}></div>
-          <div className={styles.radialOverlay}></div>
-          <div className={styles.gridOverlay}>
-            <div className={styles.animatedCircleOne}></div>
-            <div className={styles.animatedCircleTwo}></div>
-            <div className={styles.animatedCircleThree}></div>
+      <section id="hero" className={styles.hero}>
+        <div className={styles.backgroundContainer}>
+          <div className={styles.gradientBackground}>
+            <div className={styles.overlay}>
+              <div className={styles.radialGradient1}></div>
+              <div className={styles.radialGradient2}></div>
+            </div>
+            <div className={styles.shapesContainer}>
+              <div className={styles.blob1}></div>
+              <div className={styles.blob2}></div>
+              <div className={styles.blob3}></div>
+            </div>
           </div>
         </div>
-
-        <div className={styles.heroContentWrapper}>
-          <p className={styles.slogan}>Your opinion matters.</p>
-          <p className={styles.pollsterSummary}>
-            Create engaging music polls, vote on your favorite topics, publish
-            reviews, and discover like-minded people.
-          </p>
-          <button type="button" className={styles.getStarted}>
-            Get Started
-          </button>
+        <div className={styles.container}>
+          <div className={styles.content}>
+            <h1 className={styles.title}>Your taste, your opinion.</h1>
+            <p className={styles.description}>
+              Discover yourself through the rhythm of your choices.
+            </p>
+            <div className={styles.buttonContainer}>
+              <button className={styles.primaryButton}>Start Voting</button>
+              <button className={styles.secondaryButton}>Create Poll</button>
+            </div>
+          </div>
         </div>
       </section>
       <section className={styles.statsSection}>stats go here</section>

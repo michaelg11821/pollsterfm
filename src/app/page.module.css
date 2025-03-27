@@ -1,187 +1,191 @@
 .hero {
+  position: relative;
+  height: 500px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-
-  position: relative;
-
-  height: 500px;
-
-  border-bottom: 1px solid #1f293752;
 }
 
-.backgroundLayer {
+.backgroundContainer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
 }
 
-.gradientOverlay {
+.gradientBackground {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: linear-gradient(
-    to right,
-    rgba(88, 28, 135, 0.2),
-    rgba(30, 64, 175, 0.2)
+    to bottom right,
+    #181a1b,
+    rgba(147, 51, 234, 0.4)
   );
-  animation: gradient 5s ease infinite;
+  animation: gradientXY 15s ease infinite;
 }
 
-.radialOverlay {
+.overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  opacity: 0.3;
+}
+
+.radialGradient1 {
+  position: absolute;
+  inset: 0;
   background: radial-gradient(
-    circle at center,
-    rgba(120, 40, 200, 0.1) 0%,
-    transparent 100%
+    circle at 50% 50%,
+    rgba(168, 85, 247, 0.3),
+    rgba(24, 26, 27, 0) 70%
   );
-  animation: pulse 3s ease infinite;
 }
 
-.gridOverlay {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 16px;
+.radialGradient2 {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 80% 20%,
+    rgba(236, 72, 153, 0.3),
+    rgba(24, 26, 27, 0) 70%
+  );
+}
+
+.shapesContainer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   opacity: 0.2;
-  transform: rotate(12deg) scale(1.5);
 }
 
-.animatedCircle {
-  height: 16rem;
+.blob1 {
+  position: absolute;
+  height: 40rem;
+  width: 40rem;
+  top: -10rem;
+  left: -10rem;
+  background-color: rgba(139, 92, 246, 0.6);
   border-radius: 9999px;
-  filter: blur(6rem);
+  mix-blend-mode: multiply;
+  filter: blur(48px);
+  animation: blob 7s ease infinite;
 }
 
-.animatedCircleOne,
-.animatedCircleThree {
-  composes: animatedCircle;
-  background: rgba(139, 92, 246, 0.2);
-  animation: float 6s ease-in-out infinite;
+.blob2 {
+  position: absolute;
+  height: 30rem;
+  width: 30rem;
+  top: 20%;
+  right: 20%;
+  background-color: rgba(236, 72, 153, 0.6);
+  border-radius: 9999px;
+  mix-blend-mode: multiply;
+  filter: blur(48px);
+  animation: blob 7s ease infinite 2s;
 }
 
-.animatedCircleTwo {
-  composes: animatedCircle;
-
-  background: rgba(29, 78, 216, 0.2);
-  animation: float 6s ease-in-out infinite 2s;
+.blob3 {
+  position: absolute;
+  height: 35rem;
+  width: 35rem;
+  bottom: -10rem;
+  right: 10%;
+  background-color: rgba(59, 130, 246, 0.6);
+  border-radius: 9999px;
+  mix-blend-mode: multiply;
+  filter: blur(48px);
+  animation: blob 7s ease infinite 4s;
 }
 
-.heroContentWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-
-  margin-top: -30px;
+.container {
   margin-left: auto;
   margin-right: auto;
-
-  text-align: center;
-
-  padding: 20px;
-
+  padding-left: 1rem;
+  padding-right: 1rem;
   position: relative;
-
-  max-width: 1200px;
-  width: 100%;
+  z-index: 10;
 }
 
-.slogan {
-  color: #799cfa;
-  font-weight: bold;
-  font-size: 2.5em;
+.content {
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
-.pollsterSummary {
-  max-width: 600px;
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(to right, #c084fc, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.getStarted {
+@media (min-width: 768px) {
+  .title {
+    font-size: 4.5rem;
+  }
+}
+
+.description {
+  font-size: 1.25rem;
+  color: rgb(209, 213, 219);
+  margin-bottom: 2rem;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.primaryButton {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(to right, #9333ea, #ec4899);
+  border-radius: 9999px;
+  font-weight: 500;
   border: none;
-  border-radius: 8px;
-  padding: 13px 25px;
-
-  background-color: #7c3aed;
-
-  font-weight: bold;
-  font-family: inherit;
-  font-size: 1.2em;
-
+  color: white;
   cursor: pointer;
 }
 
-.getStarted:hover {
-  background-color: #8c55eb;
+.primaryButton:hover {
+  opacity: 0.9;
 }
 
-@media only screen and (min-width: 950px) {
-  .heroContentWrapper {
-    margin-top: -60px;
-
-    align-items: flex-start;
-    text-align: left;
-
-    gap: 40px;
-  }
-
-  .slogan {
-    font-size: 3.3em;
-  }
-
-  .pollsterSummary {
-    max-width: 700px;
-
-    font-size: 1.2em;
-  }
+.secondaryButton {
+  padding: 0.75rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  font-weight: 500;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 
-@media only screen and (min-width: 1280px) {
-  .heroContentWrapper {
-    padding: 0;
-  }
+.secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+@keyframes gradientXY {
+  0%,
   100% {
-    background-position: 0% 50%;
+    background-size: 100% 100%;
+    background-position: 0% 0%;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: 100% 100%;
   }
 }
 
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
+@keyframes blob {
+  0%,
   100% {
     transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20%);
   }
 }
