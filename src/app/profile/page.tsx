@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 
 import Image from "next/image";
 
