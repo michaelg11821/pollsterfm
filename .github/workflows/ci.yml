@@ -11,33 +11,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-        
-    - name: Cache Next.js build
-      uses: actions/cache@v3
-      id: nextjs-cache
-      with:
-        path: |
-          .next/cache
-          node_modules/.cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nextjs-
+      - uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: npm install
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
 
-    - name: Run linter
-      run: npm run lint
+      - name: Cache Next.js build
+        uses: actions/cache@v3
+        id: nextjs-cache
+        with:
+          path: |
+            .next/cache
+            node_modules/.cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-
 
-    - name: Run tests
-      run: npm test
+      - name: Install dependencies
+        run: npm install
 
-    - name: Build application
-      run: npm run build
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Apply database migrations
+        run: npm run migrate:prod
+
+      - name: Build application
+        run: npm run build
