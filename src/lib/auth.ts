@@ -3,6 +3,8 @@ import Spotify from "next-auth/providers/spotify";
 
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
+import { type AdapterUser } from "next-auth/adapters";
+
 import { prisma } from "./prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -18,7 +20,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
       });
 
-      return newUser;
+      const adapterUser: AdapterUser = {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        emailVerified: newUser.emailVerified,
+      };
+
+      return adapterUser;
     },
   },
   providers: [
