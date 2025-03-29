@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 
 import Image from "next/image";
 
+import { type PollsterUser } from "@/lib/types/pollsterUser";
+
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -13,7 +15,7 @@ export const metadata: Metadata = {
 
 async function Profile() {
   const session = await auth();
-  const user = session?.user;
+  const user = session?.user as PollsterUser;
 
   return (
     <main className={styles.profilePage}>
@@ -36,9 +38,11 @@ async function Profile() {
                   {user.name && (
                     <p className={styles.displayName}>{user.name}</p>
                   )}
-                  <p className={styles.pronouns}>none (PLACEHOLDER)</p>
+                  {user.pronouns && (
+                    <p className={styles.pronouns}>{user.pronouns}</p>
+                  )}
                 </div>
-                <p className={styles.username}>@PLACEHOLDER</p>
+                <p className={styles.username}>@{user.username}</p>
               </div>
             </div>
           </div>
