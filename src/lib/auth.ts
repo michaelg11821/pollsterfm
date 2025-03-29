@@ -13,18 +13,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     createUser: async (user) => {
       const newUser = await prisma.user.create({
         data: {
-          name: user.name as string,
           email: user.email,
-          image: user.image,
           emailVerified: user.emailVerified,
+          name: user.name ?? null,
+          image: user.image ?? null,
         },
       });
 
       const adapterUser: AdapterUser = {
         id: newUser.id,
-        name: newUser.name,
         email: newUser.email,
         emailVerified: newUser.emailVerified,
+        name: newUser.name ?? null,
+        image: newUser.image ?? null,
       };
 
       return adapterUser;

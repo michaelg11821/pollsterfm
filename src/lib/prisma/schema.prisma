@@ -37,7 +37,7 @@ enum AffinityType {
 model User {
   id String @id @default(cuid())
 
-  name     String
+  name     String?
   username String  @unique @default(cuid())
   pronouns String?
   aboutMe  String?
