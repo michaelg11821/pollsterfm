@@ -35,8 +35,8 @@ async function Nav() {
           </div>
           <div className={styles.searchBar}>search...</div>
         </nav>
-        <DesktopMenu profileIcon={user?.image} username={user.username} />
-        <MobileMenu profileIcon={user?.image} username={user.username} />
+        <DesktopMenu profileIcon={user?.image} username={user?.username} />
+        <MobileMenu profileIcon={user?.image} username={user?.username} />
       </div>
     </header>
   );
