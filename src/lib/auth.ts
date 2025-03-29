@@ -10,7 +10,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: {
     ...PrismaAdapter(prisma),
     createUser: async (user: AdapterUser) => {
-      const newUser = prisma.user.create({
+      const newUser = await prisma.user.create({
         data: {
           name: user.name,
           email: user.email,
