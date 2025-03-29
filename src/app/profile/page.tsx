@@ -45,13 +45,26 @@ async function Profile() {
                 <p className={styles.username}>@{user.username}</p>
               </div>
             </div>
+            {user.aboutMe && <p className={styles.aboutMe}>{user.aboutMe}</p>}
+            <div className={styles.userStats}>
+              <div className="pollsCreated">
+                <p className={styles.userStatTitle}>Polls created</p>
+                <p>300.3M</p>
+              </div>
+              <div className="votesGiven">
+                <p className={styles.userStatTitle}>Votes given</p>
+                <p>300.3M</p>
+              </div>
+              <div className="friends">
+                <p className={styles.userStatTitle}>Friends</p>
+                <p>300.3M</p>
+              </div>
+            </div>
           </div>
         )}
       </div>
     </main>
   );
-
-  return <p>{user?.name}</p>;
 }
 
 export default Profile;

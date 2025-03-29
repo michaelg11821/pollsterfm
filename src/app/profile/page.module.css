@@ -1,4 +1,8 @@
 .profileHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
   width: 100%;
 }
 
@@ -52,7 +56,6 @@
 
 .displayName,
 .username {
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -68,6 +71,28 @@
 
 .pronouns {
   color: #939589;
+}
+
+.aboutMe {
+  margin-top: 0px;
+
+  word-wrap: break-word;
+}
+
+.userStats {
+  display: flex;
+  gap: 20px;
+
+  white-space: nowrap;
+}
+
+.userStatTitle {
+  margin-bottom: 3px;
+
+  color: #939589;
+
+  font-weight: bold;
+  font-size: 0.9em;
 }
 
 @media only screen and (min-width: 950px) {
@@ -94,5 +119,9 @@
   .displayAndUser {
     width: 100%;
     max-width: 450px;
+  }
+
+  .userStatTitle {
+    font-size: 1.1em;
   }
 }
