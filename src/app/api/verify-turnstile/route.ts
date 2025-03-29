@@ -21,8 +21,11 @@ export async function POST(request: NextRequest) {
   const data = await response.json();
 
   if (data.success) {
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true }, { status: 200 });
   } else {
-    return NextResponse.json({ success: false, error: data["error-codes"] });
+    return NextResponse.json(
+      { success: false, error: data["error-codes"] },
+      { status: 401 }
+    );
   }
 }
