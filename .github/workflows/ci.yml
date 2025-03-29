@@ -43,6 +43,3 @@ jobs:
         run: npm run migrate:prod
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Build application
-        run: npm run build
