@@ -7,11 +7,13 @@ import { Turnstile } from "@marsidev/react-turnstile";
 
 import Image from "next/image";
 
+import providerLoginsConfig from "./config";
+
+import { verifyTurnstile } from "@/lib/actions";
+
 import SpotifySvg from "../../../../public/spotify.svg";
 
 import styles from "./provider-logins.module.css";
-
-import providerLoginsConfig from "./config";
 
 function ProviderLogins() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -26,13 +28,7 @@ function ProviderLogins() {
     try {
       setLoading(true);
 
-      const verification = await fetch("/api/verify-turnstile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: turnstileToken }),
-      });
-
-      const result = await verification.json();
+      const result = await verifyTurnstile(turnstileToken);
 
       if (result.success) {
         const { callbackUrl } = providerLoginsConfig;
