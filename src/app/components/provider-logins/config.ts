@@ -1,5 +1,5 @@
 const providerLoginsConfig = {
-  callbackUrl: "/profile",
+  callbackUrl: "/my-profile",
 };
 
 export default providerLoginsConfig;
