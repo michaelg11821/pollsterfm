@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 
 const authConfig = {
-  protectedRoutes: ["/profile", "/dashboard"],
+  protectedRoutes: ["/account-settings"],
   signInPath: "/sign-in",
 };
 
@@ -33,5 +33,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/profile/:path*"],
+  matcher: ["/account-settings/:path*"],
 };
