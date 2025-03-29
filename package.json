@@ -12,6 +12,7 @@
     "migrate:prod": "dotenv -e .env.production -- npx prisma migrate deploy"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "2.7.2",
     "@base-ui-components/react": "^1.0.0-alpha.7",
     "@marsidev/react-turnstile": "^1.1.0",
     "@prisma/client": "^6.5.0",
@@ -37,5 +38,8 @@
     "prisma": "^6.5.0",
     "typescript": "^5",
     "vitest": "^3.0.9"
+  },
+  "prisma": {
+    "schema": "src/lib/prisma/schema.prisma"
   }
 }
