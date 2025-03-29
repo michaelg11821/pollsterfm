@@ -13,7 +13,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         data: userData,
       });
 
-      return user;
+      return {
+        id: user.id,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        name: user.name ?? null,
+        image: user.image ?? null,
+      };
     },
   },
   providers: [
