@@ -9,7 +9,7 @@ import Image from "next/image";
 
 import providerLoginsConfig from "./config";
 
-import { verifyTurnstile } from "@/lib/actions";
+import { verifyTurnstile } from "../../../lib/actions";
 
 import SpotifySvg from "../../../../public/spotify.svg";
 

@@ -6,12 +6,12 @@ import MobileMenu from "./mobile-menu";
 
 describe("mobile menu (logged in)", () => {
   const PROFILE_ICON =
-    "https://i.scdn.co/image/ab6775700000ee85f8ef77862b055d603565d1c0";
+    "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
 
   it("opens when toggle clicked", async () => {
     const user = userEvent.setup();
 
-    render(<MobileMenu profileIcon={PROFILE_ICON} />);
+    render(<MobileMenu profileIcon={PROFILE_ICON} username="fake-user" />);
 
     const menuToggle = screen.getByTitle("Toggle menu");
 
@@ -29,7 +29,7 @@ describe("mobile menu (logged out)", () => {
   it("opens when toggle clicked", async () => {
     const user = userEvent.setup();
 
-    render(<MobileMenu profileIcon={null} />);
+    render(<MobileMenu profileIcon={null} username="" />);
 
     const menuToggle = screen.getByTitle("Toggle menu");
 

@@ -4,12 +4,28 @@ import providerLoginsConfig from "./config";
 
 import { render, screen, waitFor } from "@testing-library/react";
 import { signIn } from "next-auth/react";
-import { server } from "../../../mocks/mswSetup";
-import { verifyTurnstileHandler } from "../../../mocks/handlers/authHandlers";
 
 import ProviderLogins from "./provider-logins";
 
 let turnstileBehavior: "success" | "failure" = "success";
+
+vi.mock("../../../lib/actions", () => ({
+  verifyTurnstile: vi.fn(
+    (token) =>
+      new Promise((resolve) =>
+        setTimeout(() => {
+          if (token === "valid-mock-token") {
+            resolve({ success: true, status: 200 });
+          } else if (
+            turnstileBehavior === "failure" ||
+            token === "invalid-mock-token"
+          ) {
+            resolve({ success: false, error: ["invalid-token"], status: 401 });
+          }
+        }, 100)
+      )
+  ),
+}));
 
 vi.mock("next-auth/react", () => ({
   signIn: vi.fn((provider, options) => {
@@ -39,10 +55,6 @@ vi.mock("@marsidev/react-turnstile", () => ({
 }));
 
 describe("ProviderLogins", () => {
-  beforeEach(() => {
-    server.use(verifyTurnstileHandler);
-  });
-
   it("calls signIn after successful Turnstile verification", async () => {
     const user = userEvent.setup();
 
@@ -62,7 +74,7 @@ describe("ProviderLogins", () => {
 
     await waitFor(() => {
       expect(signIn).toHaveBeenCalledWith("spotify", {
-        callbackUrl: "/profile",
+        callbackUrl: providerLoginsConfig.callbackUrl,
       });
     });
   });
@@ -84,17 +96,16 @@ describe("ProviderLogins", () => {
       expect(screen.getByText("Please wait...")).toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText("Please wait...")).not.toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.queryByText("Please wait...")).not.toBeInTheDocument();
+      },
+      { timeout: 200 }
+    );
   });
 });
 
 describe("ProviderLogins errors", () => {
-  beforeEach(() => {
-    server.use(verifyTurnstileHandler);
-  });
-
   it("sign in without turnstile token fails", async () => {
     const user = userEvent.setup();
 

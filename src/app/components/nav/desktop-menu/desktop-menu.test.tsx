@@ -10,10 +10,10 @@ const waitForPosition = () => act(async () => {});
 
 describe("desktop menu (logged in)", () => {
   const PROFILE_ICON =
-    "https://i.scdn.co/image/ab6775700000ee85f8ef77862b055d603565d1c0";
+    "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
 
   it("renders correctly", async () => {
-    render(<DesktopMenu profileIcon={PROFILE_ICON} />);
+    render(<DesktopMenu profileIcon={PROFILE_ICON} username="fake-user" />);
 
     const signInBtn = screen.queryByRole("link", { name: "Sign In" });
     const desktopMenu = screen.getByAltText("Menu");
@@ -25,7 +25,7 @@ describe("desktop menu (logged in)", () => {
   it("menu opens", async () => {
     const user = userEvent.setup();
 
-    render(<DesktopMenu profileIcon={PROFILE_ICON} />);
+    render(<DesktopMenu profileIcon={PROFILE_ICON} username="fake-user" />);
 
     const desktopMenu = screen.getByAltText("Menu");
 
@@ -41,7 +41,7 @@ describe("desktop menu (logged in)", () => {
 
 describe("desktop menu (logged out)", () => {
   it("renders correctly", async () => {
-    render(<DesktopMenu profileIcon={null} />);
+    render(<DesktopMenu profileIcon={null} username="" />);
 
     const desktopMenu = screen.queryByAltText("Menu");
     const signInBtn = screen.getByRole("link", { name: "Sign In" });
