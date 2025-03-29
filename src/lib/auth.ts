@@ -6,22 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: {
-    ...PrismaAdapter(prisma),
-    createUser: async (userData) => {
-      const user = await prisma.user.create({
-        data: userData,
-      });
-
-      return {
-        id: user.id,
-        email: user.email,
-        emailVerified: user.emailVerified,
-        name: user.name ?? null,
-        image: user.image ?? null,
-      };
-    },
-  },
+  adapter: PrismaAdapter(prisma),
   providers: [
     Spotify({
       authorization:
