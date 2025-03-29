@@ -1,29 +1,31 @@
 "use client";
 
 import { signOut } from "next-auth/react";
+import { Menu } from "@base-ui-components/react/menu";
 
 import Image from "next/image";
 import Link from "next/link";
 
-import { Menu } from "@base-ui-components/react/menu";
+import { type MenuProps } from "../menuProps";
 
 import styles from "./desktop-menu.module.css";
 
-interface DesktopMenuProps {
-  profileIcon: string | null | undefined;
-}
-
-function DesktopMenu({ profileIcon }: DesktopMenuProps) {
+function DesktopMenu({ profileIcon, username }: MenuProps) {
   const handleSignOut = async () => {
-    await signOut({ redirectTo: "/ " });
+    await signOut({ redirectTo: "/" });
   };
 
   return (
     <div className={styles.profileIconWrapper}>
-      {profileIcon ? (
+      {username ? (
         <Menu.Root>
           <Menu.Trigger className={styles.profileIcon}>
-            <Image src={profileIcon} width={40} height={40} alt="Menu" />
+            <Image
+              src={profileIcon ? profileIcon : ""}
+              width={40}
+              height={40}
+              alt="Menu"
+            />
           </Menu.Trigger>
           <Menu.Portal>
             <Menu.Positioner
@@ -34,7 +36,7 @@ function DesktopMenu({ profileIcon }: DesktopMenuProps) {
               <Menu.Popup className={styles.Popup}>
                 <Menu.Item
                   className={styles.Item}
-                  render={<Link href="profile">My Profile</Link>}
+                  render={<Link href={`/user/${username}`}>My Profile</Link>}
                 />
                 <Menu.Item className={styles.Item}>Settings</Menu.Item>
                 <Menu.Separator className={styles.Separator} />

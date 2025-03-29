@@ -5,11 +5,13 @@ import Link from "next/link";
 import DesktopMenu from "./desktop-menu/desktop-menu";
 import MobileMenu from "./mobile-menu/mobile-menu";
 
+import { type PollsterUser } from "@/lib/types/pollsterUser";
+
 import styles from "./nav.module.css";
 
 async function Nav() {
   const session = await auth();
-  const user = session?.user;
+  const user = session?.user as PollsterUser;
 
   return (
     <header className={styles.pageHeader}>
@@ -33,8 +35,8 @@ async function Nav() {
           </div>
           <div className={styles.searchBar}>search...</div>
         </nav>
-        <DesktopMenu profileIcon={user?.image} />
-        <MobileMenu profileIcon={user?.image} />
+        <DesktopMenu profileIcon={user?.image} username={user.username} />
+        <MobileMenu profileIcon={user?.image} username={user.username} />
       </div>
     </header>
   );

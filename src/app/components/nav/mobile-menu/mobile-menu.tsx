@@ -10,16 +10,13 @@ import MenuSvg from "../../../../../public/ellipsis.svg";
 import CloseMenuSvg from "../../../../../public/x.svg";
 
 import styles from "./mobile-menu.module.css";
+import { MenuProps } from "../menuProps";
 
-type MobileMenuProps = {
-  profileIcon: string | null | undefined;
-};
-
-function MobileMenu({ profileIcon }: MobileMenuProps) {
+function MobileMenu({ profileIcon, username }: MenuProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const handleSignOut = async () => {
-    await signOut({ redirectTo: "/ " });
+    await signOut({ redirectTo: "/" });
   };
 
   return (
@@ -47,7 +44,7 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
             onClick={() => setMobileMenuOpen(false)}
           >
             <ul className={styles.accountOptions}>
-              {profileIcon ? (
+              {username ? (
                 <>
                   <li>
                     <button type="button" className={styles.profileBtn}>
@@ -57,7 +54,7 @@ function MobileMenu({ profileIcon }: MobileMenuProps) {
                         height={35}
                         alt=""
                       />
-                      <Link href="profile">Your Profile</Link>
+                      <Link href={`/user/${username}`}>Your Profile</Link>
                     </button>
                   </li>
                   <li>
