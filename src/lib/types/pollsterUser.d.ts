@@ -4,4 +4,5 @@ export type PollsterProfile = {
   createdAt: string;
   image: string;
   name: string;
+  currentlyPlaying?: string; // TEMP
 };
