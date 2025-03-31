@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 
-import MenuSvg from "../../../../../public/ellipsis.svg";
+import MenuSvg from "../../../../../public/align-justify.svg";
 import CloseMenuSvg from "../../../../../public/x.svg";
 
 import styles from "./mobile-menu.module.css";
