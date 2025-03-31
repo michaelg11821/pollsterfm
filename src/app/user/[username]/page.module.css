@@ -3,6 +3,8 @@
   flex-direction: column;
   gap: 15px;
 
+  position: relative;
+
   width: 100%;
 }
 
@@ -21,9 +23,23 @@
   width: 100%;
 }
 
+.profileBanner {
+  position: absolute;
+  padding: 20px;
+  background-color: white;
+  width: 100%;
+}
+
+.userInfoWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
 .userInfo {
   display: flex;
   align-items: center;
+  flex: 1;
   gap: 15px;
 }
 
@@ -57,11 +73,13 @@
 .displayName,
 .username {
   overflow: hidden;
-  text-overflow: ellipsis;
+  word-wrap: break-word;
 }
 
 .displayName {
   font-size: 1.35em;
+
+  word-wrap: break-word;
 }
 
 .username {
@@ -71,6 +89,54 @@
 
 .pronouns {
   color: #939589;
+}
+
+.desktopProfileActionsWrapper {
+  display: none;
+}
+
+.profileActions {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.editProfile,
+.profileActionsToggle {
+  padding: 9px 24px;
+  border-radius: 9999px;
+  background-color: rgb(71, 75, 76);
+
+  margin-top: 3px;
+
+  font-weight: bold;
+  font-size: 0.9em;
+  text-align: center;
+  color: white;
+
+  cursor: pointer;
+}
+
+.profileActionsToggle {
+  border: none;
+  padding: 0;
+  margin-top: 0;
+
+  width: 35px;
+  height: 35px;
+}
+
+.profileActionsToggle > img {
+  margin-top: 3px;
+
+  filter: invert(75%) sepia(99%) saturate(7%) hue-rotate(356deg)
+    brightness(102%) contrast(96%);
+}
+
+.editProfile:hover,
+.profileActionsToggle:hover {
+  background-color: rgb(91, 95, 96);
 }
 
 .aboutMe {
@@ -95,6 +161,13 @@
   font-size: 0.9em;
 }
 
+.sectionTitle {
+  align-self: flex-start;
+
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
 @media only screen and (min-width: 950px) {
   .profilePage {
     display: flex;
@@ -111,6 +184,11 @@
     height: 100%;
   }
 
+  .userInfoWrapper {
+    flex-direction: row;
+    gap: 0;
+  }
+
   .profileIcon {
     height: 110px;
     width: 110px;
@@ -119,6 +197,19 @@
   .displayAndUser {
     width: 100%;
     max-width: 450px;
+  }
+
+  .mobileProfileActionsWrapper {
+    display: none;
+  }
+
+  .desktopProfileActionsWrapper {
+    display: flex;
+  }
+
+  .editProfile {
+    margin-top: 0;
+    align-self: center;
   }
 
   .userStatTitle {
