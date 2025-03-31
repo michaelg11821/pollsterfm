@@ -1,4 +1,4 @@
 export type MenuProps = {
   profileIcon: string | null | undefined;
-  username: string;
+  username: string | null | undefined;
 };
