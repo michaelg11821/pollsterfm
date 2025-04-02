@@ -133,7 +133,9 @@ async function Profile({ params }: ProfileProps) {
               </div>
               <p className={styles.sectionTitle}>Recent listens</p>
               <section className="recentTracks">
-                <p className="nowPlaying">{profile.currentlyPlaying}</p>
+                <p className="nowPlaying">
+                  Now playing: {profile.currentlyPlaying}
+                </p>
               </section>
             </>
           )}
