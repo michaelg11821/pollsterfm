@@ -76,6 +76,11 @@ export default function SpotifyApi(
     }
   };
 
+  /**
+   * Gets the user's currently playing track on Spotify.
+   *
+   * @returns The title of the currently playing track.
+   */
   const getCurrentlyPlayingTrack = async () => {
     await validateSpotifyAccessToken();
 
