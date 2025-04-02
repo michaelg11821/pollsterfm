@@ -1,8 +1,8 @@
 "use server";
 
-import { prisma } from "./prisma";
+import SpotifyApi from "./spotify";
 
-import { SpotifyAPI } from "@statsfm/spotify.js";
+import { prisma } from "./prisma";
 
 // import { type PollsterProfile } from "./types/pollsterUser";
 
@@ -35,57 +35,56 @@ export async function verifyTurnstile(token: string) {
 }
 
 export async function getProfile(username: string) {
-  const matchingUser = await prisma.user.findUnique({
-    where: {
-      username,
-    },
-    select: {
-      pronouns: true,
-      aboutMe: true,
-      createdAt: true,
-      image: true,
-      name: true,
-      id: true,
-      // later, include polls, friends, and other public info
-    },
-  });
-
-  let currentlyPlaying: string | undefined;
-
-  if (matchingUser) {
-    const tokens = await prisma.account.findFirst({
+  try {
+    const profile = await prisma.user.findUnique({
       where: {
-        userId: matchingUser.id,
+        username,
       },
       select: {
-        access_token: true,
-        refresh_token: true,
+        pronouns: true,
+        aboutMe: true,
+        createdAt: true,
+        image: true,
+        name: true,
+        accounts: {
+          where: {
+            provider: "spotify",
+          },
+          select: {
+            access_token: true,
+            refresh_token: true,
+            expires_at: true,
+            providerAccountId: true,
+          },
+        },
+        // later, include polls, friends, and other public info
       },
     });
 
-    if (tokens?.access_token && tokens?.refresh_token) {
-      const spotify = new SpotifyAPI({
-        clientCredentials: {
-          clientId: process.env.AUTH_SPOTIFY_ID!,
-          clientSecret: process.env.AUTH_SPOTIFY_SECRET!,
-        },
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
-      });
+    if (!profile) throw new Error("user does not exist");
 
-      try {
-        const currentlyPlayingTrack = await spotify.me.getPlaybackState();
+    const { refresh_token, expires_at, access_token, providerAccountId } =
+      profile.accounts[0]; // just spotify for now
 
-        currentlyPlaying =
-          currentlyPlayingTrack?.item?.name || "Nothing playing";
-      } catch (error) {
-        console.error("Error fetching Spotify data:", error);
-      }
-    }
+    if (!refresh_token || !expires_at || !access_token || !providerAccountId)
+      throw new Error("user has invalid login info");
+
+    const spotify = SpotifyApi(
+      access_token,
+      refresh_token,
+      expires_at,
+      providerAccountId
+    );
+
+    const currentlyPlaying = await spotify.getCurrentlyPlayingTrack();
+
+    return {
+      ...profile,
+      currentlyPlaying,
+    };
+  } catch (err: unknown) {
+    console.error("error getting profile", err);
+
+    return null;
   }
-
-  return {
-    ...matchingUser,
-    currentlyPlaying,
-  };
 }
