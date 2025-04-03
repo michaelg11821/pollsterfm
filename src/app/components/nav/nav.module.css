@@ -8,12 +8,15 @@
   width: 100%;
 
   padding: 13px 20px;
-  border-bottom: 1px solid #363b3d;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
   background: var(--background);
 
   top: 0;
   z-index: 1;
+
+  backdrop-filter: blur(12px);
+  opacity: 0.9;
 }
 
 .pageHeaderContentWrapper {
@@ -40,6 +43,7 @@
 
 .logoText {
   font-size: 1.5em;
+  color: #fff;
 }
 
 .navLinks {

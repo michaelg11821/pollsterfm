@@ -1,14 +1,15 @@
 :root {
-  --background: #e8e6e3;
-  --foreground: #171717;
-  --max-wrapper-width: 1200px;
+  --background: #0f0f19;
+  --foreground: #ffffffb3;
+  --foreground-svg-filter: invert(100%) sepia(0%) saturate(7476%)
+    hue-rotate(110deg) brightness(98%) contrast(108%);
+  --max-wrapper-width: 1400px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #181a1b;
-    --foreground: #e8e6e3;
-  }
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 html,
@@ -45,10 +46,19 @@ body {
   font-size: 1.2em;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
 }
 
 a {
