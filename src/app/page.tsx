@@ -18,9 +18,9 @@ function Home() {
 
         <div className={styles.sectionWrapper}>
           <div className={styles.contentWrapper}>
-            <h2 className={styles.heading}>
+            <p className={styles.heading}>
               Your <span className={styles.highlight}>opinion</span> matters.
-            </h2>
+            </p>
             <p className={styles.description}>
               Vote in polls, create reviews, and discover people who experience
               music like you do.
@@ -54,7 +54,7 @@ function Home() {
         <div className={styles.sectionWrapper}>
           <div className={styles.header}>
             <div>
-              <h2 className={styles.title}>Popular Polls</h2>
+              <p className={styles.title}>Popular Polls</p>
               <p className={styles.description}>
                 Discover what the community is voting on and add your voice to
                 the conversation.
@@ -139,7 +139,7 @@ function Home() {
         <div className={styles.sectionWrapper}>
           <div className={styles.header}>
             <div>
-              <h2 className={styles.title}>Discover Through Affinities</h2>
+              <p className={styles.title}>Discover Through Affinities</p>
               <p className={styles.description}>
                 Affinities connect you with people who feel the same way about
                 music.

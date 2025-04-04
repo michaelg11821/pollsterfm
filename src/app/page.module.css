@@ -258,6 +258,8 @@
   font-size: 1.875rem;
   font-weight: 700;
   margin-bottom: 1rem;
+
+  color: #fff;
 }
 
 @media (min-width: 768px) {
