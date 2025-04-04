@@ -15,7 +15,7 @@ import RightChevron from "../../../../public/chevron-right.svg";
 import EditProfileSvg from "../../../../public/square-pen.svg";
 
 import styles from "./page.module.css";
-import Link from "next/link";
+// import Link from "next/link";
 
 type ProfileProps = {
   params: Promise<{ username: string }>;
