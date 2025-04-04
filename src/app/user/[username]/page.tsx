@@ -171,35 +171,30 @@ async function Profile({ params }: ProfileProps) {
             )}
           </div>
           <div className={styles.tracksContainer}>
-            {profile.currentlyPlaying !== "Nothing playing" && (
+            {profile.currentlyPlaying.item?.name && (
               <div className={styles.nowPlaying}>
                 <div className={styles.trackImageContainer}>
                   <Image
-                    src={
-                      profile.image
-                        ? profile.image
-                        : "../../../../public/ellipsis.svg"
-                    }
+                    src={profile.currentlyPlaying.item.album.images[0].url}
                     alt=""
                     fill
                     sizes="100%"
                     priority
                   />
-                  <div className={styles.playStatus}>
-                    <span>⏸</span>
-                  </div>
                 </div>
 
                 <div className={styles.trackInfo}>
                   <div className={styles.nowPlayingBadge}>Now Playing</div>
                   <h3 className={styles.trackTitle}>
-                    {
-                      /* profile.recentlyPlayed[0].title */ profile.currentlyPlaying
-                    }
+                    {profile.currentlyPlaying.item.name}
                   </h3>
                   <p className={styles.trackDetails}>
-                    {/* profile.recentlyPlayed[0].artist */ "some artist"} •{" "}
-                    {/* profile.recentlyPlayed[0].album */ "some album"}
+                    {profile.currentlyPlaying.item.album.artists.map(
+                      (artist: { name: string }, index: number) => (
+                        <span key={index}>{artist.name} </span>
+                      )
+                    )}{" "}
+                    • {profile.currentlyPlaying.item.album.name}
                   </p>
                 </div>
 

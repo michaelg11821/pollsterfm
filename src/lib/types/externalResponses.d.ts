@@ -5,3 +5,8 @@ export interface SpotifyAccessTokenResponse {
   refresh_token: string;
   scope: string;
 }
+
+export interface SpotifyCurrentlyPlayingResponse {
+  progress_ms?: number;
+  item?: Track;
+}

@@ -1,6 +1,9 @@
 import { prisma } from "./prisma";
 
-import { type SpotifyAccessTokenResponse } from "./types/externalResponses";
+import type {
+  SpotifyCurrentlyPlayingResponse,
+  SpotifyAccessTokenResponse,
+} from "./types/externalResponses";
 
 /**
  * A Spotify API wrapper based on individual users and made exclusively for Pollster.fm.
@@ -89,13 +92,17 @@ export default function SpotifyApi(
       { headers: getAuthHeader() }
     );
 
-    if (!res.ok) return "";
+    if (!res.ok) return {};
 
-    if (res.status === 204) return "Nothing playing";
+    if (res.status === 204) return {};
 
-    const track = await res.json();
+    const trackInfo: SpotifyCurrentlyPlayingResponse = await res.json();
 
-    return track?.item?.name ?? "Nothing playing";
+    if (!trackInfo?.item) {
+      return {};
+    }
+
+    return trackInfo;
   };
 
   return { getCurrentlyPlayingTrack };
