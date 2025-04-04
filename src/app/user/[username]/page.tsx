@@ -12,6 +12,7 @@ import Image from "next/image";
 import ProfileActionsSvg from "../../../../public/ellipsis.svg";
 import CalendarSvg from "../../../../public/calendar.svg";
 import RightChevron from "../../../../public/chevron-right.svg";
+import EditProfileSvg from "../../../../public/square-pen.svg";
 
 import styles from "./page.module.css";
 import Link from "next/link";
@@ -88,6 +89,12 @@ async function Profile({ params }: ProfileProps) {
                   {loggedInUser?.username === username ? (
                     <>
                       <button className={styles.editProfileBtn}>
+                        <Image
+                          src={EditProfileSvg}
+                          width={15}
+                          height={15}
+                          alt=""
+                        />
                         Edit Profile
                       </button>
                       <button className={styles.moreButton}>
