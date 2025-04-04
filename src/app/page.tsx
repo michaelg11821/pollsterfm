@@ -1,6 +1,9 @@
 import Image from "next/image";
+
 import RightArrow from "../../public/arrow-right.svg";
 import SearchIcon from "../../public/search.svg";
+import RightChevron from "../../public/chevron-right.svg";
+import UsersIcon from "../../public/users.svg";
 
 import styles from "./page.module.css";
 
@@ -33,7 +36,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Search Bar */}
           <div className={styles.searchContainer}>
             <div className={styles.searchWrapper}>
               <Image src={SearchIcon} width={20} height={20} alt="" />
@@ -59,7 +61,8 @@ function Home() {
               </p>
             </div>
             <button className={styles.viewButton}>
-              View All Polls (right chevron)
+              View All Polls{" "}
+              <Image src={RightChevron} width={20} height={20} alt="" />
             </button>
           </div>
 
@@ -117,7 +120,13 @@ function Home() {
                 </div>
 
                 <div className={styles.voteCount}>
-                  (vote Icon class name voteIcon)
+                  <Image
+                    src={UsersIcon}
+                    width={20}
+                    height={20}
+                    className={styles.voteIcon}
+                    alt=""
+                  />
                   <span>{poll.votes} votes</span>
                 </div>
               </div>
@@ -137,7 +146,8 @@ function Home() {
               </p>
             </div>
             <button className={styles.viewButton}>
-              View All Affinities (right chevron)
+              View All Affinities{" "}
+              <Image src={RightChevron} width={20} height={20} alt="" />
             </button>
           </div>
 

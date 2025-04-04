@@ -47,6 +47,12 @@
 
 @media only screen and (min-width: 950px) {
   .sectionWrapper {
+    margin-top: 0;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .sectionWrapper {
     padding: 0;
   }
 }
@@ -72,12 +78,6 @@
 @media (min-width: 768px) {
   .heading {
     font-size: 4.5rem;
-  }
-}
-
-@media only screen and (min-width: 950px) {
-  .sectionWrapper {
-    margin-top: 0;
   }
 }
 
@@ -285,6 +285,10 @@
   margin-top: 1rem;
 }
 
+.viewButton > img {
+  filter: var(--foreground-svg-filter);
+}
+
 @media (min-width: 768px) {
   .viewButton {
     margin-top: 0;
@@ -312,6 +316,8 @@
   padding: 1.25rem;
   transition: background-color 0.3s;
   cursor: pointer;
+
+  max-height: 450px;
 }
 
 .pollCard:hover {
@@ -372,9 +378,9 @@
 }
 
 .voteIcon {
-  width: 1rem;
-  height: 1rem;
   margin-right: 0.25rem;
+
+  filter: var(--foreground-svg-filter);
 }
 
 .affinitiesSection {
@@ -415,11 +421,15 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  transition: all 0.3s;
+  transition: background-color 0.3s;
   cursor: pointer;
   height: 8rem;
   border: 1px solid rgba(138, 79, 255, 0.3);
   background-color: rgba(138, 79, 255, 0.05);
+}
+
+.affinityCard:hover {
+  background-color: rgba(138, 79, 255, 0.15);
 }
 
 .affinityName {

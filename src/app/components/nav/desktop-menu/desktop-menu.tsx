@@ -1,12 +1,17 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { Menu } from "@base-ui-components/react/menu";
 
 import Image from "next/image";
 import Link from "next/link";
 
+import { Menu } from "@base-ui-components/react/menu";
+
 import { type MenuProps } from "../menuProps";
+
+import ProfileSvg from "../../../../../public/user.svg";
+import SettingsSvg from "../../../../../public/settings.svg";
+import SignOutSvg from "../../../../../public/log-out.svg";
 
 import styles from "./desktop-menu.module.css";
 
@@ -18,7 +23,7 @@ function DesktopMenu({ profileIcon, username }: MenuProps) {
   return (
     <div className={styles.profileIconWrapper}>
       {username ? (
-        <Menu.Root>
+        <Menu.Root modal={false}>
           <Menu.Trigger className={styles.profileIcon}>
             <Image
               src={profileIcon ? profileIcon : ""}
@@ -31,17 +36,27 @@ function DesktopMenu({ profileIcon, username }: MenuProps) {
             <Menu.Positioner
               className={styles.Positioner}
               sideOffset={7}
-              alignOffset={-45}
+              alignOffset={-77}
+              sticky={true}
             >
               <Menu.Popup className={styles.Popup}>
                 <Menu.Item
                   className={styles.Item}
-                  render={<Link href={`/user/${username}`}>My Profile</Link>}
+                  render={
+                    <Link href={`/user/${username}`}>
+                      <Image src={ProfileSvg} width={20} height={20} alt="" />{" "}
+                      My Profile
+                    </Link>
+                  }
                 />
-                <Menu.Item className={styles.Item}>Settings</Menu.Item>
+                <Menu.Item className={styles.Item}>
+                  <Image src={SettingsSvg} width={20} height={20} alt="" />{" "}
+                  Settings
+                </Menu.Item>
                 <Menu.Separator className={styles.Separator} />
                 <Menu.Item className={styles.Item} onClick={handleSignOut}>
-                  Sign Out
+                  <Image src={SignOutSvg} width={20} height={20} alt="" /> Sign
+                  Out
                 </Menu.Item>
               </Menu.Popup>
             </Menu.Positioner>
