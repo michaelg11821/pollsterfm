@@ -280,7 +280,7 @@
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -316,7 +316,7 @@
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 0.75rem;
   padding: 1.25rem;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
   cursor: pointer;
 
   max-height: 450px;
@@ -423,7 +423,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
   cursor: pointer;
   height: 8rem;
   border: 1px solid rgba(138, 79, 255, 0.3);

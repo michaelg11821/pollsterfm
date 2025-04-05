@@ -51,13 +51,14 @@
 }
 
 .navLinks > li {
-  color: rgb(161, 161, 161);
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.2s;
 
   text-align: center;
 }
 
 .navLinks > li:hover {
-  color: var(--foreground);
+  color: #ffffff;
 }
 
 .navLinks,
