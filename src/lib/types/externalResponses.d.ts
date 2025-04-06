@@ -1,3 +1,5 @@
+import type { Track } from "./spotify";
+
 export interface SpotifyAccessTokenResponse {
   access_token: string;
   token_type: "Bearer";

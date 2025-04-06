@@ -15,6 +15,9 @@ import RightChevron from "../../../../public/chevron-right.svg";
 import EditProfileSvg from "../../../../public/square-pen.svg";
 
 import styles from "./page.module.css";
+import { Suspense } from "react";
+import NowPlaying from "@/app/components/now-playing/now-playing";
+import ShortTrackHistory from "@/app/components/short-track-history/short-track-history";
 // import Link from "next/link";
 
 type ProfileProps = {
@@ -32,6 +35,7 @@ async function Profile({ params }: ProfileProps) {
   if (!username) return redirect("/not-found");
 
   metadata.title = `${username} | Pollster.fm`;
+  metadata.description = `Check out ${username}'s profile on Pollster.fm!`;
 
   const profile = await getProfile(username);
 
@@ -46,7 +50,7 @@ async function Profile({ params }: ProfileProps) {
     joinMonth
   )} ${profile.createdAt.getFullYear()}`;
 
-  const possiblePremiumMode = false;
+  const historyImported = false;
 
   return (
     <main className={styles.pageContainer}>
@@ -158,7 +162,7 @@ async function Profile({ params }: ProfileProps) {
         <div className={styles.sectionWrapper}>
           <div className={styles.recentlyPlayedHeader}>
             <p className={styles.sectionTitle}>Recently Played</p>
-            {possiblePremiumMode ? (
+            {historyImported ? (
               <button className={styles.viewHistory}>
                 View History{" "}
                 <Image src={RightChevron} width={20} height={20} alt="" />
@@ -171,70 +175,12 @@ async function Profile({ params }: ProfileProps) {
             )}
           </div>
           <div className={styles.tracksContainer}>
-            {profile.currentlyPlaying.item?.name && (
-              <div className={styles.nowPlaying}>
-                <div className={styles.trackImageContainer}>
-                  <Image
-                    src={profile.currentlyPlaying.item.album.images[0].url}
-                    alt=""
-                    fill
-                    sizes="100%"
-                    priority
-                  />
-                </div>
-
-                <div className={styles.trackInfo}>
-                  <div className={styles.nowPlayingBadge}>Now Playing</div>
-                  <h3 className={styles.trackTitle}>
-                    {profile.currentlyPlaying.item.name}
-                  </h3>
-                  <p className={styles.trackDetails}>
-                    {profile.currentlyPlaying.item.album.artists.map(
-                      (artist: { name: string }, index: number) => (
-                        <span key={index}>{artist.name} </span>
-                      )
-                    )}{" "}
-                    • {profile.currentlyPlaying.item.album.name}
-                  </p>
-                </div>
-
-                <div className={styles.progressContainer}>
-                  <div className={styles.progressBar}>
-                    <div className={styles.progressFill}></div>
-                  </div>
-                  <div className={styles.progressTime}>
-                    <span>1:24</span>
-                    <span>3:42</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/*            <div className={styles.recentTracks}>
-              {profile.recentlyPlayed.slice(1).map((track, i) => (
-                <div key={i} className={styles.trackItem}>
-                  <div className={styles.recentTrackImageContainer}>
-                    <img
-                      src={track.image || "/placeholder.svg"}
-                      alt={track.title}
-                      className={styles.recentTrackImage}
-                    />
-                    <div className={styles.playOverlay}>
-                      <span className={styles.playIcon}>▶</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.recentTrackInfo}>
-                    <h4 className={styles.recentTrackTitle}>{track.title}</h4>
-                    <p className={styles.recentTrackDetails}>
-                      {track.artist} • {track.album}
-                    </p>
-                  </div>
-
-                  <div className={styles.trackTime}>{track.time}</div>
-                </div>
-              ))}
-            </div> */}
+            <Suspense fallback={<p>Loading... </p>}>
+              <NowPlaying username={username} />
+            </Suspense>
+            <Suspense fallback={<p>Loading...</p>}>
+              <ShortTrackHistory username={username} />
+            </Suspense>
           </div>
         </div>
       </div>

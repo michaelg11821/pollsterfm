@@ -1,10 +1,6 @@
 "use server";
 
-import SpotifyApi from "./spotify";
-
 import { prisma } from "./prisma";
-
-// import { type PollsterProfile } from "./types/pollsterUser";
 
 export async function verifyTurnstile(token: string) {
   if (process.env.NODE_ENV !== "production") return { success: true };
@@ -34,18 +30,19 @@ export async function verifyTurnstile(token: string) {
   }
 }
 
-export async function getProfile(username: string) {
+/**
+ * A function that retrieves a user's Spotify API credentials from the database.
+ *
+ * @param username A Pollster.fm user's username.
+ * @returns The credentials needed for Pollster.fm's Spotify API wrapper.
+ */
+export async function getSpotifyApiCredentials(username: string) {
   try {
-    const profile = await prisma.user.findUnique({
+    const tokens = await prisma.user.findUniqueOrThrow({
       where: {
         username,
       },
       select: {
-        pronouns: true,
-        aboutMe: true,
-        createdAt: true,
-        image: true,
-        name: true,
         accounts: {
           where: {
             provider: "spotify",
@@ -57,31 +54,39 @@ export async function getProfile(username: string) {
             providerAccountId: true,
           },
         },
-        // later, include polls, friends, and other public info
       },
     });
 
-    if (!profile) throw new Error("user does not exist");
-
     const { refresh_token, expires_at, access_token, providerAccountId } =
-      profile.accounts[0]; // just spotify for now
+      tokens.accounts[0];
 
     if (!refresh_token || !expires_at || !access_token || !providerAccountId)
-      throw new Error("user has invalid login info");
+      throw new Error("user is missing one or more credentials");
 
-    const spotify = SpotifyApi(
-      access_token,
-      refresh_token,
-      expires_at,
-      providerAccountId
-    );
+    return { refresh_token, expires_at, access_token, providerAccountId };
+  } catch (err: unknown) {
+    console.error("error getting credentials", err);
 
-    const currentlyPlaying = await spotify.getCurrentlyPlayingTrack();
+    return null;
+  }
+}
 
-    return {
-      ...profile,
-      currentlyPlaying,
-    };
+export async function getProfile(username: string) {
+  try {
+    const profile = await prisma.user.findUniqueOrThrow({
+      where: {
+        username,
+      },
+      select: {
+        pronouns: true,
+        aboutMe: true,
+        createdAt: true,
+        image: true,
+        name: true,
+      },
+    });
+
+    return profile;
   } catch (err: unknown) {
     console.error("error getting profile", err);
 

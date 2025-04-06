@@ -18,4 +18,5 @@ export interface Track {
   album: Album;
   duration_ms: number;
   name: string;
+  is_local: boolean;
 }
