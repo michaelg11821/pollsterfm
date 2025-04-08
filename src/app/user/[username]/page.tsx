@@ -19,6 +19,7 @@ import { Suspense } from "react";
 import NowPlaying from "@/app/components/now-playing/now-playing";
 import LastFourTracks from "@/app/components/last-four-tracks/last-four-tracks";
 import LastFourTracksSkeleton from "@/app/components/last-four-tracks/skeleton/skeleton";
+import Link from "next/link";
 // import Link from "next/link";
 
 type ProfileProps = {
@@ -50,8 +51,6 @@ async function Profile({ params }: ProfileProps) {
   const joinDate = `${enUS.localize.month(
     joinMonth
   )} ${profile.createdAt.getFullYear()}`;
-
-  const historyImported = false;
 
   return (
     <main className={styles.pageContainer}>
@@ -163,17 +162,13 @@ async function Profile({ params }: ProfileProps) {
         <div className={styles.sectionWrapper}>
           <div className={styles.recentlyPlayedHeader}>
             <p className={styles.sectionTitle}>Recently Played</p>
-            {historyImported ? (
-              <button className={styles.viewHistory}>
-                View History{" "}
-                <Image src={RightChevron} width={20} height={20} alt="" />
-              </button>
-            ) : (
-              <button className={styles.viewHistory}>
-                View More{" "}
-                <Image src={RightChevron} width={15} height={15} alt="" />
-              </button>
-            )}
+            <Link
+              className={styles.viewHistory}
+              href={`/user/${username}/history`}
+            >
+              View More{" "}
+              <Image src={RightChevron} width={20} height={20} alt="" />
+            </Link>
           </div>
           <div className={styles.tracksContainer}>
             <Suspense fallback={<p>Loading...</p>}>
