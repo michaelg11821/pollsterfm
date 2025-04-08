@@ -36,7 +36,7 @@ async function LastFourTracks({ username }: LastFourTracksProps) {
   return (
     <div className={styles.recentTracks}>
       {lastFourTracks.items.map(({ track, played_at }) => (
-        <div key={randomUUID()} className={styles.trackItem}>
+        <Link key={randomUUID()} className={styles.trackItem} href="#">
           <div className={styles.recentTrackImageContainer}>
             <Image
               src={track.album.images[0].url}
@@ -47,22 +47,23 @@ async function LastFourTracks({ username }: LastFourTracksProps) {
             />
           </div>
 
-          <Link className={styles.recentTrackInfo} href="#">
+          <div className={styles.recentTrackInfo}>
             <p className={styles.recentTrackTitle}>{track.name}</p>
-            {track.album.artists.map(({ name }, index) => {
-              if (index !== track.album.artists.length - 1) {
-                return <span key={randomUUID()}>{name}, </span>;
-              }
-
-              return <span key={randomUUID()}>{name}</span>;
-            })}{" "}
-            • <span>{track.album.name}</span>
-          </Link>
+            <div className={styles.recentTrackArtistsAndAlbum}>
+              {track.album.artists.map(({ name }, index) => {
+                if (index !== track.album.artists.length - 1) {
+                  return <span key={randomUUID()}>{name}, </span>;
+                }
+                return <span key={randomUUID()}>{name}</span>;
+              })}{" "}
+              • <span>{track.album.name}</span>
+            </div>
+          </div>
 
           <div className={styles.trackTime}>
             {dateStringDistanceToNow(played_at)}
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

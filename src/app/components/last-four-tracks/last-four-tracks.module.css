@@ -11,6 +11,8 @@
   padding: 0.5rem;
   border-radius: 0.5rem;
   transition: background-color 0.2s;
+
+  cursor: pointer;
 }
 
 .trackItem:hover {
@@ -27,6 +29,9 @@
 }
 
 .recentTrackInfo {
+  display: flex;
+  flex-direction: column;
+
   flex: 1;
   min-width: 0;
 
@@ -35,22 +40,29 @@
   user-select: none;
 }
 
-.recentTrackInfo > span {
-  color: rgba(255, 255, 255, 0.6);
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .recentTrackTitle {
   font-weight: 500;
   font-size: 0.875rem;
-  white-space: nowrap;
+
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 
   color: #fff;
+}
+
+.recentTrackArtistsAndAlbum {
+  display: flex;
+
+  gap: 0.225rem;
+}
+
+.recentTrackArtistsAndAlbum > span {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .trackTime {
