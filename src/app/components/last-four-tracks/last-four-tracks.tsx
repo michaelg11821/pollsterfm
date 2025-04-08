@@ -1,8 +1,6 @@
 import { randomUUID } from "crypto";
 
-import SpotifyApi from "@/lib/spotify";
-
-import { getSpotifyApiCredentials } from "@/lib/actions";
+import { spotifyApiWithCredentials } from "@/lib/actions";
 import { dateStringDistanceToNow } from "@/lib/utils";
 
 import Image from "next/image";
@@ -15,23 +13,14 @@ interface LastFourTracksProps {
 }
 
 async function LastFourTracks({ username }: LastFourTracksProps) {
-  const credentials = await getSpotifyApiCredentials(username);
+  const spotify = await spotifyApiWithCredentials(username);
 
-  if (!credentials) return <p>Invalid credentials.</p>;
-
-  const { refresh_token, expires_at, access_token, providerAccountId } =
-    credentials;
-
-  const spotify = SpotifyApi(
-    access_token,
-    refresh_token,
-    expires_at,
-    providerAccountId
-  );
+  if (!spotify) return <p>Given user is invalid.</p>;
 
   const lastFourTracks = await spotify.getLastFourTracks();
 
-  if (!lastFourTracks.items) return;
+  if (!lastFourTracks.items)
+    return <p>Error getting recently played tracks.</p>;
 
   return (
     <div className={styles.recentTracks}>

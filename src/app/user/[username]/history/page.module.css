@@ -1,0 +1,307 @@
+.pageContainer {
+  padding-bottom: 48px;
+}
+
+.sectionWrapper {
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+
+  padding: 0 20px;
+
+  max-width: var(--max-wrapper-width);
+}
+
+.pageHeader {
+  padding-top: 80px;
+  padding-bottom: 16px;
+}
+
+.headerFlex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.backButton {
+  color: rgba(255, 255, 255, 0.7);
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: -8px;
+}
+
+.backButton:hover {
+  color: white;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.username {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.statusBar {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.statusItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusText {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.alert {
+  background-color: rgba(138, 79, 255, 0.1);
+  border: 1px solid rgba(138, 79, 255, 0.3);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.alertText {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.trackList {
+  padding: 16px 0;
+}
+
+.trackCard {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: background-color 0.2s;
+}
+
+.trackCard:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.trackFlex {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trackImageContainer {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.trackInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.trackHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.trackTitle {
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackArtist {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackDetails {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.trackAlbum {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.trackMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trackDuration,
+.trackPlayedAt {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.mobileTimestamp {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.paginationContainer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 32px 0;
+  margin-top: 24px;
+}
+
+.paginationFlex {
+  display: flex;
+  justify-content: center;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.navButton:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.navButtonDisabled {
+  color: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px;
+}
+
+.pageNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.pageNumber:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.pageNumberActive {
+  color: #b07fff;
+  border-bottom: 2px solid #8a4fff;
+  border-radius: 0;
+}
+
+.ellipsis {
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0 4px;
+}
+
+.iconSmall {
+  width: 16px;
+  height: 16px;
+}
+
+.iconMedium {
+  width: 20px;
+  height: 20px;
+}
+
+.iconWhite {
+  color: white;
+}
+
+.iconMuted {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.iconPurple {
+  color: #b07fff;
+}
+
+@media (max-width: 640px) {
+  .headerButton:not(.mobileVisible) {
+    display: none;
+  }
+  .joinButton {
+    display: none;
+  }
+  .avatar {
+    display: block;
+  }
+  .trackPlayedAt {
+    display: none;
+  }
+  .mobileTimestamp {
+    display: block;
+  }
+}
+
+@media (min-width: 641px) {
+  .headerButton.mobileVisible {
+    display: none;
+  }
+  .joinButton {
+    display: block;
+  }
+  .avatar {
+    display: none;
+  }
+  .trackPlayedAt {
+    display: inline;
+  }
+  .mobileTimestamp {
+    display: none;
+  }
+}

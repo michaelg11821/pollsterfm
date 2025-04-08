@@ -130,5 +130,32 @@ export default function SpotifyApi(
     return trackInfo;
   };
 
-  return { getCurrentlyPlayingTrack, getLastFourTracks };
+  /**
+   * A function that gets 10 tracks from a user on Spotify. Pages can be incremented with next().
+   *
+   * @returns The user's last ten tracks corresponding to the URL.
+   */
+  const getTenTracks = async () => {
+    let nextPage: string | null =
+      "https://api.spotify.com/v1/me/player/recently-played?limit=10";
+
+    async function next() {
+      await validateSpotifyAccessToken();
+
+      if (!nextPage) return {};
+
+      const res = await fetch(nextPage!, { headers: getAuthHeader() });
+
+      if (!res.ok) return {};
+
+      const tracks: SpotifyRecentlyPlayedResponse = await res.json();
+      nextPage = tracks.next!;
+
+      return tracks;
+    }
+
+    return { next };
+  };
+
+  return { getCurrentlyPlayingTrack, getLastFourTracks, getTenTracks };
 }

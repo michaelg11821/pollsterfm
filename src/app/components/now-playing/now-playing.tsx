@@ -1,8 +1,6 @@
 import { randomUUID } from "crypto";
 
-import SpotifyApi from "@/lib/spotify";
-
-import { getSpotifyApiCredentials } from "@/lib/actions";
+import { spotifyApiWithCredentials } from "@/lib/actions";
 
 import Image from "next/image";
 
@@ -15,23 +13,13 @@ interface NowPlayingProps {
 }
 
 async function NowPlaying({ username, name }: NowPlayingProps) {
-  const credentials = await getSpotifyApiCredentials(username);
+  const spotify = await spotifyApiWithCredentials(username);
 
-  if (!credentials) return <p>Invalid credentials.</p>;
-
-  const { refresh_token, expires_at, access_token, providerAccountId } =
-    credentials;
-
-  const spotify = SpotifyApi(
-    access_token,
-    refresh_token,
-    expires_at,
-    providerAccountId
-  );
+  if (!spotify) return <p>Given user is invalid.</p>;
 
   const currentlyPlaying = await spotify.getCurrentlyPlayingTrack();
 
-  if (!currentlyPlaying.item || currentlyPlaying.item.is_local) return;
+  if (!currentlyPlaying.item || currentlyPlaying.item.is_local) return null;
 
   return (
     <div className={styles.nowPlaying}>

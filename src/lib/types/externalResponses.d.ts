@@ -13,8 +13,8 @@ export interface SpotifyCurrentlyPlayingResponse {
   item?: Track;
 }
 
-export interface SpotifyRecentlyPlayedResponse {
-  next?: string;
+export type SpotifyRecentlyPlayedResponse = {
+  next?: string | null;
   progress_ms?: number;
   items?: PlayHistory[];
-}
+};

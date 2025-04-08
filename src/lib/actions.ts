@@ -1,5 +1,7 @@
 "use server";
 
+import SpotifyApi from "./spotify";
+
 import { prisma } from "./prisma";
 
 export async function verifyTurnstile(token: string) {
@@ -36,7 +38,7 @@ export async function verifyTurnstile(token: string) {
  * @param username A Pollster.fm user's username.
  * @returns The credentials needed for Pollster.fm's Spotify API wrapper.
  */
-export async function getSpotifyApiCredentials(username: string) {
+async function getSpotifyApiCredentials(username: string) {
   try {
     const tokens = await prisma.user.findUniqueOrThrow({
       where: {
@@ -69,6 +71,23 @@ export async function getSpotifyApiCredentials(username: string) {
 
     return null;
   }
+}
+
+/**
+ * A function that returns an instance of the Pollster.fm Spotify API wrapper with valid credentials.
+ *
+ * @param username A Pollster.fm user's username.
+ * @returns A Pollster.fm Spotify API wrapper with valid credentials.
+ */
+export async function spotifyApiWithCredentials(username: string) {
+  const credentials = await getSpotifyApiCredentials(username);
+
+  if (!credentials) return null;
+
+  const { refresh_token, expires_at, access_token, providerAccountId } =
+    credentials;
+
+  return SpotifyApi(access_token, refresh_token, expires_at, providerAccountId);
 }
 
 export async function getProfile(username: string) {
