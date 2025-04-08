@@ -18,6 +18,7 @@ import styles from "./page.module.css";
 import { Suspense } from "react";
 import NowPlaying from "@/app/components/now-playing/now-playing";
 import LastFourTracks from "@/app/components/last-four-tracks/last-four-tracks";
+import LastFourTracksSkeleton from "@/app/components/last-four-tracks/skeleton/skeleton";
 // import Link from "next/link";
 
 type ProfileProps = {
@@ -175,10 +176,10 @@ async function Profile({ params }: ProfileProps) {
             )}
           </div>
           <div className={styles.tracksContainer}>
-            <Suspense fallback={<p>Loading... </p>}>
+            <Suspense fallback={<p>Loading...</p>}>
               <NowPlaying username={username} name={profile.name!} />
             </Suspense>
-            <Suspense fallback={<p>Loading...</p>}>
+            <Suspense fallback={<LastFourTracksSkeleton />}>
               <LastFourTracks username={username} />
             </Suspense>
           </div>
