@@ -26,34 +26,21 @@
   flex-shrink: 0;
 }
 
-.recentTrackImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.playOverlay {
-  position: absolute;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  transition: opacity 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.trackItem:hover .playOverlay {
-  opacity: 1;
-}
-
-.playIcon {
-  font-size: 1rem;
-}
-
 .recentTrackInfo {
   flex: 1;
   min-width: 0;
+
+  font-size: 0.75rem;
+
+  user-select: none;
+}
+
+.recentTrackInfo > span {
+  color: rgba(255, 255, 255, 0.6);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .recentTrackTitle {
@@ -62,14 +49,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
 
-.recentTrackDetails {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.75rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: #fff;
 }
 
 .trackTime {

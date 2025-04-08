@@ -1,31 +1,19 @@
-import { addHours, getMinutes, getHours, getSeconds } from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
 
 /**
- * A helper function that converts the given amount of milliseconds into a duration.
+ * A helper function that parses the given ISO 8601 string and returns a string containing the strict formatted distance to now.
  *
- * Ex: 200155 ms -> 3:22
- *
- * @param msAmount The amount of milliseconds in the duration.
- * @returns A formatted duration.
+ * @param dateString A string in the ISO 8601 format.
+ * @returns The distance from now to the date in the string given.
  */
-export function convertToDuration(msAmount: number) {
-  // works for the longest songs on spotify
+export function dateStringDistanceToNow(dateString: string): string {
+  const parsed = Date.parse(dateString);
 
-  const normalizeTime = (time: string): string =>
-    time.length === 1 ? `0${time}` : time;
-  const MINUTES_IN_HOUR = 60;
+  const parsedDate = new Date(parsed);
 
-  const date = new Date(msAmount);
-  const timezoneDiff = date.getTimezoneOffset() / MINUTES_IN_HOUR;
-  const dateWithoutTimezoneDiff = addHours(date, timezoneDiff);
+  const distanceString = formatDistanceToNowStrict(parsedDate, {
+    addSuffix: true,
+  });
 
-  const hours = String(getHours(dateWithoutTimezoneDiff));
-  const minutes = String(getMinutes(dateWithoutTimezoneDiff));
-  const seconds = normalizeTime(String(getSeconds(dateWithoutTimezoneDiff)));
-
-  const minutesOutput =
-    hours.length >= 1 ? `${normalizeTime(minutes)}` : minutes;
-  const hoursOutput = hours !== "0" ? `${hours}:` : "";
-
-  return `${hoursOutput}${minutesOutput}:${seconds}`;
+  return distanceString;
 }

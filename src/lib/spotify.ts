@@ -3,6 +3,7 @@ import { prisma } from "./prisma";
 import type {
   SpotifyCurrentlyPlayingResponse,
   SpotifyAccessTokenResponse,
+  SpotifyRecentlyPlayedResponse,
 } from "./types/externalResponses";
 
 /**
@@ -105,5 +106,29 @@ export default function SpotifyApi(
     return trackInfo;
   };
 
-  return { getCurrentlyPlayingTrack };
+  /**
+   * Gets the last four tracks the user listened to on Spotify. Solely for Pollster.fm profiles.
+   *
+   * @returns The last four tracks the user listened to on Spotify.
+   */
+  const getLastFourTracks = async () => {
+    await validateSpotifyAccessToken();
+
+    const res = await fetch(
+      "https://api.spotify.com/v1/me/player/recently-played?limit=4",
+      { headers: getAuthHeader() }
+    );
+
+    if (!res.ok) return {};
+
+    const trackInfo: SpotifyRecentlyPlayedResponse = await res.json();
+
+    if (!trackInfo?.items) {
+      return {};
+    }
+
+    return trackInfo;
+  };
+
+  return { getCurrentlyPlayingTrack, getLastFourTracks };
 }

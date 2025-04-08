@@ -17,7 +17,7 @@ import EditProfileSvg from "../../../../public/square-pen.svg";
 import styles from "./page.module.css";
 import { Suspense } from "react";
 import NowPlaying from "@/app/components/now-playing/now-playing";
-import ShortTrackHistory from "@/app/components/short-track-history/short-track-history";
+import LastFourTracks from "@/app/components/last-four-tracks/last-four-tracks";
 // import Link from "next/link";
 
 type ProfileProps = {
@@ -176,10 +176,10 @@ async function Profile({ params }: ProfileProps) {
           </div>
           <div className={styles.tracksContainer}>
             <Suspense fallback={<p>Loading... </p>}>
-              <NowPlaying username={username} />
+              <NowPlaying username={username} name={profile.name!} />
             </Suspense>
             <Suspense fallback={<p>Loading...</p>}>
-              <ShortTrackHistory username={username} />
+              <LastFourTracks username={username} />
             </Suspense>
           </div>
         </div>

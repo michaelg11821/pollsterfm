@@ -7,13 +7,14 @@ import { getSpotifyApiCredentials } from "@/lib/actions";
 import Image from "next/image";
 
 import styles from "./now-playing.module.css";
-import NowPlayingProgress from "./progress/progress";
+import Reactions from "./reactions/reactions";
 
 interface NowPlayingProps {
   username: string;
+  name: string;
 }
 
-async function NowPlaying({ username }: NowPlayingProps) {
+async function NowPlaying({ username, name }: NowPlayingProps) {
   const credentials = await getSpotifyApiCredentials(username);
 
   if (!credentials) return <p>Invalid credentials.</p>;
@@ -57,11 +58,7 @@ async function NowPlaying({ username }: NowPlayingProps) {
           • {currentlyPlaying.item.album.name}
         </p>
       </div>
-
-      <NowPlayingProgress
-        progressMs={currentlyPlaying.progress_ms!}
-        durationMs={currentlyPlaying.item.duration_ms}
-      />
+      <Reactions username={username} name={name} />
     </div>
   );
 }

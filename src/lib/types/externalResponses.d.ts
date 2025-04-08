@@ -1,4 +1,4 @@
-import type { Track } from "./spotify";
+import type { PlayHistory, Track } from "./spotify";
 
 export interface SpotifyAccessTokenResponse {
   access_token: string;
@@ -11,4 +11,10 @@ export interface SpotifyAccessTokenResponse {
 export interface SpotifyCurrentlyPlayingResponse {
   progress_ms?: number;
   item?: Track;
+}
+
+export interface SpotifyRecentlyPlayedResponse {
+  next?: string;
+  progress_ms?: number;
+  items?: PlayHistory[];
 }

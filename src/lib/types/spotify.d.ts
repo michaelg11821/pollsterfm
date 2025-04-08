@@ -20,3 +20,17 @@ export interface Track {
   name: string;
   is_local: boolean;
 }
+
+export interface PlayHistory {
+  track: {
+    album: Album;
+    artists: SimplifiedArtist[];
+    id: string;
+    name: string;
+    is_local: boolean;
+  };
+  /**
+   * A string in the ISO 8601 format.
+   */
+  played_at: string;
+}
