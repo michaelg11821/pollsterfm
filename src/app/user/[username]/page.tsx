@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { enUS } from "date-fns/locale";
 
@@ -7,7 +8,12 @@ import { getProfile } from "@/lib/actions";
 import { type Metadata } from "next";
 import { type Month } from "date-fns";
 
+import NowPlaying from "@/app/components/now-playing/now-playing";
+import RecentlyPlayed from "@/app/components/recently-played/recently-played";
+import RecentlyPlayedSkeleton from "@/app/components/recently-played/skeleton/skeleton";
+
 import Image from "next/image";
+import Link from "next/link";
 
 import ProfileActionsSvg from "../../../../public/ellipsis.svg";
 import CalendarSvg from "../../../../public/calendar.svg";
@@ -15,12 +21,6 @@ import RightChevron from "../../../../public/chevron-right.svg";
 import EditProfileSvg from "../../../../public/square-pen.svg";
 
 import styles from "./page.module.css";
-import { Suspense } from "react";
-import NowPlaying from "@/app/components/now-playing/now-playing";
-import LastFourTracks from "@/app/components/last-four-tracks/last-four-tracks";
-import LastFourTracksSkeleton from "@/app/components/last-four-tracks/skeleton/skeleton";
-import Link from "next/link";
-// import Link from "next/link";
 
 type ProfileProps = {
   params: Promise<{ username: string }>;
@@ -174,8 +174,8 @@ async function Profile({ params }: ProfileProps) {
             <Suspense fallback={<p>Loading...</p>}>
               <NowPlaying username={username} name={profile.name!} />
             </Suspense>
-            <Suspense fallback={<LastFourTracksSkeleton />}>
-              <LastFourTracks username={username} />
+            <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
+              <RecentlyPlayed username={username} limit={4} />
             </Suspense>
           </div>
         </div>

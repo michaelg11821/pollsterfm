@@ -107,15 +107,16 @@ export default function SpotifyApi(
   };
 
   /**
-   * Gets the last four tracks the user listened to on Spotify. Solely for Pollster.fm profiles.
-   *
-   * @returns The last four tracks the user listened to on Spotify.
+   * Gets the given amount of recently played tracks for the user.
+   * 
+   * @param limit The amount of tracks to get. Max is 50.
+   * @returns The user's recently played tracks on Spotify.
    */
-  const getLastFourTracks = async () => {
+  const getRecentlyPlayedTracks = async (limit: number) => {
     await validateSpotifyAccessToken();
 
     const res = await fetch(
-      "https://api.spotify.com/v1/me/player/recently-played?limit=4",
+      `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
       { headers: getAuthHeader() }
     );
 
@@ -130,32 +131,5 @@ export default function SpotifyApi(
     return trackInfo;
   };
 
-  /**
-   * A function that gets 10 tracks from a user on Spotify. Pages can be incremented with next().
-   *
-   * @returns The user's last ten tracks corresponding to the URL.
-   */
-  const getTenTracks = async () => {
-    let nextPage: string | null =
-      "https://api.spotify.com/v1/me/player/recently-played?limit=10";
-
-    async function next() {
-      await validateSpotifyAccessToken();
-
-      if (!nextPage) return {};
-
-      const res = await fetch(nextPage!, { headers: getAuthHeader() });
-
-      if (!res.ok) return {};
-
-      const tracks: SpotifyRecentlyPlayedResponse = await res.json();
-      nextPage = tracks.next!;
-
-      return tracks;
-    }
-
-    return { next };
-  };
-
-  return { getCurrentlyPlayingTrack, getLastFourTracks, getTenTracks };
+  return { getCurrentlyPlayingTrack, getRecentlyPlayedTracks };
 }
