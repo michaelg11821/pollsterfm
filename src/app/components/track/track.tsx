@@ -34,7 +34,7 @@ function Track({ album, trackTitle, playedAt }: TrackProps) {
 
             return <span key={randomUUID()}>{name}</span>;
           })}{" "}
-          • {album.name}
+          <span> • {album.name}</span>
         </p>
       </div>
       <div className={styles.trackTime}>
