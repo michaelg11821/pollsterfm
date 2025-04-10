@@ -33,7 +33,9 @@ async function NowPlaying({ username, name }: NowPlayingProps) {
         />
       </div>
       <div className={styles.trackInfo}>
-        <div className={styles.nowPlayingBadge}>Now Playing</div>
+        <div className={styles.nowPlayingBadgeWrapper}>
+          <div className={styles.nowPlayingBadge}>Now Playing</div>
+        </div>
         <h3 className={styles.trackTitle}>{currentlyPlaying.item.name}</h3>
         <p className={styles.trackDetails}>
           {currentlyPlaying.item.album.artists.map(({ name }, index) => {
@@ -43,7 +45,7 @@ async function NowPlaying({ username, name }: NowPlayingProps) {
 
             return <span key={randomUUID()}>{name}</span>;
           })}{" "}
-          • {currentlyPlaying.item.album.name}
+          <span> • {currentlyPlaying.item.album.name}</span>
         </p>
       </div>
       <Reactions username={username} name={name} />
