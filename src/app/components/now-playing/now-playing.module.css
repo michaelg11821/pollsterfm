@@ -80,6 +80,7 @@
 
 .trackDetails {
   display: flex;
+  justify-content: center;
 
   gap: 0.225rem;
 }
