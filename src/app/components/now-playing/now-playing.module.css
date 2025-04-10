@@ -85,6 +85,12 @@
   gap: 0.225rem;
 }
 
+@media (min-width: 640px) {
+  .trackDetails {
+    justify-content: flex-start;
+  }
+}
+
 .trackDetails > span {
   text-overflow: ellipsis;
   overflow: hidden;
