@@ -144,6 +144,7 @@ export async function getRecentlyPlayedTracks(
     if (!spotify) throw new Error("invalid spotify instance");
 
     const computedLimit = Math.max(1, Math.min(limit, 50));
+
     const recentTracks = await spotify.getRecentlyPlayedTracks(
       computedLimit,
       next
