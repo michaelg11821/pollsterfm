@@ -109,7 +109,7 @@
 .loadingWrapper {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 20px;
   color: rgba(255, 255, 255, 0.6);
 }
 

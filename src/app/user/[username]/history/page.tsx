@@ -120,7 +120,7 @@ function History() {
               <Info className={styles.alertIcon} />
               <span className={styles.alertText}>
                 Only showing {MAX_TRACKS_WITHOUT_IMPORT} recent tracks. Import
-                your Spotify or Apple Music streaming history to see more.
+                your Spotify or Apple Music streaming history to see more!
               </span>
             </div>
           )}
