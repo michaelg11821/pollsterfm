@@ -105,7 +105,7 @@ function History() {
         <div className={styles.profileHeader}>
           <div className={styles.profileHeaderTop}>
             <button className={styles.backButton}>
-              <Link href={`/profile/${username}`}>
+              <Link href={`/user/${username}`}>
                 <ArrowLeft className={styles.backIcon} />
                 <span className={styles.visuallyHidden}>Back</span>
               </Link>
