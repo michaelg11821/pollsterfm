@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto";
-
 import { dateStringDistanceToNow } from "@/lib/utils";
 
 import type { Album } from "@/lib/types/spotify";
@@ -29,10 +27,10 @@ function Track({ album, trackTitle, playedAt }: TrackProps) {
         <p className={styles.trackDetails}>
           {album.artists.map(({ name }, index) => {
             if (index !== album.artists.length - 1) {
-              return <span key={randomUUID()}>{name}, </span>;
+              return <span key={`${name}-${index}`}>{name}, </span>;
             }
 
-            return <span key={randomUUID()}>{name}</span>;
+            return <span key={`${name}-${index}`}>{name}</span>;
           })}{" "}
           • {album.name}
         </p>

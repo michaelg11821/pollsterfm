@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import { spotifyApiWithCredentials } from "@/lib/actions";
+import { getRecentlyPlayedTracks } from "@/lib/actions";
 
 import Track from "../track/track";
 
@@ -15,23 +15,10 @@ type RecentlyPlayedProps = {
 };
 
 async function RecentlyPlayed({ username, limit }: RecentlyPlayedProps) {
-  const spotify = await spotifyApiWithCredentials(username);
+  const recentTracks = await getRecentlyPlayedTracks(username, limit);
 
-  if (!spotify) return <p>Given user is invalid.</p>;
-
-  let computedLimit: number;
-
-  if (!limit) {
-    computedLimit = 20;
-  } else if (limit > 50) {
-    computedLimit = 50;
-  } else {
-    computedLimit = limit;
-  }
-
-  const recentTracks = await spotify.getRecentlyPlayedTracks(computedLimit);
-
-  if (!recentTracks.items) return <p>Error getting recently played tracks.</p>;
+  if (!recentTracks || !recentTracks.items)
+    return <p>Error getting recently played tracks.</p>;
 
   return (
     <div className={styles.recentTracks}>

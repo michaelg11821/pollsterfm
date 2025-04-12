@@ -108,17 +108,20 @@ export default function SpotifyApi(
 
   /**
    * Gets the given amount of recently played tracks for the user.
-   * 
+   *
    * @param limit The amount of tracks to get. Max is 50.
+   * @param next (optional) The endpoint for the next page of recently played tracks provided by the Spotify API.
    * @returns The user's recently played tracks on Spotify.
    */
-  const getRecentlyPlayedTracks = async (limit: number) => {
+  const getRecentlyPlayedTracks = async (limit: number, next?: string) => {
     await validateSpotifyAccessToken();
 
-    const res = await fetch(
-      `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
-      { headers: getAuthHeader() }
-    );
+    const res = next
+      ? await fetch(next, { headers: getAuthHeader() })
+      : await fetch(
+          `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
+          { headers: getAuthHeader() }
+        );
 
     if (!res.ok) return {};
 
