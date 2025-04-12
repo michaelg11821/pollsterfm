@@ -80,6 +80,26 @@ export default function SpotifyApi(
     }
   };
 
+  const fetchWithRetry = async (
+    url: string,
+    options: RequestInit,
+    retries = 1
+  ) => {
+    let res = await fetch(url, options);
+
+    if (res.status === 401 && retries > 0) {
+      await validateSpotifyAccessToken();
+
+      const newOptions = {
+        ...options,
+        headers: getAuthHeader(),
+      };
+
+      res = await fetchWithRetry(url, newOptions, retries - 1);
+    }
+    return res;
+  };
+
   /**
    * Gets the user's currently playing track on Spotify.
    *
@@ -88,7 +108,7 @@ export default function SpotifyApi(
   const getCurrentlyPlayingTrack = async () => {
     await validateSpotifyAccessToken();
 
-    const res = await fetch(
+    const res = await fetchWithRetry(
       "https://api.spotify.com/v1/me/player/currently-playing",
       { headers: getAuthHeader() }
     );
@@ -117,8 +137,8 @@ export default function SpotifyApi(
     await validateSpotifyAccessToken();
 
     const res = next
-      ? await fetch(next, { headers: getAuthHeader() })
-      : await fetch(
+      ? await fetchWithRetry(next, { headers: getAuthHeader() })
+      : await fetchWithRetry(
           `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
           { headers: getAuthHeader() }
         );
