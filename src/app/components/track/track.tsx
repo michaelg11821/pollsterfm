@@ -32,7 +32,7 @@ function Track({ album, trackTitle, playedAt }: TrackProps) {
 
             return <span key={`${name}-${index}`}>{name}</span>;
           })}{" "}
-          • {album.name}
+          <span> • {album.name}</span>
         </p>
       </div>
       <div className={styles.trackTime}>
