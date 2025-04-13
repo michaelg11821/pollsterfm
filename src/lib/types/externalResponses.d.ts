@@ -9,12 +9,12 @@ export interface SpotifyAccessTokenResponse {
 }
 
 export interface SpotifyCurrentlyPlayingResponse {
-  progress_ms?: number;
-  item?: Track;
+  progress_ms: number;
+  item: Track;
 }
 
 export type SpotifyRecentlyPlayedResponse = {
-  next?: string | null;
-  progress_ms?: number;
-  items?: PlayHistory[];
+  next: string | null;
+  progress_ms: number;
+  items: PlayHistory[];
 };

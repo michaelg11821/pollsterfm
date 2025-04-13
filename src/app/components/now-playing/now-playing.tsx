@@ -4,8 +4,9 @@ import { spotifyApiWithCredentials } from "@/lib/actions";
 
 import Image from "next/image";
 
-import styles from "./now-playing.module.css";
 import Reactions from "./reactions/reactions";
+
+import styles from "./now-playing.module.css";
 
 interface NowPlayingProps {
   username: string;
@@ -15,11 +16,13 @@ interface NowPlayingProps {
 async function NowPlaying({ username, name }: NowPlayingProps) {
   const spotify = await spotifyApiWithCredentials(username);
 
-  if (!spotify) return <p>Given user is invalid.</p>;
+  if (!spotify) return <p>Invalid user.</p>;
 
   const currentlyPlaying = await spotify.getCurrentlyPlayingTrack();
 
-  if (!currentlyPlaying.item || currentlyPlaying.item.is_local) return null;
+  if (!currentlyPlaying || !currentlyPlaying.item) return null;
+
+  if (currentlyPlaying.item.is_local) return null;
 
   return (
     <div className={styles.nowPlaying}>

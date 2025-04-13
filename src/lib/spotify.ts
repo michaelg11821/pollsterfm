@@ -106,24 +106,30 @@ export default function SpotifyApi(
    * @returns The title of the currently playing track.
    */
   const getCurrentlyPlayingTrack = async () => {
-    await validateSpotifyAccessToken();
+    try {
+      await validateSpotifyAccessToken();
 
-    const res = await fetchWithRetry(
-      "https://api.spotify.com/v1/me/player/currently-playing",
-      { headers: getAuthHeader() }
-    );
+      const res = await fetchWithRetry(
+        "https://api.spotify.com/v1/me/player/currently-playing",
+        { headers: getAuthHeader() }
+      );
 
-    if (!res.ok) return {};
+      if (!res.ok) throw new Error("failed to get currently playing track");
 
-    if (res.status === 204) return {};
+      if (res.status === 204) return null;
 
-    const trackInfo: SpotifyCurrentlyPlayingResponse = await res.json();
+      const trackInfo: SpotifyCurrentlyPlayingResponse = await res.json();
 
-    if (!trackInfo?.item) {
-      return {};
+      if (!trackInfo?.item) {
+        throw new Error("malformed track data");
+      }
+
+      return trackInfo;
+    } catch (err: unknown) {
+      console.error("error getting currently playing track:", err);
+
+      return null;
     }
-
-    return trackInfo;
   };
 
   /**
@@ -134,24 +140,30 @@ export default function SpotifyApi(
    * @returns The user's recently played tracks on Spotify.
    */
   const getRecentlyPlayedTracks = async (limit: number, next?: string) => {
-    await validateSpotifyAccessToken();
+    try {
+      await validateSpotifyAccessToken();
 
-    const res = next
-      ? await fetchWithRetry(next, { headers: getAuthHeader() })
-      : await fetchWithRetry(
-          `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
-          { headers: getAuthHeader() }
-        );
+      const res = next
+        ? await fetchWithRetry(next, { headers: getAuthHeader() })
+        : await fetchWithRetry(
+            `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
+            { headers: getAuthHeader() }
+          );
 
-    if (!res.ok) return {};
+      if (!res.ok) throw new Error("failed to get recently played tracks");
 
-    const trackInfo: SpotifyRecentlyPlayedResponse = await res.json();
+      const trackInfo: SpotifyRecentlyPlayedResponse = await res.json();
 
-    if (!trackInfo?.items) {
-      return {};
+      if (!trackInfo?.items) {
+        throw new Error("malformed track data");
+      }
+
+      return trackInfo;
+    } catch (err: unknown) {
+      console.error("error getting currently recently played tracks:", err);
+
+      return null;
     }
-
-    return trackInfo;
   };
 
   return { getCurrentlyPlayingTrack, getRecentlyPlayedTracks };

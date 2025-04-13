@@ -42,12 +42,12 @@ function History() {
         nextUrl || undefined
       );
 
-      if (!response || !response?.items) {
-        throw new Error("Invalid response");
+      if (!response || !response.items) {
+        throw new Error("malformed track data");
       }
 
       setTracks((prevTracks) => {
-        const newTracks = [...prevTracks!, ...response.items!];
+        const newTracks = [...prevTracks, ...response.items];
 
         if (newTracks.length >= MAX_TRACKS_WITHOUT_IMPORT) {
           setHasMore(false);
@@ -56,7 +56,7 @@ function History() {
         return newTracks;
       });
 
-      setNextUrl(response.next!);
+      setNextUrl(response.next);
     } catch (err) {
       console.error("error getting tracks:", err);
 
