@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
+
+import Image from "next/image";
 import { Dialog } from "@base-ui-components/react/dialog";
 import { Camera, SquarePen } from "lucide-react";
 
 import styles from "./edit-profile.module.css";
-import Image from "next/image";
 
 type EditProfileProps = {
   headerImage: string | null;
@@ -21,8 +23,10 @@ function EditProfile({
   username,
   aboutMe,
 }: EditProfileProps) {
+  const [open, setOpen] = useState<boolean>(false);
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger
         render={
           <button className={styles.editProfileBtn}>
@@ -39,7 +43,13 @@ function EditProfile({
             Update your profile information and customize your presence on
             Pollster.
           </Dialog.Description>
-          <form className={styles.form}>
+          <form
+            className={styles.form}
+            onSubmit={(e) => {
+              e.preventDefault();
+              setOpen(false);
+            }}
+          >
             <div className={styles.headerContainer}>
               <Image src={headerImage!} alt="Header image" fill sizes="100%" />
               <button className={styles.headerButton}>
@@ -67,7 +77,7 @@ function EditProfile({
             <div className={styles.nameInputContainer}>
               <div className={styles.formRow}>
                 <label htmlFor="name" className={styles.label}>
-                  Display Name
+                  Name
                 </label>
                 <input
                   id="name"
@@ -101,11 +111,15 @@ function EditProfile({
               />
               <p className={styles.characterLimit}>250 characters max</p>
             </div>
+            <div className={styles.Actions}>
+              <Dialog.Close className={styles.outlineButton}>
+                Cancel
+              </Dialog.Close>
+              <button className={styles.primaryButton} type="submit">
+                Save Changes
+              </button>
+            </div>
           </form>
-          <div className={styles.Actions}>
-            <Dialog.Close className={styles.outlineButton}>Cancel</Dialog.Close>
-            <button className={styles.primaryButton}>Save Changes</button>
-          </div>
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>
