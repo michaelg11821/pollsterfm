@@ -1,6 +1,6 @@
 import styles from "./skeleton.module.css";
 
-export default function NowPlayingSkeleton() {
+function NowPlayingSkeleton() {
   return (
     <div className={styles.skeletonContainer}>
       <div className={styles.nowPlayingImageContainer}>
@@ -26,3 +26,5 @@ export default function NowPlayingSkeleton() {
     </div>
   );
 }
+
+export default NowPlayingSkeleton;

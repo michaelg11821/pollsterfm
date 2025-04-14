@@ -22,6 +22,8 @@ import EditProfileSvg from "../../../../public/square-pen.svg";
 
 import styles from "./page.module.css";
 import NowPlayingSkeleton from "@/app/components/now-playing/skeleton/skeleton";
+import Affinities from "@/app/components/affinities/affinities";
+import AffinitiesSkeleton from "@/app/components/affinities/skeleton/skeleton";
 
 type ProfileProps = {
   params: Promise<{ username: string }>;
@@ -158,28 +160,35 @@ async function Profile({ params }: ProfileProps) {
             </div>
           </div>
         </div>
-      </div>
-      <div className={styles.recentlyPlayed}>
-        <div className={styles.sectionWrapper}>
-          <div className={styles.recentlyPlayedHeader}>
-            <p className={styles.sectionTitle}>Recently Played</p>
-            <Link
-              className={styles.viewHistory}
-              href={`/user/${username}/history`}
-            >
-              View More{" "}
-              <Image src={RightChevron} width={20} height={20} alt="" />
-            </Link>
+        <section className={styles.recentlyPlayed}>
+          <div className={styles.sectionWrapper}>
+            <div className={styles.recentlyPlayedHeader}>
+              <h2 className={styles.sectionTitle}>Recently Played</h2>
+              <Link
+                className={styles.viewHistory}
+                href={`/user/${username}/history`}
+              >
+                View More{" "}
+                <Image src={RightChevron} width={20} height={20} alt="" />
+              </Link>
+            </div>
+            <div className={styles.tracksContainer}>
+              <Suspense fallback={<NowPlayingSkeleton />}>
+                <NowPlaying username={username} name={profile.name!} />
+              </Suspense>
+              <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
+                <RecentlyPlayed username={username} limit={4} />
+              </Suspense>
+            </div>
           </div>
-          <div className={styles.tracksContainer}>
-            <Suspense fallback={<NowPlayingSkeleton />}>
-              <NowPlaying username={username} name={profile.name!} />
-            </Suspense>
-            <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
-              <RecentlyPlayed username={username} limit={4} />
+        </section>
+        <section className={styles.affinities}>
+          <div className={styles.sectionWrapper}>
+            <Suspense fallback={<AffinitiesSkeleton />}>
+              <Affinities />
             </Suspense>
           </div>
-        </div>
+        </section>
       </div>
     </main>
   );

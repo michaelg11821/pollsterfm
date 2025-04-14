@@ -4,7 +4,7 @@
 }
 
 .headerImage {
-  height: 13rem;
+  height: 12rem;
   width: 100%;
   background: linear-gradient(
     to right,
@@ -292,4 +292,8 @@
   border-radius: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1.25rem;
+}
+
+.affinities {
+  padding: 2.3rem 0;
 }
