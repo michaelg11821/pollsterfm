@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
+
+import { Dialog } from "@base-ui-components/react/dialog";
+import { AlertDialog } from "@base-ui-components/react/alert-dialog";
+import { Camera, SquarePen } from "lucide-react";
+
+import { fileToBlobUrl } from "../../../lib/utils";
+import { headerImageSchema, profileIconSchema } from "../../../lib/schemas";
 
 import Image from "next/image";
-import { Dialog } from "@base-ui-components/react/dialog";
-import { Camera, SquarePen } from "lucide-react";
 
 import styles from "./edit-profile.module.css";
 
@@ -16,6 +21,11 @@ type EditProfileProps = {
   aboutMe: string | null;
 };
 
+type ImageInfo = {
+  image?: File;
+  src?: string | null;
+};
+
 function EditProfile({
   headerImage,
   profileIcon,
@@ -24,9 +34,91 @@ function EditProfile({
   aboutMe,
 }: EditProfileProps) {
   const [open, setOpen] = useState<boolean>(false);
+  const [currentHeaderImg, setCurrentHeaderImg] = useState<ImageInfo>({
+    src: headerImage,
+  });
+  const [currentProfileIcon, setCurrentProfileIcon] = useState<ImageInfo>({
+    src: profileIcon,
+  });
+  const [error, setError] = useState<string>("");
+  const [errorOpen, setErrorOpen] = useState(false);
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (!currentHeaderImg.image) return;
+
+    const imageUrl = fileToBlobUrl(currentHeaderImg.image);
+    setCurrentHeaderImg((prev) => ({ ...prev, src: imageUrl }));
+
+    return () => URL.revokeObjectURL(imageUrl);
+  }, [currentHeaderImg.image]);
+
+  useEffect(() => {
+    if (!currentProfileIcon.image) return;
+
+    const imageUrl = fileToBlobUrl(currentProfileIcon.image);
+    setCurrentProfileIcon((prev) => ({ ...prev, src: imageUrl }));
+
+    return () => URL.revokeObjectURL(imageUrl);
+  }, [currentProfileIcon.image]);
+
+  const validateFile = (
+    file: File,
+    schema: typeof headerImageSchema | typeof profileIconSchema
+  ) => {
+    const result = schema.safeParse(file);
+
+    if (!result.success) {
+      setError(result.error.errors[0].message);
+      setErrorOpen(true);
+
+      return false;
+    } else {
+      setError("");
+
+      return true;
+    }
+  };
+
+  const handleHeaderImgChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const isValid = validateFile(file, headerImageSchema);
+
+      if (isValid) setCurrentHeaderImg({ image: file });
+    }
+  };
+
+  const handleProfileIconChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      const isValid = validateFile(file, profileIconSchema);
+
+      if (isValid) setCurrentProfileIcon({ image: file });
+    }
+  };
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
+    <Dialog.Root
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) {
+          setTimeout(() => {
+            setCurrentHeaderImg({ src: headerImage });
+            setCurrentProfileIcon({ src: profileIcon });
+
+            if (formRef.current) {
+              formRef.current.reset();
+            }
+          }, 500);
+        }
+
+        setOpen(open);
+      }}
+    >
       <Dialog.Trigger
         render={
           <button className={styles.editProfileBtn}>
@@ -43,30 +135,52 @@ function EditProfile({
             Update your profile information and customize your presence on
             Pollster.
           </Dialog.Description>
-          <form
-            className={styles.form}
-            onSubmit={(e) => {
-              e.preventDefault();
-              setOpen(false);
-            }}
-          >
+          <form className={styles.form} ref={formRef}>
             <div className={styles.headerContainer}>
-              <Image src={headerImage!} alt="Header image" fill sizes="100%" />
+              {currentHeaderImg.src ? (
+                <Image
+                  src={currentHeaderImg.src}
+                  alt="Header image"
+                  fill
+                  sizes="100%"
+                />
+              ) : (
+                <div className={styles.placeholder}>No header image</div>
+              )}
               <button className={styles.headerButton}>
                 <Camera className={styles.cameraIcon} />
+                <input
+                  type="file"
+                  name="headerImage"
+                  aria-label="Upload header image"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={(e) => handleHeaderImgChange(e)}
+                />
               </button>
               <div className={styles.headerImageOverlay}>Header Image</div>
             </div>
             <div className={styles.profileImages}>
               <div className={styles.avatarContainer}>
-                <Image
-                  src={profileIcon!}
-                  alt="Profile icon"
-                  fill
-                  sizes="100%"
-                />
+                {currentProfileIcon.src ? (
+                  <Image
+                    src={currentProfileIcon.src}
+                    alt="Profile picture"
+                    fill
+                    sizes="100%"
+                  />
+                ) : (
+                  <div className={styles.placeholder}>No profile picture</div>
+                )}
+
                 <button className={styles.avatarButton}>
                   <Camera className={styles.cameraIconSmall} />
+                  <input
+                    type="file"
+                    name="profileIcon"
+                    aria-label="Upload profile picture"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={(e) => handleProfileIconChange(e)}
+                  />
                 </button>
               </div>
               <div className={styles.profileInfo}>
@@ -76,23 +190,27 @@ function EditProfile({
             </div>
             <div className={styles.nameInputContainer}>
               <div className={styles.formRow}>
-                <label htmlFor="name" className={styles.label}>
+                <label htmlFor="nameInput" className={styles.label}>
                   Name
                 </label>
                 <input
-                  id="name"
+                  name="name"
+                  id="nameInput"
+                  type="text"
                   defaultValue={name ? name : ""}
                   className={styles.input}
                 />
               </div>
               <div className={styles.formRow}>
-                <label htmlFor="username" className={styles.label}>
+                <label htmlFor="usernameInput" className={styles.label}>
                   Username
                 </label>
                 <div className={styles.relativeFormRow}>
                   <span className={styles.usernamePrefix}>@</span>
                   <input
-                    id="username"
+                    name="username"
+                    id="usernameInput"
+                    type="text"
                     defaultValue={username}
                     className={`${styles.input} ${styles.inputUsername}`}
                   />
@@ -100,11 +218,12 @@ function EditProfile({
               </div>
             </div>
             <div className={styles.formRow}>
-              <label htmlFor="aboutMe" className={styles.label}>
+              <label htmlFor="aboutMeTextArea" className={styles.label}>
                 About Me
               </label>
               <textarea
-                id="aboutMe"
+                id="aboutMeTextArea"
+                name="aboutMe"
                 defaultValue={aboutMe ? aboutMe : ""}
                 className={styles.textarea}
                 placeholder="Tell us about yourself and your music taste..."
@@ -122,6 +241,26 @@ function EditProfile({
           </form>
         </Dialog.Popup>
       </Dialog.Portal>
+
+      <AlertDialog.Root open={errorOpen} onOpenChange={setErrorOpen}>
+        <AlertDialog.Portal>
+          <AlertDialog.Popup className={styles.Popup}>
+            <AlertDialog.Title className={styles.Title}>
+              Error
+            </AlertDialog.Title>
+            <AlertDialog.Description className={styles.Description}>
+              {error}
+            </AlertDialog.Description>
+            <div className={styles.Actions}>
+              <AlertDialog.Close
+                className={`${styles.outlineButton} ${styles.errorClose}`}
+              >
+                OK
+              </AlertDialog.Close>
+            </div>
+          </AlertDialog.Popup>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
     </Dialog.Root>
   );
 }
