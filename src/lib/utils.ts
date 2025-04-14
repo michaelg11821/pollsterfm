@@ -41,3 +41,13 @@ export function dateStringDistanceToNow(dateString: string): string {
 
   return distanceString;
 }
+
+/**
+ * A simple helper function that converts a file into a Blob URL.
+ *
+ * @param file A Blob/File.
+ * @returns An object URL for use in images.
+ */
+export function fileToBlobUrl(file: Blob) {
+  return URL.createObjectURL(file);
+}
