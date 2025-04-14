@@ -40,7 +40,8 @@
     "msw": "^2.7.3",
     "prisma": "^6.5.0",
     "typescript": "^5",
-    "vitest": "^3.0.9"
+    "vitest": "^3.0.9",
+    "vitest-mock-extended": "^3.1.0"
   },
   "prisma": {
     "schema": "src/lib/prisma/schema.prisma"
