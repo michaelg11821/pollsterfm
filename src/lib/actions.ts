@@ -3,8 +3,18 @@
 import SpotifyApi from "./spotify";
 
 import { prisma } from "./prisma";
-import type { SpotifyRecentlyPlayedResponse } from "./types/externalResponses";
 
+import type {
+  SpotifyCurrentlyPlayingResponse,
+  SpotifyRecentlyPlayedResponse,
+} from "./types/externalResponses";
+
+/**
+ * A function that verifies tokens from the Cloudflare Turnstile on the sign-in page.
+ *
+ * @param token A Cloudflare turnstile token.
+ * @returns A success indicator, status, and possible errors.
+ */
 export async function verifyTurnstile(token: string) {
   if (process.env.NODE_ENV !== "production") return { success: true };
 
@@ -102,6 +112,12 @@ export async function spotifyApiWithCredentials(username: string) {
   }
 }
 
+/**
+ * Returns some basic (public) information about a Pollster.fm user.
+ *
+ * @param username A Pollster.fm user's username
+ * @returns Basic profile information for a Pollster.fm user.
+ */
 export async function getProfile(username: string) {
   try {
     const profile = await prisma.user.findUniqueOrThrow({
@@ -120,6 +136,33 @@ export async function getProfile(username: string) {
     return profile;
   } catch (err: unknown) {
     console.error("error getting profile", err);
+
+    return null;
+  }
+}
+
+/**
+ * A function that returns the user's currently playing track on Spotify.
+ *
+ *  @param username A Pollster.fm user's username.
+ *
+ */
+export async function getCurrentlyPlayingTrack(
+  username: string
+): Promise<SpotifyCurrentlyPlayingResponse | null> {
+  try {
+    const spotify = await spotifyApiWithCredentials(username);
+
+    if (!spotify) throw new Error("invalid spotify instance");
+
+    const nowPlaying = await spotify.getCurrentlyPlayingTrack();
+
+    return nowPlaying;
+  } catch (err: unknown) {
+    console.error(
+      `error fetching currently playing track for ${username}:`,
+      err
+    );
 
     return null;
   }

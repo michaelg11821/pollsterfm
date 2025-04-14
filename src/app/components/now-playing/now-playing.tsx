@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import { spotifyApiWithCredentials } from "@/lib/actions";
+import { getCurrentlyPlayingTrack } from "@/lib/actions";
 
 import Image from "next/image";
 
@@ -14,11 +14,7 @@ interface NowPlayingProps {
 }
 
 async function NowPlaying({ username, name }: NowPlayingProps) {
-  const spotify = await spotifyApiWithCredentials(username);
-
-  if (!spotify) return <p>Invalid user.</p>;
-
-  const currentlyPlaying = await spotify.getCurrentlyPlayingTrack();
+  const currentlyPlaying = await getCurrentlyPlayingTrack(username);
 
   if (!currentlyPlaying || !currentlyPlaying.item) return null;
 
