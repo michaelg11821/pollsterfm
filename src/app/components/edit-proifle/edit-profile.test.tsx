@@ -32,8 +32,8 @@ describe("EditProfile", () => {
     it("upload header image + profile picture", async () => {
       const { user } = setup(
         <EditProfile
-          headerImage="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
-          profileIcon="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+          headerImage=""
+          profileIcon=""
           name=""
           username=""
           aboutMe=""
