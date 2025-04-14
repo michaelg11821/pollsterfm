@@ -21,6 +21,7 @@ import RightChevron from "../../../../public/chevron-right.svg";
 import EditProfileSvg from "../../../../public/square-pen.svg";
 
 import styles from "./page.module.css";
+import NowPlayingSkeleton from "@/app/components/now-playing/skeleton/skeleton";
 
 type ProfileProps = {
   params: Promise<{ username: string }>;
@@ -171,7 +172,7 @@ async function Profile({ params }: ProfileProps) {
             </Link>
           </div>
           <div className={styles.tracksContainer}>
-            <Suspense fallback={<p>Loading...</p>}>
+            <Suspense fallback={<NowPlayingSkeleton />}>
               <NowPlaying username={username} name={profile.name!} />
             </Suspense>
             <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>

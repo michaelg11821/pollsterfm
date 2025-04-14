@@ -130,7 +130,7 @@ export async function getProfile(username: string) {
  *
  * @param username A Pollster.fm user's username.
  * @param limit Minimum: 1. Default: 20. Maximum: 50.
- * @param next A URL for the next page of recently played tracks provided by the Spotify API. To obtain one, make a request for a user's recently played tracks.
+ * @param next (optional) A URL for the next page of recently played tracks provided by the Spotify API. To obtain one, make a request for a user's recently played tracks.
  * @returns The user's recently played tracks on Spotify.
  */
 export async function getRecentlyPlayedTracks(

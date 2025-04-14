@@ -1,0 +1,175 @@
+.skeletonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 640px) {
+  .skeletonContainer {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.nowPlayingImageContainer {
+  position: relative;
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 6px;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .nowPlayingImageContainer {
+    width: 64px;
+    height: 64px;
+    margin: 0;
+  }
+}
+
+.imageSkeleton {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.nowPlayingTrackInfo {
+  flex: 1;
+  text-align: center;
+  margin-top: 12px;
+}
+
+@media (min-width: 640px) {
+  .nowPlayingTrackInfo {
+    text-align: left;
+    margin-top: 0;
+  }
+}
+
+.nowPlayingBadgeWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+@media (min-width: 640px) {
+  .nowPlayingBadgeWrapper {
+    justify-content: flex-start;
+  }
+}
+
+.badgeSkeleton {
+  width: 80px;
+  height: 15px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.05);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.titleSkeleton {
+  width: 150px;
+  height: 15px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.05);
+  animation: pulse 1.5s infinite ease-in-out;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .titleSkeleton {
+    margin: 0;
+  }
+}
+
+.detailsSkeleton {
+  display: flex;
+  justify-content: center;
+  width: 220px;
+  height: 15px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.05);
+  animation: pulse 1.5s infinite ease-in-out;
+  gap: 3.6px;
+  margin: 4px auto 0;
+}
+
+@media (min-width: 640px) {
+  .detailsSkeleton {
+    justify-content: flex-start;
+    margin: 4px 0 0;
+  }
+}
+
+.artistSkeleton {
+  width: 60px;
+  height: 16px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.05);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.albumSkeleton {
+  width: 80px;
+  height: 16px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.05);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.reactionsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+}
+
+@media (min-width: 640px) {
+  .reactionsContainer {
+    align-items: flex-end;
+    margin-top: 0;
+  }
+}
+
+.reactionTextSkeleton {
+  width: 100px;
+  height: 12px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.05);
+  animation: pulse 1.5s infinite ease-in-out;
+  margin-bottom: 4px;
+}
+
+.reactionButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reactionButtonSkeleton {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.05);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
