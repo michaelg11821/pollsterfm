@@ -27,6 +27,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body:has(div[role="dialog"][data-open]) > header {
+  isolation: isolate;
+  z-index: 0;
+}
+
 .centered-main {
   display: flex;
   flex-direction: column;

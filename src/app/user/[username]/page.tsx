@@ -18,12 +18,12 @@ import Link from "next/link";
 import ProfileActionsSvg from "../../../../public/ellipsis.svg";
 import CalendarSvg from "../../../../public/calendar.svg";
 import RightChevron from "../../../../public/chevron-right.svg";
-import EditProfileSvg from "../../../../public/square-pen.svg";
 
 import styles from "./page.module.css";
 import NowPlayingSkeleton from "@/app/components/now-playing/skeleton/skeleton";
 import Affinities from "@/app/components/affinities/affinities";
 import AffinitiesSkeleton from "@/app/components/affinities/skeleton/skeleton";
+import EditProfile from "@/app/components/edit-proifle/edit-profile";
 
 type ProfileProps = {
   params: Promise<{ username: string }>;
@@ -95,15 +95,13 @@ async function Profile({ params }: ProfileProps) {
                 <div className={styles.actionButtons}>
                   {loggedInUser?.username === username ? (
                     <>
-                      <button className={styles.editProfileBtn}>
-                        <Image
-                          src={EditProfileSvg}
-                          width={15}
-                          height={15}
-                          alt=""
-                        />
-                        Edit Profile
-                      </button>
+                      <EditProfile
+                        headerImage={profile.image}
+                        profileIcon={profile.image}
+                        name={profile.name}
+                        username={username}
+                        aboutMe={profile.aboutMe}
+                      />
                       <button className={styles.moreButton}>
                         <Image
                           src={ProfileActionsSvg}
