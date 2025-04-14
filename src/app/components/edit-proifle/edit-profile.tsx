@@ -231,7 +231,7 @@ function EditProfile({
               <p className={styles.characterLimit}>250 characters max</p>
             </div>
             <div className={styles.Actions}>
-              <Dialog.Close className={styles.outlineButton}>
+              <Dialog.Close className={styles.outlineButton} type="button">
                 Cancel
               </Dialog.Close>
               <button className={styles.primaryButton} type="submit">
