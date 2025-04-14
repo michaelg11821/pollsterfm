@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { enUS } from "date-fns/locale";
 
 import { auth } from "@/lib/auth";
-import { getProfile } from "@/lib/actions";
+import { getProfile } from "@/lib/data-access/user";
 
 import { type Metadata } from "next";
 import { type Month } from "date-fns";
@@ -11,6 +11,10 @@ import { type Month } from "date-fns";
 import NowPlaying from "@/app/components/now-playing/now-playing";
 import RecentlyPlayed from "@/app/components/recently-played/recently-played";
 import RecentlyPlayedSkeleton from "@/app/components/recently-played/skeleton/skeleton";
+import NowPlayingSkeleton from "@/app/components/now-playing/skeleton/skeleton";
+import Affinities from "@/app/components/affinities/affinities";
+import AffinitiesSkeleton from "@/app/components/affinities/skeleton/skeleton";
+import EditProfile from "@/app/components/edit-proifle/edit-profile";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -20,10 +24,6 @@ import CalendarSvg from "../../../../public/calendar.svg";
 import RightChevron from "../../../../public/chevron-right.svg";
 
 import styles from "./page.module.css";
-import NowPlayingSkeleton from "@/app/components/now-playing/skeleton/skeleton";
-import Affinities from "@/app/components/affinities/affinities";
-import AffinitiesSkeleton from "@/app/components/affinities/skeleton/skeleton";
-import EditProfile from "@/app/components/edit-proifle/edit-profile";
 
 type ProfileProps = {
   params: Promise<{ username: string }>;
