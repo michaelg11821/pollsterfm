@@ -72,14 +72,14 @@ function EditProfile({
     const result = schema.safeParse(file);
 
     if (!result.success) {
-      if (typeof schema === typeof headerImageSchema) {
-        if (!headerImgInputRef.current) return;
-
-        headerImgInputRef.current.value = "";
+      if (schema === headerImageSchema) {
+        if (headerImgInputRef.current) {
+          headerImgInputRef.current.value = "";
+        }
       } else {
-        if (!profilePicInputRef.current) return;
-
-        profilePicInputRef.current.value = "";
+        if (profilePicInputRef.current) {
+          profilePicInputRef.current.value = "";
+        }
       }
 
       setError(result.error.errors[0].message);
