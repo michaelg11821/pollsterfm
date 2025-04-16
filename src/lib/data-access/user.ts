@@ -65,10 +65,10 @@ export async function getProfile(username: string) {
         username,
       },
       select: {
-        pronouns: true,
         aboutMe: true,
         createdAt: true,
         image: true,
+        headerImage: true,
         name: true,
       },
     });
