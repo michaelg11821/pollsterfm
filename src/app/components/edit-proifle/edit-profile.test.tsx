@@ -29,7 +29,7 @@ describe("EditProfile", () => {
       return true;
     };
 
-    it("upload header image + profile picture", async () => {
+    it("preview images update", async () => {
       const { user } = setup(
         <EditProfile
           headerImage=""
@@ -65,8 +65,15 @@ describe("EditProfile", () => {
       await user.upload(headerImageInput, headerImage);
       await user.upload(profilePictureInput, profilePicture);
 
-      expect(checkForFile(headerImageInput, headerImage)).toBe(true);
-      expect(checkForFile(profilePictureInput, profilePicture)).toBe(true);
+      const headerImagePreview = screen.getByAltText(
+        "Header image preview"
+      ) as HTMLImageElement;
+      const profilePicturePreview = screen.getByAltText(
+        "Profile picture preview"
+      ) as HTMLImageElement;
+
+      expect(headerImagePreview.src).toBe("blob:fake-url");
+      expect(profilePicturePreview.src).toBe("blob:fake-url");
     });
 
     it("non-image file fail", async () => {

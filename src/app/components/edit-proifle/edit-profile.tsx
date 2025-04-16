@@ -140,7 +140,7 @@ function EditProfile({
               {currentHeaderImg.src ? (
                 <Image
                   src={currentHeaderImg.src}
-                  alt="Header image"
+                  alt="Header image preview"
                   fill
                   sizes="100%"
                 />
@@ -164,7 +164,7 @@ function EditProfile({
                 {currentProfileIcon.src ? (
                   <Image
                     src={currentProfileIcon.src}
-                    alt="Profile picture"
+                    alt="Profile picture preview"
                     fill
                     sizes="100%"
                   />
