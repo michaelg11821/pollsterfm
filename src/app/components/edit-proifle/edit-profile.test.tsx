@@ -20,15 +20,6 @@ function setup(jsx: ReactNode) {
 
 describe("EditProfile", () => {
   describe("file uploads", () => {
-    const checkForFile = (input: HTMLInputElement, file: File) => {
-      if (!input.files) return false;
-      if (input.files[0] !== file) return false;
-      if (input.files.item(0) !== file) return false;
-      if (input.files.length !== 1) return false;
-
-      return true;
-    };
-
     it("preview images update", async () => {
       const { user } = setup(
         <EditProfile
