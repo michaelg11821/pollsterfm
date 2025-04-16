@@ -2,7 +2,13 @@ import Link from "next/link";
 
 import styles from "./affinities.module.css";
 
+async function waitFor(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function Affinities() {
+  await waitFor(400);
+
   const temporaryAffinities = [
     { name: "Nostalgic", score: 92 },
     { name: "Atmospheric", score: 87 },
