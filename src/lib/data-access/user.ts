@@ -82,6 +82,31 @@ export async function getProfile(username: string) {
 }
 
 /**
+ * Returns a Pollster.fm user's name.
+ *
+ * @param username A Pollster.fm user's username
+ * @returns A Pollster.fm user's name.
+ */
+export async function getName(username: string) {
+  try {
+    const { name } = await prisma.user.findUniqueOrThrow({
+      where: {
+        username,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    return name;
+  } catch (err: unknown) {
+    console.error("error getting name", err);
+
+    return null;
+  }
+}
+
+/**
  * A function that updates the given user's profile with the given form data.
  *
  * @param username A Pollster.fm user's username.

@@ -7,7 +7,7 @@ import styles from "./reactions.module.css";
 
 type ReactionsProps = {
   username: string;
-  name: string;
+  name: string | null;
 };
 
 type ReactionAnimation = {
@@ -49,7 +49,9 @@ function Reactions({ username, name }: ReactionsProps) {
 
   return (
     <div className={styles.reactionContainer}>
-      <p className={styles.reactionText}>Send reaction to {name}</p>
+      <p className={styles.reactionText}>
+        {name ? `Send reaction to ${name}` : "Send a reaction"}
+      </p>
       <div className={styles.reactionButtons}>
         <div className={styles.reactionButtonContainer}>
           <button

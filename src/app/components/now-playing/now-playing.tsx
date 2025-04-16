@@ -7,18 +7,20 @@ import Image from "next/image";
 import Reactions from "./reactions/reactions";
 
 import styles from "./now-playing.module.css";
+import { getName } from "@/lib/data-access/user";
 
 interface NowPlayingProps {
   username: string;
-  name: string;
 }
 
-async function NowPlaying({ username, name }: NowPlayingProps) {
+async function NowPlaying({ username }: NowPlayingProps) {
   const currentlyPlaying = await getCurrentlyPlayingTrack(username);
 
   if (!currentlyPlaying || !currentlyPlaying.item) return null;
 
   if (currentlyPlaying.item.is_local) return null;
+
+  const name = await getName(username);
 
   return (
     <div className={styles.nowPlaying}>
