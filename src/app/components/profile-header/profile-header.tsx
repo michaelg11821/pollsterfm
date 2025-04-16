@@ -63,10 +63,8 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
               <div className={styles.actionButtons}>
                 {loggedInUser?.username === username ? (
                   <EditProfile
-                    headerImage={
-                      profile.headerImage ? profile.headerImage : null
-                    }
-                    profileIcon={profile.image ? profile.image : null}
+                    headerImage={profile.headerImage}
+                    profileIcon={profile.image}
                     name={profile.name}
                     username={username}
                     aboutMe={profile.aboutMe}
