@@ -2,7 +2,7 @@ import userEvent from "@testing-library/user-event";
 
 import { act, render, screen, waitFor } from "@testing-library/react";
 
-import { prismaMock } from "@/lib/mocks/prisma";
+// import { prismaMock } from "@/lib/mocks/prisma";
 
 import EditProfile from "./edit-profile";
 

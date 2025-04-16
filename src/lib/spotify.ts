@@ -83,7 +83,7 @@ export default function SpotifyApi(
   const fetchWithRetry = async (
     url: string,
     options: RequestInit,
-    retries = 1
+    retries = 3
   ) => {
     let res = await fetch(url, options);
 

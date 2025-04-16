@@ -24,7 +24,7 @@ export const profileIconSchema = z
       ),
     {
       message:
-        "Invalid file type.  Accepted file types: .png, .jpeg, .webp, and .gif.",
+        "Invalid file type. Accepted file types: .png, .jpeg, .webp, and .gif.",
     }
   )
   .refine((file) => file.size <= imageFileSizeLimit, {
