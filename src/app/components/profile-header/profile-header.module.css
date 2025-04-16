@@ -11,6 +11,7 @@
 
 .headerImageContent {
   opacity: 0.4;
+  object-fit: cover;
 }
 
 .sectionWrapper {
@@ -61,6 +62,7 @@
 .avatar > img {
   border: 6px solid #0f0f19;
   border-radius: 9999px;
+  object-fit: cover;
 }
 
 @media (min-width: 768px) {

@@ -31,6 +31,7 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
         >
           <Image
             src={mobileMenuOpen ? CloseMenuSvg : MenuSvg}
+            style={{ objectFit: "cover" }}
             width={30}
             height={30}
             alt=""
