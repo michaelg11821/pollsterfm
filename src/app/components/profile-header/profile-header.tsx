@@ -35,31 +35,23 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
   return (
     <>
       <div className={styles.headerImage}>
-        <Image
-          src={
-            profile.image ? profile.image : "../../../../public/ellipsis.svg"
-          }
-          alt=""
-          fill
-          sizes="100%"
-          className={styles.headerImageContent}
-        />
+        {profile.headerImage && (
+          <Image
+            src={profile.headerImage}
+            alt=""
+            fill
+            sizes="100%"
+            className={styles.headerImageContent}
+          />
+        )}
       </div>
       <div className={styles.sectionWrapper}>
         <div className={styles.profileInfo}>
           <div className={styles.avatarContainer}>
             <div className={styles.avatar}>
-              <Image
-                src={
-                  profile.image
-                    ? profile.image
-                    : "../../../../public/ellipsis.svg"
-                }
-                alt=""
-                fill
-                sizes="100%"
-                priority
-              />
+              {profile.image && (
+                <Image src={profile.image} alt="" fill sizes="100%" priority />
+              )}
             </div>
           </div>
           <div className={styles.profileDetails}>
@@ -71,8 +63,10 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
               <div className={styles.actionButtons}>
                 {loggedInUser?.username === username ? (
                   <EditProfile
-                    headerImage={profile.image}
-                    profileIcon={profile.image}
+                    headerImage={
+                      profile.headerImage ? profile.headerImage : null
+                    }
+                    profileIcon={profile.image ? profile.image : null}
                     name={profile.name}
                     username={username}
                     aboutMe={profile.aboutMe}

@@ -149,7 +149,7 @@ function EditProfile({
           </Dialog.Description>
           <form className={styles.form} ref={formRef}>
             <div className={styles.headerContainer}>
-              {currentHeaderImg.src ? (
+              {currentHeaderImg.src && (
                 <Image
                   src={currentHeaderImg.src}
                   alt="Header image preview"
@@ -157,15 +157,12 @@ function EditProfile({
                   sizes="100%"
                   className={styles.headerImgPreview}
                 />
-              ) : (
-                <div className={styles.placeholder}>No header image</div>
               )}
               <button className={styles.headerButton}>
                 <Camera className={styles.cameraIcon} />
                 <input
                   type="file"
                   ref={headerImgInputRef}
-                  value=""
                   name="headerImage"
                   aria-label="Upload header image"
                   accept="image/jpeg,image/png,image/webp"
@@ -176,7 +173,7 @@ function EditProfile({
             </div>
             <div className={styles.profileImages}>
               <div className={styles.avatarContainer}>
-                {currentProfileIcon.src ? (
+                {currentProfileIcon.src && (
                   <Image
                     src={currentProfileIcon.src}
                     alt="Profile picture preview"
@@ -184,10 +181,7 @@ function EditProfile({
                     sizes="100%"
                     className={styles.profilePicPreview}
                   />
-                ) : (
-                  <div className={styles.placeholder}>No profile picture</div>
                 )}
-
                 <button className={styles.avatarButton}>
                   <Camera className={styles.cameraIconSmall} />
                   <input
