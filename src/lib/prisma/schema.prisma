@@ -39,7 +39,6 @@ model User {
 
   name     String?
   username String  @unique @default(cuid())
-  pronouns String?
   aboutMe  String?
 
   email         String    @unique
@@ -48,7 +47,8 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  image String? // link to cloud storage where image is stored
+  image       String? // link to cloud storage where image is stored
+  headerImage String? // another link to cloud storage 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
