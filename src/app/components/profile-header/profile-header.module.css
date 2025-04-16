@@ -1,5 +1,5 @@
 .headerImage {
-  height: 12rem;
+  height: 9rem;
   width: 100%;
   background: linear-gradient(
     to right,
@@ -7,6 +7,12 @@
     rgba(176, 127, 255, 0.3)
   );
   position: relative;
+}
+
+@media only screen and (min-width: 1200px) {
+  .headerImage {
+    height: 12rem;
+  }
 }
 
 .headerImageContent {
