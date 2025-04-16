@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto";
-
 import TrackSkeleton from "../../track/skeleton/skeleton";
 
 import type { ReactElement } from "react";
@@ -11,8 +9,10 @@ type RecentlyPlayedSkeletonProps = {
 };
 
 function RecentlyPlayedSkeleton({ limit }: RecentlyPlayedSkeletonProps) {
+  let trackSkeletonKey = 0;
+
   const skeletons: ReactElement[] = Array(limit).fill(
-    <TrackSkeleton key={randomUUID()} />
+    <TrackSkeleton key={trackSkeletonKey++} />
   );
 
   return <div className={styles.skeletonWrapper}>{skeletons}</div>;
