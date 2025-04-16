@@ -72,6 +72,7 @@ describe("EditProfile", () => {
         "Profile picture preview"
       ) as HTMLImageElement;
 
+      // mock createObjectUrl return value
       expect(headerImagePreview.src).toBe("blob:fake-url");
       expect(profilePicturePreview.src).toBe("blob:fake-url");
     });
@@ -108,8 +109,6 @@ describe("EditProfile", () => {
 
       await user.upload(headerImageInput, suspiciousFile);
 
-      expect(checkForFile(headerImageInput, suspiciousFile)).toBe(true);
-
       await waitFor(() => {
         expect(
           screen.getByText(
@@ -117,6 +116,8 @@ describe("EditProfile", () => {
           )
         ).toBeInTheDocument();
       });
+
+      expect(headerImageInput.value).toBe("");
     });
   });
 });

@@ -44,6 +44,8 @@ function EditProfile({
   const [errorOpen, setErrorOpen] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const headerImgInputRef = useRef<HTMLInputElement>(null);
+  const profilePicInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!currentHeaderImg.image) return;
@@ -70,6 +72,16 @@ function EditProfile({
     const result = schema.safeParse(file);
 
     if (!result.success) {
+      if (typeof schema === typeof headerImageSchema) {
+        if (!headerImgInputRef.current) return;
+
+        headerImgInputRef.current.value = "";
+      } else {
+        if (!profilePicInputRef.current) return;
+
+        profilePicInputRef.current.value = "";
+      }
+
       setError(result.error.errors[0].message);
       setErrorOpen(true);
 
@@ -143,6 +155,7 @@ function EditProfile({
                   alt="Header image preview"
                   fill
                   sizes="100%"
+                  className={styles.headerImgPreview}
                 />
               ) : (
                 <div className={styles.placeholder}>No header image</div>
@@ -151,6 +164,8 @@ function EditProfile({
                 <Camera className={styles.cameraIcon} />
                 <input
                   type="file"
+                  ref={headerImgInputRef}
+                  value=""
                   name="headerImage"
                   aria-label="Upload header image"
                   accept="image/jpeg,image/png,image/webp"
@@ -167,6 +182,7 @@ function EditProfile({
                     alt="Profile picture preview"
                     fill
                     sizes="100%"
+                    className={styles.profilePicPreview}
                   />
                 ) : (
                   <div className={styles.placeholder}>No profile picture</div>
@@ -176,6 +192,7 @@ function EditProfile({
                   <Camera className={styles.cameraIconSmall} />
                   <input
                     type="file"
+                    ref={profilePicInputRef}
                     name="profileIcon"
                     aria-label="Upload profile picture"
                     accept="image/jpeg,image/png,image/webp,image/gif"
