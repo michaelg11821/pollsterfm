@@ -1,13 +1,23 @@
 "use client";
 
-import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  type ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useRouter } from "next/navigation";
 
 import { Dialog } from "@base-ui-components/react/dialog";
 import { AlertDialog } from "@base-ui-components/react/alert-dialog";
 import { Camera, SquarePen } from "lucide-react";
 
+import { updateProfile } from "@/lib/data-access/user";
 import { fileToBlobUrl } from "../../../lib/utils";
 import { headerImageSchema, profileIconSchema } from "../../../lib/schemas";
+
+import type { EditProfileFormData } from "@/lib/types/formData";
 
 import Image from "next/image";
 
@@ -21,11 +31,6 @@ type EditProfileProps = {
   aboutMe: string | null;
 };
 
-type ImageInfo = {
-  image?: File;
-  src?: string | null;
-};
-
 function EditProfile({
   headerImage,
   profileIcon,
@@ -34,36 +39,49 @@ function EditProfile({
   aboutMe,
 }: EditProfileProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [currentHeaderImg, setCurrentHeaderImg] = useState<ImageInfo>({
-    src: headerImage,
-  });
-  const [currentProfileIcon, setCurrentProfileIcon] = useState<ImageInfo>({
-    src: profileIcon,
-  });
+  const [headerImgPreview, setHeaderImgPreview] = useState<string | null>(
+    headerImage
+  );
+  const [profileIconPreview, setProfileIconPreview] = useState<string | null>(
+    profileIcon
+  );
   const [error, setError] = useState<string>("");
-  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState<boolean>(false);
+  const [formData, setFormData] = useState<EditProfileFormData>({
+    newHeaderImg: null,
+    newProfileIcon: null,
+    newName: name,
+    newUsername: username,
+    newAboutMe: aboutMe,
+    oldHeaderImg: headerImage,
+    oldProfileIcon: profileIcon,
+  });
 
   const formRef = useRef<HTMLFormElement>(null);
   const headerImgInputRef = useRef<HTMLInputElement>(null);
   const profilePicInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!currentHeaderImg.image) return;
-
-    const imageUrl = fileToBlobUrl(currentHeaderImg.image);
-    setCurrentHeaderImg((prev) => ({ ...prev, src: imageUrl }));
-
-    return () => URL.revokeObjectURL(imageUrl);
-  }, [currentHeaderImg.image]);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!currentProfileIcon.image) return;
+    if (!formData.newHeaderImg) return;
 
-    const imageUrl = fileToBlobUrl(currentProfileIcon.image);
-    setCurrentProfileIcon((prev) => ({ ...prev, src: imageUrl }));
+    const imageUrl = fileToBlobUrl(formData.newHeaderImg);
+
+    setHeaderImgPreview(imageUrl);
 
     return () => URL.revokeObjectURL(imageUrl);
-  }, [currentProfileIcon.image]);
+  }, [formData.newHeaderImg]);
+
+  useEffect(() => {
+    if (!formData.newProfileIcon) return;
+
+    const imageUrl = fileToBlobUrl(formData.newProfileIcon);
+
+    setProfileIconPreview(imageUrl);
+
+    return () => URL.revokeObjectURL(imageUrl);
+  }, [formData.newProfileIcon]);
 
   const validateFile = (
     file: File,
@@ -99,7 +117,7 @@ function EditProfile({
     if (file) {
       const isValid = validateFile(file, headerImageSchema);
 
-      if (isValid) setCurrentHeaderImg({ image: file });
+      if (isValid) setFormData((prev) => ({ ...prev, newHeaderImg: file }));
     }
   };
 
@@ -109,8 +127,30 @@ function EditProfile({
     if (file) {
       const isValid = validateFile(file, profileIconSchema);
 
-      if (isValid) setCurrentProfileIcon({ image: file });
+      if (isValid) setFormData((prev) => ({ ...prev, newProfileIcon: file }));
     }
+  };
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, newName: e.target.value }));
+  };
+
+  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, newUsername: e.target.value }));
+  };
+
+  const handleAboutMeChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData((prev) => ({ ...prev, newAboutMe: e.target.value }));
+  };
+
+  const onSubmitChanges = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setOpen(false);
+
+    await updateProfile(username, formData);
+
+    router.refresh();
   };
 
   return (
@@ -119,8 +159,8 @@ function EditProfile({
       onOpenChange={(open) => {
         if (!open) {
           setTimeout(() => {
-            setCurrentHeaderImg({ src: headerImage });
-            setCurrentProfileIcon({ src: profileIcon });
+            setHeaderImgPreview(headerImage);
+            setProfileIconPreview(profileIcon);
 
             if (formRef.current) {
               formRef.current.reset();
@@ -147,11 +187,15 @@ function EditProfile({
             Update your profile information and customize your presence on
             Pollster.
           </Dialog.Description>
-          <form className={styles.form} ref={formRef}>
+          <form
+            className={styles.form}
+            ref={formRef}
+            onSubmit={onSubmitChanges}
+          >
             <div className={styles.headerContainer}>
-              {currentHeaderImg.src && (
+              {headerImgPreview && (
                 <Image
-                  src={currentHeaderImg.src}
+                  src={headerImgPreview}
                   alt="Header image preview"
                   fill
                   sizes="100%"
@@ -173,9 +217,9 @@ function EditProfile({
             </div>
             <div className={styles.profileImages}>
               <div className={styles.avatarContainer}>
-                {currentProfileIcon.src && (
+                {profileIconPreview && (
                   <Image
-                    src={currentProfileIcon.src}
+                    src={profileIconPreview}
                     alt="Profile picture preview"
                     fill
                     sizes="100%"
@@ -209,6 +253,8 @@ function EditProfile({
                   id="nameInput"
                   type="text"
                   defaultValue={name ? name : ""}
+                  onChange={(e) => handleNameChange(e)}
+                  autoComplete="name"
                   className={styles.input}
                 />
               </div>
@@ -223,6 +269,8 @@ function EditProfile({
                     id="usernameInput"
                     type="text"
                     defaultValue={username}
+                    onChange={(e) => handleUsernameChange(e)}
+                    autoComplete="username"
                     className={`${styles.input} ${styles.inputUsername}`}
                   />
                 </div>
@@ -236,8 +284,9 @@ function EditProfile({
                 id="aboutMeTextArea"
                 name="aboutMe"
                 defaultValue={aboutMe ? aboutMe : ""}
-                className={styles.textarea}
                 placeholder="Tell us about yourself and your music taste..."
+                onChange={(e) => handleAboutMeChange(e)}
+                className={styles.textarea}
               />
               <p className={styles.characterLimit}>250 characters max</p>
             </div>
