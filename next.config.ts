@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const supabaseUrl = new URL(process.env.SUPABASE_URL!);
+
 const nextConfig: NextConfig = {
   images: {
     localPatterns: [
@@ -15,6 +17,10 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/image/**",
         search: "",
+      },
+      {
+        protocol: "https",
+        hostname: supabaseUrl.hostname,
       },
     ],
   },
