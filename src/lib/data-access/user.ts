@@ -1,10 +1,15 @@
+"use server";
+
 import { redirect } from "next/navigation";
 
 import SpotifyApi from "../spotify";
 
 import { prisma } from "../prisma";
-import { profileSchema } from "../schemas";
+import { editProfileSchema } from "../schemas";
 import { auth } from "../auth";
+import { getSupabaseFileName, supabase } from "../supabase";
+
+import type { EditProfileFormData } from "../types/formData";
 
 /**
  * A function that returns an instance of the Pollster.fm Spotify API wrapper with valid credentials.
@@ -112,7 +117,10 @@ export async function getName(username: string) {
  * @param username A Pollster.fm user's username.
  * @param formData Data from the "Edit Profile" form. Will be validated on both the frontend and the backend.
  */
-export async function updateProfile(username: string, formData: unknown) {
+export async function updateProfile(
+  username: string,
+  formData: EditProfileFormData
+) {
   const session = await auth();
   const user = session?.user;
 
@@ -125,26 +133,86 @@ export async function updateProfile(username: string, formData: unknown) {
   }
 
   try {
-    if (!(formData instanceof FormData)) {
-      throw new Error("bad form data");
-    }
-
-    const formDataObj = Object.fromEntries(formData.entries());
-    const result = profileSchema.safeParse(formDataObj);
+    const result = editProfileSchema.safeParse(formData);
 
     if (!result.success) throw new Error("bad form data");
+
+    const {
+      newHeaderImg,
+      newProfileIcon,
+      newName,
+      newUsername,
+      newAboutMe,
+      oldHeaderImg,
+      oldProfileIcon,
+    } = result.data;
+
+    let newHeaderImgUrl: string | null = null;
+    let newProfileIconUrl: string | null = null;
+
+    if (newHeaderImg) {
+      if (oldHeaderImg) {
+        const fileName = getSupabaseFileName(new URL(oldHeaderImg));
+
+        const { error } = await supabase.storage
+          .from("header-images")
+          .remove([fileName]);
+
+        if (error) throw error;
+      }
+
+      const { data, error } = await supabase.storage
+        .from("header-images")
+        .upload(newHeaderImg.name, newHeaderImg);
+
+      if (error) throw error;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("header-images").getPublicUrl(data.path);
+
+      newHeaderImgUrl = publicUrl;
+    }
+
+    if (newProfileIcon && oldProfileIcon) {
+      const oldIconUrl = new URL(oldProfileIcon);
+
+      if (oldIconUrl.origin === process.env.SUPABASE_URL!) {
+        const fileName = getSupabaseFileName(oldIconUrl);
+
+        const { error } = await supabase.storage
+          .from("profile-icons")
+          .remove([fileName]);
+
+        if (error) throw error;
+      }
+
+      const { data, error } = await supabase.storage
+        .from("profile-icons")
+        .upload(newProfileIcon.name, newProfileIcon);
+
+      if (error) throw error;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("profile-icons").getPublicUrl(data.path);
+
+      newProfileIconUrl = publicUrl;
+    }
 
     await prisma.user.update({
       where: {
         username,
       },
       data: {
-        name: result.data.name,
-        username: result.data.username,
-        aboutMe: result.data.aboutMe,
+        name: newName,
+        username: newUsername,
+        aboutMe: newAboutMe,
+        image: newProfileIconUrl ?? oldProfileIcon,
+        headerImage: newHeaderImgUrl ?? oldHeaderImg,
       },
     });
   } catch (err: unknown) {
-    console.error(`error updating profile for user ${username}:`, err);
+    console.error(`error updating profile:`, err);
   }
 }
