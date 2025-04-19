@@ -10,6 +10,8 @@ import { auth } from "../auth";
 import { getSupabaseFileName, supabase } from "../supabase";
 
 import type { EditProfileFormData } from "../types/formData";
+import { ZodError } from "zod";
+import type { UpdateProfileResult } from "../types/serverResponses";
 
 /**
  * A function that returns an instance of the Pollster.fm Spotify API wrapper with valid credentials.
@@ -114,9 +116,15 @@ export async function getName(username: string) {
 /**
  * A function that updates the authenticated user's profile with the given form data.
  *
+ * Returns detailed error(s) if the Zod parse fails. A less detailed error is returned when Supabase or Prisma fails.
+ *
  * @param formData Data from the "Edit Profile" form. Will be validated on both the frontend and the backend.
+ * @returns An object with denoting the result's success and an array of any errors present.
+ *
  */
-export async function updateProfile(formData: EditProfileFormData) {
+export async function updateProfile(
+  formData: EditProfileFormData
+): Promise<UpdateProfileResult> {
   const session = await auth();
   const user = session?.user;
 
@@ -125,9 +133,7 @@ export async function updateProfile(formData: EditProfileFormData) {
   }
 
   try {
-    const result = editProfileSchema.safeParse(formData);
-
-    if (!result.success) throw new Error("bad form data");
+    const result = editProfileSchema.parse(formData);
 
     const {
       newHeaderImg,
@@ -137,27 +143,30 @@ export async function updateProfile(formData: EditProfileFormData) {
       newAboutMe,
       oldHeaderImg,
       oldProfileIcon,
-    } = result.data;
+    } = result;
 
-    let newHeaderImgUrl: string | null = null;
-    let newProfileIconUrl: string | null = null;
+    let newHeaderImgUrl: string | null = oldHeaderImg;
+    let newProfileIconUrl: string | null = oldProfileIcon;
 
     if (newHeaderImg) {
       if (oldHeaderImg) {
-        const fileName = getSupabaseFileName(new URL(oldHeaderImg));
+        try {
+          const fileName = getSupabaseFileName(new URL(oldHeaderImg));
 
-        const { error } = await supabase.storage
-          .from("header-images")
-          .remove([fileName]);
-
-        if (error) throw error;
+          await supabase.storage.from("header-images").remove([fileName]);
+        } catch (removeError) {
+          console.error(
+            `failed to remove old header image for ${user.username}:`,
+            removeError
+          );
+        }
       }
 
-      const { data, error } = await supabase.storage
+      const { data, error: uploadError } = await supabase.storage
         .from("header-images")
         .upload(newHeaderImg.name, newHeaderImg);
 
-      if (error) throw error;
+      if (uploadError) throw uploadError;
 
       const {
         data: { publicUrl },
@@ -168,24 +177,26 @@ export async function updateProfile(formData: EditProfileFormData) {
 
     if (newProfileIcon) {
       if (oldProfileIcon) {
-        const oldIconUrl = new URL(oldProfileIcon);
+        try {
+          const oldIconUrl = new URL(oldProfileIcon);
+          if (oldIconUrl.origin === process.env.SUPABASE_URL!) {
+            const fileName = getSupabaseFileName(oldIconUrl);
 
-        if (oldIconUrl.origin === process.env.SUPABASE_URL!) {
-          const fileName = getSupabaseFileName(oldIconUrl);
-
-          const { error } = await supabase.storage
-            .from("profile-icons")
-            .remove([fileName]);
-
-          if (error) throw error;
+            await supabase.storage.from("profile-icons").remove([fileName]);
+          }
+        } catch (removeError) {
+          console.error(
+            `failed to remove old profile icon for ${user.username}:`,
+            removeError
+          );
         }
       }
 
-      const { data, error } = await supabase.storage
+      const { data, error: uploadError } = await supabase.storage
         .from("profile-icons")
         .upload(newProfileIcon.name, newProfileIcon);
 
-      if (error) throw error;
+      if (uploadError) throw uploadError;
 
       const {
         data: { publicUrl },
@@ -202,13 +213,33 @@ export async function updateProfile(formData: EditProfileFormData) {
         name: newName,
         username: newUsername,
         aboutMe: newAboutMe,
-        image: newProfileIconUrl ?? oldProfileIcon,
-        headerImage: newHeaderImgUrl ?? oldHeaderImg,
+        image: newProfileIconUrl,
+        headerImage: newHeaderImgUrl,
       },
     });
-  } catch (err: unknown) {
-    console.error(`error updating profile:`, err);
 
-    throw err;
+    return { success: true };
+  } catch (err: unknown) {
+    console.error(`error updating profile for ${user.username}:`, err);
+
+    if (err instanceof ZodError) {
+      return {
+        success: false,
+        errors: err.issues.map((issue) => ({
+          path: issue.path,
+          message: issue.message,
+        })),
+      };
+    }
+
+    return {
+      success: false,
+      errors: [
+        {
+          path: ["server"],
+          message: "An unexpected server error occurred. Please try again.",
+        },
+      ],
+    };
   }
 }
