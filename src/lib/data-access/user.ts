@@ -112,24 +112,16 @@ export async function getName(username: string) {
 }
 
 /**
- * A function that updates the given user's profile with the given form data.
+ * A function that updates the authenticated user's profile with the given form data.
  *
- * @param username A Pollster.fm user's username.
  * @param formData Data from the "Edit Profile" form. Will be validated on both the frontend and the backend.
  */
-export async function updateProfile(
-  username: string,
-  formData: EditProfileFormData
-) {
+export async function updateProfile(formData: EditProfileFormData) {
   const session = await auth();
   const user = session?.user;
 
   if (!user) {
     redirect("/sign-in");
-  }
-
-  if (user.username !== username) {
-    throw new Error("unauthorized update");
   }
 
   try {
@@ -174,17 +166,19 @@ export async function updateProfile(
       newHeaderImgUrl = publicUrl;
     }
 
-    if (newProfileIcon && oldProfileIcon) {
-      const oldIconUrl = new URL(oldProfileIcon);
+    if (newProfileIcon) {
+      if (oldProfileIcon) {
+        const oldIconUrl = new URL(oldProfileIcon);
 
-      if (oldIconUrl.origin === process.env.SUPABASE_URL!) {
-        const fileName = getSupabaseFileName(oldIconUrl);
+        if (oldIconUrl.origin === process.env.SUPABASE_URL!) {
+          const fileName = getSupabaseFileName(oldIconUrl);
 
-        const { error } = await supabase.storage
-          .from("profile-icons")
-          .remove([fileName]);
+          const { error } = await supabase.storage
+            .from("profile-icons")
+            .remove([fileName]);
 
-        if (error) throw error;
+          if (error) throw error;
+        }
       }
 
       const { data, error } = await supabase.storage
@@ -202,7 +196,7 @@ export async function updateProfile(
 
     await prisma.user.update({
       where: {
-        username,
+        username: user.username,
       },
       data: {
         name: newName,
@@ -214,5 +208,7 @@ export async function updateProfile(
     });
   } catch (err: unknown) {
     console.error(`error updating profile:`, err);
+
+    throw err;
   }
 }
