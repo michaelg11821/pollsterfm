@@ -8,7 +8,7 @@ import type { Month } from "date-fns";
 
 import Image from "next/image";
 
-import EditProfile from "../edit-proifle/edit-profile";
+import EditProfile from "../edit-profile/edit-profile";
 
 import { CalendarIcon, EllipsisIcon } from "lucide-react";
 
