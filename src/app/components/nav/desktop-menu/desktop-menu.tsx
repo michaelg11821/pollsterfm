@@ -25,12 +25,9 @@ function DesktopMenu({ profileIcon, username }: MenuProps) {
       {username ? (
         <Menu.Root modal={false}>
           <Menu.Trigger className={styles.profileIcon}>
-            <Image
-              src={profileIcon ? profileIcon : ""}
-              width={40}
-              height={40}
-              alt="Menu"
-            />
+            {profileIcon && (
+              <Image src={profileIcon} width={40} height={40} alt="Menu" />
+            )}
           </Menu.Trigger>
           <Menu.Portal>
             <Menu.Positioner

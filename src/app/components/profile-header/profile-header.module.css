@@ -60,13 +60,16 @@
   height: 8rem;
   width: 8rem;
 
+  border: 6px solid #0f0f19;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.05);
+
   position: inherit;
 
   overflow: hidden;
 }
 
 .avatar > img {
-  border: 6px solid #0f0f19;
   border-radius: 9999px;
   object-fit: cover;
 }

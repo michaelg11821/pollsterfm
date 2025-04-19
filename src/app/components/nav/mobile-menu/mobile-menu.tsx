@@ -49,12 +49,14 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
                 <>
                   <li>
                     <button type="button" className={styles.profileBtn}>
-                      <Image
-                        src={profileIcon ? profileIcon : ""}
-                        width={35}
-                        height={35}
-                        alt=""
-                      />
+                      {profileIcon && (
+                        <Image
+                          src={profileIcon}
+                          width={35}
+                          height={35}
+                          alt=""
+                        />
+                      )}
                       <Link href={`/user/${username}`}>Your Profile</Link>
                     </button>
                   </li>
