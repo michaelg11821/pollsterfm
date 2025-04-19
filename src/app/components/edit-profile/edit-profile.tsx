@@ -199,6 +199,15 @@ function EditProfile({
           setTimeout(() => {
             setHeaderImgPreview(headerImage);
             setProfileIconPreview(profileIcon);
+            setFormData({
+              newHeaderImg: null,
+              newProfileIcon: null,
+              newName: name,
+              newUsername: username,
+              newAboutMe: aboutMe,
+              oldHeaderImg: headerImage,
+              oldProfileIcon: profileIcon,
+            });
 
             if (formRef.current) {
               formRef.current.reset();
