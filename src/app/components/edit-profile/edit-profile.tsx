@@ -153,7 +153,7 @@ function EditProfile({
     if (result.success) {
       setOpen(false);
 
-      router.refresh();
+      router.push(`/user/${formData.newUsername}`);
 
       toastManager.add({
         title: "Success",
