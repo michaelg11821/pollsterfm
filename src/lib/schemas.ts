@@ -65,4 +65,6 @@ export const editProfileSchema = z.object({
   ),
   oldHeaderImg: z.nullable(z.string()),
   oldProfileIcon: z.nullable(z.string()),
+  deleteHeaderImg: z.boolean(),
+  deleteProfileIcon: z.boolean(),
 });

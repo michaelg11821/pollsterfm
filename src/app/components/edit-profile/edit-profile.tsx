@@ -55,6 +55,8 @@ function EditProfile({
     newAboutMe: aboutMe,
     oldHeaderImg: headerImage,
     oldProfileIcon: profileIcon,
+    deleteHeaderImg: false,
+    deleteProfileIcon: false,
   });
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -178,16 +180,24 @@ function EditProfile({
       headerImgInputRef.current.value = "";
     }
 
-    setFormData((prev) => ({ ...prev, newHeaderImg: null }));
+    setFormData((prev) => ({
+      ...prev,
+      newHeaderImg: null,
+      deleteHeaderImg: true,
+    }));
     setHeaderImgPreview(null);
   };
 
-  const onProfilePicReset = () => {
+  const onProfileIconReset = () => {
     if (headerImgInputRef.current) {
       headerImgInputRef.current.value = "";
     }
 
-    setFormData((prev) => ({ ...prev, newProfileIcon: null }));
+    setFormData((prev) => ({
+      ...prev,
+      newProfileIcon: null,
+      deleteProfileIcon: true,
+    }));
     setProfileIconPreview(null);
   };
 
@@ -207,6 +217,8 @@ function EditProfile({
               newAboutMe: aboutMe,
               oldHeaderImg: headerImage,
               oldProfileIcon: profileIcon,
+              deleteHeaderImg: false,
+              deleteProfileIcon: false,
             });
 
             if (formRef.current) {
@@ -337,7 +349,7 @@ function EditProfile({
                         <Menu.Separator className={styles.Separator} />
                         <Menu.Item
                           className={styles.MenuItem}
-                          onClick={() => onProfilePicReset()}
+                          onClick={() => onProfileIconReset()}
                           data-testid="profile-picture-remove"
                         >
                           <Trash2 className={styles.trashIcon} />

@@ -143,12 +143,27 @@ export async function updateProfile(
       newAboutMe,
       oldHeaderImg,
       oldProfileIcon,
+      deleteHeaderImg,
+      deleteProfileIcon,
     } = result;
 
     let newHeaderImgUrl: string | null = oldHeaderImg;
     let newProfileIconUrl: string | null = oldProfileIcon;
 
-    if (newHeaderImg) {
+    if (deleteHeaderImg && oldHeaderImg) {
+      try {
+        const fileName = getSupabaseFileName(new URL(oldHeaderImg));
+
+        await supabase.storage.from("header-images").remove([fileName]);
+
+        newHeaderImgUrl = null;
+      } catch (removeError) {
+        console.error(
+          `failed to remove old header image for ${user.username}:`,
+          removeError
+        );
+      }
+    } else if (newHeaderImg) {
       if (oldHeaderImg) {
         try {
           const fileName = getSupabaseFileName(new URL(oldHeaderImg));
@@ -175,7 +190,20 @@ export async function updateProfile(
       newHeaderImgUrl = publicUrl;
     }
 
-    if (newProfileIcon) {
+    if (deleteProfileIcon && oldProfileIcon) {
+      try {
+        const fileName = getSupabaseFileName(new URL(oldProfileIcon));
+
+        await supabase.storage.from("profile-icons").remove([fileName]);
+
+        newProfileIconUrl = null;
+      } catch (removeError) {
+        console.error(
+          `failed to remove old profile icon for ${user.username}:`,
+          removeError
+        );
+      }
+    } else if (newProfileIcon) {
       if (oldProfileIcon) {
         try {
           const oldIconUrl = new URL(oldProfileIcon);

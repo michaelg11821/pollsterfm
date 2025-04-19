@@ -6,4 +6,6 @@ export type EditProfileFormData = {
   newAboutMe: string | null;
   oldHeaderImg: string | null;
   oldProfileIcon: string | null;
+  deleteHeaderImg: boolean;
+  deleteProfileIcon: boolean;
 };
