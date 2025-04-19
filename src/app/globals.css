@@ -75,6 +75,17 @@ button {
   color: var(--foreground);
 }
 
+.toast-viewport {
+  position: absolute;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  bottom: 2rem;
+  right: 2rem;
+  left: auto;
+  top: auto;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
