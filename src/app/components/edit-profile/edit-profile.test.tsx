@@ -2,7 +2,7 @@ import userEvent from "@testing-library/user-event";
 
 import { act, render, screen, waitFor } from "@testing-library/react";
 
-import TestToastWrapper from "../../../lib/test-utils/test-toast-wrapper";
+import TestToastWrapper from "../../../lib/__tests__/utils/test-toast-wrapper";
 import EditProfile from "./edit-profile";
 
 import type { ReactNode } from "react";
