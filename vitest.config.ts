@@ -2,11 +2,29 @@ import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [react()],
   test: {
-    include: ["**/*.test.tsx"],
-    environment: "jsdom",
-    globals: true,
-    setupFiles: ["./vitest.setup.ts"],
+    workspace: [
+      {
+        plugins: [react()],
+        test: {
+          include: ["src/app/components/**/*.test.tsx"],
+          name: "jsdom",
+          environment: "jsdom",
+          setupFiles: ["./vitest.jsdom.setup.ts"],
+          globals: true,
+          clearMocks: true,
+        },
+      },
+      {
+        test: {
+          include: ["src/lib/__tests__/**/*.test.ts"],
+          name: "node",
+          environment: "node",
+          setupFiles: ["./vitest.node.setup.ts"],
+          globals: true,
+          clearMocks: true,
+        },
+      },
+    ],
   },
 });

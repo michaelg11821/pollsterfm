@@ -5,7 +5,7 @@ import { prisma } from "../prisma";
 
 vi.mock("../prisma", () => ({
   __esModule: true,
-  default: mockDeep<PrismaClient>(),
+  prisma: mockDeep<PrismaClient>(),
 }));
 
 beforeEach(() => {

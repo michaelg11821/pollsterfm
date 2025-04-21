@@ -1,4 +1,4 @@
-export const supabase = {
+export const supabaseMock = {
   storage: {
     from: vi.fn().mockImplementation((bucketName: string) => ({
       upload: vi.fn().mockResolvedValue({

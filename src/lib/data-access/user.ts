@@ -129,7 +129,7 @@ export async function updateProfile(
   const user = session?.user;
 
   if (!user) {
-    redirect("/sign-in");
+    return redirect("/sign-in");
   }
 
   try {
