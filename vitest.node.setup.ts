@@ -1,3 +1,3 @@
-afterEach(() => {
+beforeEach(() => {
   vi.resetModules();
 });

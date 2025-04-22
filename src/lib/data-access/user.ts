@@ -13,6 +13,7 @@ import { getSupabaseFileName } from "../utils";
 import type { EditProfileFormData } from "../types/formData";
 import { ZodError } from "zod";
 import type { UpdateProfileResult } from "../types/serverResponses";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 /**
  * A function that returns an instance of the Pollster.fm Spotify API wrapper with valid credentials.
@@ -258,6 +259,19 @@ export async function updateProfile(
           path: issue.path,
           message: issue.message,
         })),
+      };
+    } else if (
+      err instanceof PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      return {
+        success: false,
+        errors: [
+          {
+            path: ["newUsername"],
+            message: "Username already taken.",
+          },
+        ],
       };
     }
 

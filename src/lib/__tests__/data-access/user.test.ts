@@ -5,7 +5,9 @@ import { supabaseMock } from "../../__mocks__/supabase";
 
 import { prismaMock } from "../../__mocks__/prisma";
 import { auth } from "../../auth";
+
 import { type MockedFunction } from "vitest";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 // expect redirect to have been called on invalid session
 
@@ -62,61 +64,228 @@ describe("user data access", () => {
       expect(redirect).toHaveBeenCalledWith("/sign-in");
     });
 
-    it("deletes existing header image", async () => {
-      const mockedAuth = vi.mocked(
-        auth as unknown as MockedFunction<
-          () => Promise<{ user: { username: string } } | null>
-        >
-      );
-      mockedAuth.mockResolvedValueOnce({ user: { username: "mock-user" } });
+    describe("images", () => {
+      it("deletes existing header image", async () => {
+        const mockedAuth = vi.mocked(
+          auth as unknown as MockedFunction<
+            () => Promise<{ user: { username: string } } | null>
+          >
+        );
+        mockedAuth.mockResolvedValueOnce({ user: { username: "mock-user" } });
 
-      const { updateProfile } = await import("../../data-access/user");
+        const { updateProfile } = await import("../../data-access/user");
 
-      const existingHeaderImageUrl = "https://cdn.supabase.mock/headerImg.png";
+        const existingHeaderImageUrl =
+          "https://cdn.supabase.mock/headerImg.png";
 
-      const mockUser = {
-        id: "clurtkqhd000008l5dz8b70ei", // random cuid
-        username: "mock-user",
-        email: "mockuser@mock.com",
-        headerImage: existingHeaderImageUrl,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        name: "mock",
-        aboutMe: null,
-        emailVerified: null,
-        image: null,
-      };
+        const mockUser = {
+          id: "clurtkqhd000008l5dz8b70ei", // random cuid
+          username: "mock-user",
+          email: "mockuser@mock.com",
+          headerImage: existingHeaderImageUrl,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          name: "mock",
+          aboutMe: null,
+          emailVerified: null,
+          image: null,
+        };
 
-      const mockFormData = {
-        newHeaderImg: null,
-        newProfileIcon: null,
-        newName: mockUser.name,
-        newUsername: mockUser.username,
-        newAboutMe: mockUser.aboutMe,
-        oldHeaderImg: existingHeaderImageUrl,
-        oldProfileIcon: mockUser.image,
-        deleteHeaderImg: true,
-        deleteProfileIcon: false,
-      };
+        await updateProfile({
+          newHeaderImg: null,
+          newProfileIcon: null,
+          newName: mockUser.name,
+          newUsername: mockUser.username,
+          newAboutMe: mockUser.aboutMe,
+          oldHeaderImg: existingHeaderImageUrl,
+          oldProfileIcon: mockUser.image,
+          deleteHeaderImg: true,
+          deleteProfileIcon: false,
+        });
 
-      await updateProfile(mockFormData);
+        expect(supabaseMock.storage.from).toHaveBeenCalledWith("header-images");
+        expect(supabaseMock.storage.from().remove).toHaveBeenCalledWith([
+          "headerImg.png",
+        ]);
 
-      expect(supabaseMock.storage.from).toHaveBeenCalledWith("header-images");
-      expect(supabaseMock.storage.from().remove).toHaveBeenCalledWith([
-        "headerImg.png",
-      ]);
+        expect(prismaMock.user.update).toHaveBeenCalledWith({
+          where: {
+            username: mockUser.username,
+          },
+          data: {
+            name: mockUser.name,
+            username: mockUser.username,
+            aboutMe: mockUser.aboutMe,
+            image: mockUser.image,
+            headerImage: null,
+          },
+        });
+      });
 
-      expect(prismaMock.user.update).toHaveBeenCalledWith({
-        where: {
-          username: mockUser.username,
-        },
-        data: {
-          name: mockUser.name,
-          username: mockUser.username,
-          aboutMe: mockUser.aboutMe,
-          image: mockUser.image,
+      it("deletes existing profile icon", async () => {
+        const mockedAuth = vi.mocked(
+          auth as unknown as MockedFunction<
+            () => Promise<{ user: { username: string } } | null>
+          >
+        );
+        mockedAuth.mockResolvedValueOnce({ user: { username: "mock-user" } });
+
+        const { updateProfile } = await import("../../data-access/user");
+
+        const existingProfileIconUrl =
+          "https://cdn.supabase.mock/profileIcon.png";
+
+        const mockUser = {
+          id: "clurtkqhd000008l5dz8b70ei",
+          username: "mock-user",
+          email: "mockuser@mock.com",
           headerImage: null,
-        },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          name: "mock",
+          aboutMe: null,
+          emailVerified: null,
+          image: existingProfileIconUrl,
+        };
+
+        await updateProfile({
+          newHeaderImg: null,
+          newProfileIcon: null,
+          newName: mockUser.name,
+          newUsername: mockUser.username,
+          newAboutMe: mockUser.aboutMe,
+          oldHeaderImg: mockUser.headerImage,
+          oldProfileIcon: existingProfileIconUrl,
+          deleteHeaderImg: false,
+          deleteProfileIcon: true,
+        });
+
+        expect(supabaseMock.storage.from).toHaveBeenCalledWith("profile-icons");
+        expect(supabaseMock.storage.from().remove).toHaveBeenCalledWith([
+          "profileIcon.png",
+        ]);
+
+        expect(prismaMock.user.update).toHaveBeenCalledWith({
+          where: {
+            username: mockUser.username,
+          },
+          data: {
+            name: mockUser.name,
+            username: mockUser.username,
+            aboutMe: mockUser.aboutMe,
+            image: null,
+            headerImage: mockUser.headerImage,
+          },
+        });
+      });
+
+      it("deletes existing images simultaneously", async () => {
+        const mockedAuth = vi.mocked(
+          auth as unknown as MockedFunction<
+            () => Promise<{ user: { username: string } } | null>
+          >
+        );
+        mockedAuth.mockResolvedValueOnce({ user: { username: "mock-user" } });
+
+        const { updateProfile } = await import("../../data-access/user");
+
+        const existingHeaderImageUrl =
+          "https://cdn.supabase.mock/headerImg.png";
+        const existingProfileIconUrl =
+          "https://cdn.supabase.mock/profileIcon.png";
+
+        const mockUser = {
+          id: "clurtkqhd000008l5dz8b70ei",
+          username: "mock-user",
+          email: "mockuser@mock.com",
+          headerImage: existingHeaderImageUrl,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          name: "mock",
+          aboutMe: null,
+          emailVerified: null,
+          image: existingProfileIconUrl,
+        };
+
+        await updateProfile({
+          newHeaderImg: null,
+          newProfileIcon: null,
+          newName: mockUser.name,
+          newUsername: mockUser.username,
+          newAboutMe: mockUser.aboutMe,
+          oldHeaderImg: mockUser.headerImage,
+          oldProfileIcon: mockUser.image,
+          deleteHeaderImg: true,
+          deleteProfileIcon: true,
+        });
+
+        expect(supabaseMock.storage.from).toHaveBeenCalledWith("header-images");
+        expect(supabaseMock.storage.from().remove).toHaveBeenCalledWith([
+          "headerImg.png",
+        ]);
+
+        expect(supabaseMock.storage.from).toHaveBeenCalledWith("profile-icons");
+        expect(supabaseMock.storage.from().remove).toHaveBeenCalledWith([
+          "profileIcon.png",
+        ]);
+
+        expect(prismaMock.user.update).toHaveBeenCalledWith({
+          where: {
+            username: mockUser.username,
+          },
+          data: {
+            name: mockUser.name,
+            username: mockUser.username,
+            aboutMe: mockUser.aboutMe,
+            image: null,
+            headerImage: null,
+          },
+        });
+      });
+    });
+
+    describe("username", () => {
+      it("error when username is taken", async () => {
+        const mockedAuth = vi.mocked(
+          auth as unknown as MockedFunction<
+            () => Promise<{ user: { username: string } } | null>
+          >
+        );
+        mockedAuth.mockResolvedValueOnce({ user: { username: "mock-user" } });
+
+        const uniqueError = new PrismaClientKnownRequestError(
+          "Unique constraint failed on the fields: (`username`)",
+          {
+            code: "P2002",
+            clientVersion: "latest",
+          }
+        );
+
+        prismaMock.user.update.mockRejectedValueOnce(uniqueError);
+
+        const { updateProfile } = await import("../../data-access/user");
+
+        const result = await updateProfile({
+          newHeaderImg: null,
+          newProfileIcon: null,
+          newName: "same-as-before",
+          newUsername: "dupe",
+          newAboutMe: "🙃",
+          oldHeaderImg: null,
+          oldProfileIcon: null,
+          deleteHeaderImg: false,
+          deleteProfileIcon: false,
+        });
+
+        expect(result).toStrictEqual({
+          success: false,
+          errors: [
+            {
+              path: ["newUsername"],
+              message: "Username already taken.",
+            },
+          ],
+        });
       });
     });
   });
