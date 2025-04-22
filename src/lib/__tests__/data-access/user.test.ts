@@ -1,8 +1,11 @@
 // check to see if username in db exists! (somehow handle that error from prisma)
 
 import { redirect } from "next/navigation";
-import { supabaseMock } from "../../../lib/__mocks__/supabase";
-import { prismaMock } from "../../../lib/__mocks__/prisma";
+import { supabaseMock } from "../../__mocks__/supabase";
+
+import { prismaMock } from "../../__mocks__/prisma";
+import { auth } from "../../auth";
+import { type MockedFunction } from "vitest";
 
 // expect redirect to have been called on invalid session
 
@@ -13,32 +16,34 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
-vi.mock("../../../lib/auth", async () => ({
-  auth: vi.fn(() => {
-    return { username: "mock-user" };
-  }),
+vi.mock("../../supabase", () => ({
+  __esModule: true,
+  supabase: supabaseMock,
+}));
+
+vi.mock("../../prisma", () => ({
+  __esModule: true,
+  prisma: prismaMock,
+}));
+
+vi.mock("../../auth", () => ({
+  __esModule: true,
+  auth: vi.fn(),
 }));
 
 describe("user data access", () => {
   describe("updateProfile", () => {
     beforeEach(() => {
-      vi.doMock("../../../lib/supabase", () => ({
-        supabase: supabaseMock,
-      }));
-
-      vi.doMock("../../../lib/prisma", async () => ({
-        prisma: prismaMock,
-      }));
+      vi.clearAllMocks();
     });
 
     it("redirects unauthenticated user", async () => {
-      vi.doMock("../../../lib/auth", () => ({
-        auth: vi.fn().mockResolvedValue(null),
-      }));
+      const mockedAuth = vi.mocked(auth);
+      mockedAuth.mockResolvedValueOnce(() => new Response(null));
 
       // dynamic import required
       // (prisma needs to be mocked before this is imported)
-      const { updateProfile } = await import("../../../lib/data-access/user");
+      const { updateProfile } = await import("../../data-access/user");
 
       const mockFormData = {
         newHeaderImg: null,
@@ -57,24 +62,62 @@ describe("user data access", () => {
       expect(redirect).toHaveBeenCalledWith("/sign-in");
     });
 
-    // it("deletes existing header image", async () => {
-    //     const { updateProfile } = await import("../../../lib/data-access/user");
+    it("deletes existing header image", async () => {
+      const mockedAuth = vi.mocked(
+        auth as unknown as MockedFunction<
+          () => Promise<{ user: { username: string } } | null>
+        >
+      );
+      mockedAuth.mockResolvedValueOnce({ user: { username: "mock-user" } });
 
-    //     const mockFormData = {
-    //       newHeaderImg: null,
-    //       newProfileIcon: null,
-    //       newName: "",
-    //       newUsername: "",
-    //       newAboutMe: "",
-    //       oldHeaderImg: "https://cdn.supabase.mock/storage/v1/object/public/header-images//reviews-web-1-0-elliott-smith-show-website-v0-pvb2jucu3oob1.webp",
-    //       oldProfileIcon: "",
-    //       deleteHeaderImg: true,
-    //       deleteProfileIcon: false,
-    //     };
+      const { updateProfile } = await import("../../data-access/user");
 
-    //     await updateProfile(mockFormData);
+      const existingHeaderImageUrl = "https://cdn.supabase.mock/headerImg.png";
 
-    //     expect(redirect).toHaveBeenCalledWith("/sign-in");
-    //   });
+      const mockUser = {
+        id: "clurtkqhd000008l5dz8b70ei", // random cuid
+        username: "mock-user",
+        email: "mockuser@mock.com",
+        headerImage: existingHeaderImageUrl,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        name: "mock",
+        aboutMe: null,
+        emailVerified: null,
+        image: null,
+      };
+
+      const mockFormData = {
+        newHeaderImg: null,
+        newProfileIcon: null,
+        newName: mockUser.name,
+        newUsername: mockUser.username,
+        newAboutMe: mockUser.aboutMe,
+        oldHeaderImg: existingHeaderImageUrl,
+        oldProfileIcon: mockUser.image,
+        deleteHeaderImg: true,
+        deleteProfileIcon: false,
+      };
+
+      await updateProfile(mockFormData);
+
+      expect(supabaseMock.storage.from).toHaveBeenCalledWith("header-images");
+      expect(supabaseMock.storage.from().remove).toHaveBeenCalledWith([
+        "headerImg.png",
+      ]);
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: {
+          username: mockUser.username,
+        },
+        data: {
+          name: mockUser.name,
+          username: mockUser.username,
+          aboutMe: mockUser.aboutMe,
+          image: mockUser.image,
+          headerImage: null,
+        },
+      });
+    });
   });
 });

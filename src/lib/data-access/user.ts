@@ -7,7 +7,8 @@ import SpotifyApi from "../spotify";
 import { prisma } from "../prisma";
 import { editProfileSchema } from "../schemas";
 import { auth } from "../auth";
-import { getSupabaseFileName, supabase } from "../supabase";
+import { supabase } from "../supabase";
+import { getSupabaseFileName } from "../utils";
 
 import type { EditProfileFormData } from "../types/formData";
 import { ZodError } from "zod";
