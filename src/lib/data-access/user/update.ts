@@ -79,7 +79,7 @@ export async function updateProfile(
 
       const { data, error: uploadError } = await supabase.storage
         .from("header-images")
-        .upload(newHeaderImg.name, newHeaderImg);
+        .upload(newHeaderImg.name, newHeaderImg.bytes);
 
       if (uploadError) throw uploadError;
 
@@ -122,7 +122,7 @@ export async function updateProfile(
 
       const { data, error: uploadError } = await supabase.storage
         .from("profile-icons")
-        .upload(newProfileIcon.name, newProfileIcon);
+        .upload(newProfileIcon.name, newProfileIcon.bytes);
 
       if (uploadError) throw uploadError;
 

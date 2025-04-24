@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import {
   type ChangeEvent,
-  FormEvent,
+  type FormEvent,
   useEffect,
   useRef,
   useState,
@@ -19,9 +19,12 @@ import {
   profileIconSchema,
 } from "../../../lib/schemas/user";
 import { toastManager } from "../../../lib/toast";
-import { fileToBlobUrl } from "../../../lib/utils";
+import { fileToUint8Array, uInt8ArrayToBlobUrl } from "../../../lib/utils";
 
-import type { EditProfileFormData } from "../../../lib/types/formData";
+import type {
+  EditProfileFormData,
+  FileBytes,
+} from "../../../lib/types/formData";
 
 import Image from "next/image";
 
@@ -71,7 +74,7 @@ function EditProfile({
   useEffect(() => {
     if (!formData.newHeaderImg) return;
 
-    const imageUrl = fileToBlobUrl(formData.newHeaderImg);
+    const imageUrl = uInt8ArrayToBlobUrl(formData.newHeaderImg.bytes);
 
     setHeaderImgPreview(imageUrl);
 
@@ -81,18 +84,18 @@ function EditProfile({
   useEffect(() => {
     if (!formData.newProfileIcon) return;
 
-    const imageUrl = fileToBlobUrl(formData.newProfileIcon);
+    const imageUrl = uInt8ArrayToBlobUrl(formData.newProfileIcon.bytes);
 
     setProfileIconPreview(imageUrl);
 
     return () => URL.revokeObjectURL(imageUrl);
   }, [formData.newProfileIcon]);
 
-  const validateFile = (
-    file: File,
+  const validateFileBytes = (
+    fileBytes: FileBytes,
     schema: typeof headerImageSchema | typeof profileIconSchema
   ) => {
-    const result = schema.safeParse(file);
+    const result = schema.safeParse(fileBytes);
 
     if (!result.success) {
       if (schema === headerImageSchema) {
@@ -116,23 +119,37 @@ function EditProfile({
     }
   };
 
-  const handleHeaderImgChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleHeaderImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
-      const isValid = validateFile(file, headerImageSchema);
+      const bytes = await fileToUint8Array(file);
+      const fileBytesObj = { bytes, name: file.name, mimeType: file.type };
 
-      if (isValid) setFormData((prev) => ({ ...prev, newHeaderImg: file }));
+      const isValid = validateFileBytes(fileBytesObj, headerImageSchema);
+
+      if (isValid)
+        setFormData((prev) => ({
+          ...prev,
+          newHeaderImg: fileBytesObj,
+        }));
     }
   };
 
-  const handleProfileIconChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleProfileIconChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
-      const isValid = validateFile(file, profileIconSchema);
+      const bytes = await fileToUint8Array(file);
+      const fileBytesObj = { bytes, name: file.name, mimeType: file.type };
 
-      if (isValid) setFormData((prev) => ({ ...prev, newProfileIcon: file }));
+      const isValid = validateFileBytes(fileBytesObj, profileIconSchema);
+
+      if (isValid)
+        setFormData((prev) => ({
+          ...prev,
+          newProfileIcon: fileBytesObj,
+        }));
     }
   };
 

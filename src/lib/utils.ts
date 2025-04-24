@@ -43,13 +43,15 @@ export function dateStringDistanceToNow(dateString: string): string {
 }
 
 /**
- * A simple helper function that converts a file into a Blob URL.
+ * A simple helper function that converts a Uint8Array into a Blob URL.
  *
- * @param file A Blob/File.
- * @returns An object URL for use in images.
+ * @param arr A Uint8Array.
+ * @returns An object URL for use in the src attribute of an img.
  */
-export function fileToBlobUrl(file: Blob) {
-  return URL.createObjectURL(file);
+export function uInt8ArrayToBlobUrl(arr: Uint8Array) {
+  const blob = new Blob([arr]);
+
+  return URL.createObjectURL(blob);
 }
 
 /**
@@ -63,4 +65,16 @@ export function getSupabaseFileName(supabaseUrl: URL) {
   const fileName = pathnames[pathnames.length - 1];
 
   return fileName;
+}
+
+/**
+ * Turns a File from the browser into a Uint8Array.
+ *
+ * @param file A file from the browser.
+ * @returns A Uint8Array.
+ */
+export async function fileToUint8Array(file: File): Promise<Uint8Array> {
+  const buffer = await file.arrayBuffer();
+
+  return new Uint8Array(buffer);
 }
