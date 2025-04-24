@@ -13,7 +13,7 @@ import { Dialog } from "@base-ui-components/react/dialog";
 import { Menu } from "@base-ui-components/react/menu";
 import { Camera, ImageIcon, SquarePen, Trash2 } from "lucide-react";
 
-import { updateProfile } from "../../../lib/data-access/user";
+import { updateProfile } from "../../../lib/data-access/user/update";
 import { fileToBlobUrl } from "../../../lib/utils";
 import { toastManager } from "../../../lib/toast";
 import { headerImageSchema, profileIconSchema } from "../../../lib/schemas";
@@ -41,10 +41,10 @@ function EditProfile({
 }: EditProfileProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [headerImgPreview, setHeaderImgPreview] = useState<string | null>(
-    headerImage
+    headerImage,
   );
   const [profileIconPreview, setProfileIconPreview] = useState<string | null>(
-    profileIcon
+    profileIcon,
   );
   const [saving, setSaving] = useState<boolean>(false);
   const [formData, setFormData] = useState<EditProfileFormData>({
@@ -87,7 +87,7 @@ function EditProfile({
 
   const validateFile = (
     file: File,
-    schema: typeof headerImageSchema | typeof profileIconSchema
+    schema: typeof headerImageSchema | typeof profileIconSchema,
   ) => {
     const result = schema.safeParse(file);
 

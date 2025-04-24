@@ -2,16 +2,16 @@
 
 import { redirect } from "next/navigation";
 
-import { prisma } from "../prisma";
-import { editProfileSchema } from "../schemas";
-import { auth } from "../auth";
-import { supabase } from "../supabase";
-import { getSupabaseFileName } from "../utils";
+import { auth } from "../../auth";
+import { prisma } from "../../prisma";
+import { editProfileSchema } from "../../schemas";
+import { supabase } from "../../supabase";
+import { getSupabaseFileName } from "../../utils";
 
-import type { EditProfileFormData } from "../types/formData";
-import { ZodError } from "zod";
-import type { UpdateProfileResult } from "../types/serverResponses";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { ZodError } from "zod";
+import type { EditProfileFormData } from "../../types/formData";
+import type { UpdateProfileResult } from "../../types/serverResponses";
 
 /**
  * A function that updates the authenticated user's profile with the given form data.

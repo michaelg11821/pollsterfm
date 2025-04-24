@@ -23,7 +23,7 @@ vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
 }));
 
-vi.mock("../../../lib/data-access/user", () => ({
+vi.mock("../../../lib/data-access/user/update", () => ({
   updateProfile: vi.fn(async () => {
     if (failure) {
       return {
@@ -46,7 +46,7 @@ describe("EditProfile", () => {
           name=""
           username=""
           aboutMe=""
-        />
+        />,
       );
 
       const editProfileBtn = screen.getByRole("button", {
@@ -65,10 +65,10 @@ describe("EditProfile", () => {
       });
 
       const uploadHeaderBtn = screen.getByLabelText(
-        "Upload header image"
+        "Upload header image",
       ) as HTMLButtonElement;
       const headerImageInput = screen.getByTestId(
-        "header-upload"
+        "header-upload",
       ) as HTMLInputElement;
 
       await user.click(uploadHeaderBtn);
@@ -78,10 +78,10 @@ describe("EditProfile", () => {
       await user.upload(headerImageInput, headerImage);
 
       const uploadPfpBtn = screen.getByLabelText(
-        "Upload profile picture"
+        "Upload profile picture",
       ) as HTMLButtonElement;
       const profilePictureInput = screen.getByTestId(
-        "profile-picture-upload"
+        "profile-picture-upload",
       ) as HTMLInputElement;
 
       await user.click(uploadPfpBtn);
@@ -91,10 +91,10 @@ describe("EditProfile", () => {
       await user.upload(profilePictureInput, profilePicture);
 
       const headerImagePreview = screen.getByAltText(
-        "Header image preview"
+        "Header image preview",
       ) as HTMLImageElement;
       const profilePicturePreview = screen.getByAltText(
-        "Profile picture preview"
+        "Profile picture preview",
       ) as HTMLImageElement;
 
       // mock createObjectUrl return value
@@ -110,7 +110,7 @@ describe("EditProfile", () => {
           name=""
           username=""
           aboutMe=""
-        />
+        />,
       );
 
       const editProfileBtn = screen.getByRole("button", {
@@ -126,10 +126,10 @@ describe("EditProfile", () => {
       });
 
       const uploadHeaderBtn = screen.getByLabelText(
-        "Upload header image"
+        "Upload header image",
       ) as HTMLButtonElement;
       const headerImageInput = screen.getByTestId(
-        "header-upload"
+        "header-upload",
       ) as HTMLInputElement;
 
       await user.click(uploadHeaderBtn);
@@ -146,8 +146,8 @@ describe("EditProfile", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            "Invalid file type. Accepted file types: .png, .jpeg, and .webp."
-          )
+            "Invalid file type. Accepted file types: .png, .jpeg, and .webp.",
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -160,7 +160,7 @@ describe("EditProfile", () => {
           name=""
           username=""
           aboutMe=""
-        />
+        />,
       );
 
       const editProfileBtn = screen.getByRole("button", {
@@ -171,11 +171,11 @@ describe("EditProfile", () => {
       await waitForPosition();
 
       const uploadHeaderBtn = screen.getByLabelText(
-        "Upload header image"
+        "Upload header image",
       ) as HTMLButtonElement;
 
       const headerImageInput = screen.getByTestId(
-        "header-upload"
+        "header-upload",
       ) as HTMLInputElement;
 
       await user.click(uploadHeaderBtn);
@@ -195,7 +195,7 @@ describe("EditProfile", () => {
       await user.click(removeHeaderImgBtn);
 
       expect(
-        screen.queryByAltText("Header image preview")
+        screen.queryByAltText("Header image preview"),
       ).not.toBeInTheDocument();
     });
   });
@@ -210,7 +210,7 @@ describe("EditProfile", () => {
         name=""
         username=""
         aboutMe=""
-      />
+      />,
     );
 
     const editProfileBtn = screen.getByRole("button", {
