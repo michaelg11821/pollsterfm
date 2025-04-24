@@ -8,7 +8,7 @@ import { editProfileSchema } from "../../schemas/formData";
 import { supabase } from "../../supabase";
 import { getSupabaseFileName } from "../../utils";
 
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { ZodError } from "zod";
 import type { EditProfileFormData } from "../../types/formData";
 import type { UpdateProfileResult } from "../../types/serverResponses";
