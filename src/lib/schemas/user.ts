@@ -1,5 +1,3 @@
-"use server";
-
 import { z } from "zod";
 
 const imageFileSizeLimit = 5 * 1024 * 1024; // 5 MB
