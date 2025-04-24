@@ -8,7 +8,7 @@ import { editProfileSchema } from "../../schemas/formData";
 import { supabase } from "../../supabase";
 import { getSupabaseFileName } from "../../utils";
 
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 import type { EditProfileFormData } from "../../types/formData";
 import type { UpdateProfileResult } from "../../types/serverResponses";
@@ -163,7 +163,7 @@ export async function updateProfile(
         })),
       };
     } else if (
-      err instanceof PrismaClientKnownRequestError &&
+      err instanceof Prisma.PrismaClientKnownRequestError &&
       err.code === "P2002"
     ) {
       return {
