@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { ArrowLeft, Info, Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { getRecentlyPlayedTracks } from "@/lib/actions";
+import { getRecentlyPlayedTracks } from "@/lib/data-access/user/spotify";
 
 import Link from "next/link";
 

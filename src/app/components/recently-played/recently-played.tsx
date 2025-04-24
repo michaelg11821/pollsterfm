@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import { getRecentlyPlayedTracks } from "@/lib/actions";
+import { getRecentlyPlayedTracks } from "@/lib/data-access/user/spotify";
 
 import Track from "../track/track";
 
