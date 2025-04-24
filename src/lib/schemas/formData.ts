@@ -1,39 +1,7 @@
+"use server";
+
 import { z } from "zod";
-
-const imageFileSizeLimit = 5 * 1024 * 1024;
-
-export const headerImageSchema = z.nullable(
-  z
-    .instanceof(File)
-    .refine(
-      (file) => ["image/png", "image/jpeg", "image/webp"].includes(file.type),
-      {
-        message:
-          "Invalid file type. Accepted file types: .png, .jpeg, and .webp.",
-      }
-    )
-    .refine((file) => file.size <= imageFileSizeLimit, {
-      message: "File size should not exceed 5MB.",
-    })
-);
-
-export const profileIconSchema = z.nullable(
-  z
-    .instanceof(File)
-    .refine(
-      (file) =>
-        ["image/png", "image/jpeg", "image/webp", "image/gif"].includes(
-          file.type
-        ),
-      {
-        message:
-          "Invalid file type. Accepted file types: .png, .jpeg, .webp, and .gif.",
-      }
-    )
-    .refine((file) => file.size <= imageFileSizeLimit, {
-      message: "File size should not exceed 5MB.",
-    })
-);
+import { headerImageSchema, profileIconSchema } from "./user";
 
 export const editProfileSchema = z.object({
   newHeaderImg: headerImageSchema,

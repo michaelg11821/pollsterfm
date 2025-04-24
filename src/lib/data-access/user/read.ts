@@ -1,52 +1,6 @@
-import SpotifyApi from "../../spotify";
+"use server";
 
 import { prisma } from "../../prisma";
-
-/**
- * A function that returns an instance of the Pollster.fm Spotify API wrapper with valid credentials.
- *
- * @param username A Pollster.fm user's username.
- * @returns A Pollster.fm Spotify API wrapper with valid credentials.
- */
-export async function spotifyApiWithCredentials(username: string) {
-  try {
-    const tokens = await prisma.user.findUniqueOrThrow({
-      where: {
-        username,
-      },
-      select: {
-        accounts: {
-          where: {
-            provider: "spotify",
-          },
-          select: {
-            access_token: true,
-            refresh_token: true,
-            expires_at: true,
-            providerAccountId: true,
-          },
-        },
-      },
-    });
-
-    const { refresh_token, expires_at, access_token, providerAccountId } =
-      tokens.accounts[0];
-
-    if (!refresh_token || !expires_at || !access_token || !providerAccountId)
-      throw new Error("user is missing one or more credentials");
-
-    return SpotifyApi(
-      access_token,
-      refresh_token,
-      expires_at,
-      providerAccountId,
-    );
-  } catch (err: unknown) {
-    console.error(`error getting spotify instance for ${username}:`, err);
-
-    return null;
-  }
-}
 
 /**
  * Returns some basic (public) information about a Pollster.fm user.

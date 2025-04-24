@@ -1,13 +1,13 @@
 import { randomUUID } from "crypto";
 
-import { getCurrentlyPlayingTrack } from "@/lib/actions";
+import { getCurrentlyPlayingTrack } from "@/lib/data-access/user/spotify";
 
 import Image from "next/image";
 
 import Reactions from "./reactions/reactions";
 
-import styles from "./now-playing.module.css";
 import { getName } from "@/lib/data-access/user/read";
+import styles from "./now-playing.module.css";
 
 interface NowPlayingProps {
   username: string;

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "../../auth";
 import { prisma } from "../../prisma";
-import { editProfileSchema } from "../../schemas";
+import { editProfileSchema } from "../../schemas/formData";
 import { supabase } from "../../supabase";
 import { getSupabaseFileName } from "../../utils";
 
@@ -23,7 +23,7 @@ import type { UpdateProfileResult } from "../../types/serverResponses";
  *
  */
 export async function updateProfile(
-  formData: EditProfileFormData,
+  formData: EditProfileFormData
 ): Promise<UpdateProfileResult> {
   const session = await auth();
   const user = session?.user;
@@ -60,7 +60,7 @@ export async function updateProfile(
       } catch (removeError) {
         console.error(
           `failed to remove old header image for ${user.username}:`,
-          removeError,
+          removeError
         );
       }
     } else if (newHeaderImg) {
@@ -72,7 +72,7 @@ export async function updateProfile(
         } catch (removeError) {
           console.error(
             `failed to remove old header image for ${user.username}:`,
-            removeError,
+            removeError
           );
         }
       }
@@ -100,7 +100,7 @@ export async function updateProfile(
       } catch (removeError) {
         console.error(
           `failed to remove old profile icon for ${user.username}:`,
-          removeError,
+          removeError
         );
       }
     } else if (newProfileIcon) {
@@ -115,7 +115,7 @@ export async function updateProfile(
         } catch (removeError) {
           console.error(
             `failed to remove old profile icon for ${user.username}:`,
-            removeError,
+            removeError
           );
         }
       }
