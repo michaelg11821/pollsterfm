@@ -1,0 +1,16 @@
+{
+  "importOrder": [
+    "^(next/(.*)$)|^(next$)",
+    "<THIRD_PARTY_MODULES>",
+    "interface",
+    "(?=content|api)",
+    "__mocks__/",
+    "config",
+    "hooks/",
+    "components/",
+    ".svg",
+    "^../(.*)$"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}
