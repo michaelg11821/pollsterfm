@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { enUS } from "date-fns/locale";
 
-import { getProfile } from "@/lib/data-access/user";
+import { getProfile } from "@/lib/data-access/user/read";
 import { auth } from "@/lib/auth";
 
 import type { Month } from "date-fns";
@@ -29,7 +29,7 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
   const joinMonth = profile.createdAt.getMonth() as Month;
 
   const joinDate = `${enUS.localize.month(
-    joinMonth
+    joinMonth,
   )} ${profile.createdAt.getFullYear()}`;
 
   return (

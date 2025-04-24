@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getProfile } from "@/lib/data-access/user";
+import { getProfile } from "@/lib/data-access/user/read";
 
 type RequestParams = {
   params: Promise<{ username: string }>;

@@ -1,6 +1,6 @@
 "use server";
 
-import { spotifyApiWithCredentials } from "./data-access/user";
+import { spotifyApiWithCredentials } from "./data-access/user/read";
 
 import type {
   SpotifyCurrentlyPlayingResponse,
@@ -26,7 +26,7 @@ export async function verifyTurnstile(token: string) {
       {
         method: "POST",
         body: formData,
-      }
+      },
     );
 
     const data = await response.json();
@@ -48,7 +48,7 @@ export async function verifyTurnstile(token: string) {
  *
  */
 export async function getCurrentlyPlayingTrack(
-  username: string
+  username: string,
 ): Promise<SpotifyCurrentlyPlayingResponse | null> {
   try {
     const spotify = await spotifyApiWithCredentials(username);
@@ -61,7 +61,7 @@ export async function getCurrentlyPlayingTrack(
   } catch (err: unknown) {
     console.error(
       `error fetching currently playing track for ${username}:`,
-      err
+      err,
     );
 
     return null;
@@ -79,7 +79,7 @@ export async function getCurrentlyPlayingTrack(
 export async function getRecentlyPlayedTracks(
   username: string,
   limit: number = 20,
-  next?: string
+  next?: string,
 ): Promise<SpotifyRecentlyPlayedResponse | null> {
   try {
     const spotify = await spotifyApiWithCredentials(username);
@@ -90,7 +90,7 @@ export async function getRecentlyPlayedTracks(
 
     const recentTracks = await spotify.getRecentlyPlayedTracks(
       computedLimit,
-      next
+      next,
     );
 
     return recentTracks;

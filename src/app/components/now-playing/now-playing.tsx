@@ -7,7 +7,7 @@ import Image from "next/image";
 import Reactions from "./reactions/reactions";
 
 import styles from "./now-playing.module.css";
-import { getName } from "@/lib/data-access/user";
+import { getName } from "@/lib/data-access/user/read";
 
 interface NowPlayingProps {
   username: string;

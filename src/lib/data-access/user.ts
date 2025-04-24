@@ -2,8 +2,6 @@
 
 import { redirect } from "next/navigation";
 
-import SpotifyApi from "../spotify";
-
 import { prisma } from "../prisma";
 import { editProfileSchema } from "../schemas";
 import { auth } from "../auth";
@@ -16,106 +14,6 @@ import type { UpdateProfileResult } from "../types/serverResponses";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 /**
- * A function that returns an instance of the Pollster.fm Spotify API wrapper with valid credentials.
- *
- * @param username A Pollster.fm user's username.
- * @returns A Pollster.fm Spotify API wrapper with valid credentials.
- */
-export async function spotifyApiWithCredentials(username: string) {
-  try {
-    const tokens = await prisma.user.findUniqueOrThrow({
-      where: {
-        username,
-      },
-      select: {
-        accounts: {
-          where: {
-            provider: "spotify",
-          },
-          select: {
-            access_token: true,
-            refresh_token: true,
-            expires_at: true,
-            providerAccountId: true,
-          },
-        },
-      },
-    });
-
-    const { refresh_token, expires_at, access_token, providerAccountId } =
-      tokens.accounts[0];
-
-    if (!refresh_token || !expires_at || !access_token || !providerAccountId)
-      throw new Error("user is missing one or more credentials");
-
-    return SpotifyApi(
-      access_token,
-      refresh_token,
-      expires_at,
-      providerAccountId
-    );
-  } catch (err: unknown) {
-    console.error(`error getting spotify instance for ${username}:`, err);
-
-    return null;
-  }
-}
-
-/**
- * Returns some basic (public) information about a Pollster.fm user.
- *
- * @param username A Pollster.fm user's username
- * @returns Basic profile information for a Pollster.fm user.
- */
-export async function getProfile(username: string) {
-  try {
-    const profile = await prisma.user.findUniqueOrThrow({
-      where: {
-        username,
-      },
-      select: {
-        aboutMe: true,
-        createdAt: true,
-        image: true,
-        headerImage: true,
-        name: true,
-      },
-    });
-
-    return profile;
-  } catch (err: unknown) {
-    console.error("error getting profile", err);
-
-    return null;
-  }
-}
-
-/**
- * Returns a Pollster.fm user's name.
- *
- * @param username A Pollster.fm user's username
- * @returns A Pollster.fm user's name.
- */
-export async function getName(username: string) {
-  try {
-    const { name } = await prisma.user.findUniqueOrThrow({
-      where: {
-        username,
-      },
-      select: {
-        name: true,
-      },
-    });
-
-    return name;
-  } catch (err: unknown) {
-    console.error("error getting name", err);
-
-    return null;
-  }
-}
-
-/**
  * A function that updates the authenticated user's profile with the given form data.
  *
  * Returns detailed error(s) if the Zod parse fails. A less detailed error is returned when Supabase or Prisma fails.
@@ -125,7 +23,7 @@ export async function getName(username: string) {
  *
  */
 export async function updateProfile(
-  formData: EditProfileFormData
+  formData: EditProfileFormData,
 ): Promise<UpdateProfileResult> {
   const session = await auth();
   const user = session?.user;
@@ -162,7 +60,7 @@ export async function updateProfile(
       } catch (removeError) {
         console.error(
           `failed to remove old header image for ${user.username}:`,
-          removeError
+          removeError,
         );
       }
     } else if (newHeaderImg) {
@@ -174,7 +72,7 @@ export async function updateProfile(
         } catch (removeError) {
           console.error(
             `failed to remove old header image for ${user.username}:`,
-            removeError
+            removeError,
           );
         }
       }
@@ -202,7 +100,7 @@ export async function updateProfile(
       } catch (removeError) {
         console.error(
           `failed to remove old profile icon for ${user.username}:`,
-          removeError
+          removeError,
         );
       }
     } else if (newProfileIcon) {
@@ -217,7 +115,7 @@ export async function updateProfile(
         } catch (removeError) {
           console.error(
             `failed to remove old profile icon for ${user.username}:`,
-            removeError
+            removeError,
           );
         }
       }
