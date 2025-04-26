@@ -5,7 +5,7 @@ import { supabaseMock } from "../../../__mocks__/supabase";
 
 import { auth } from "../../../auth";
 
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
 import { type MockedFunction } from "vitest";
 
 vi.mock("next/navigation", () => ({
@@ -250,7 +250,7 @@ describe("updateProfile", () => {
       );
       mockedAuth.mockResolvedValueOnce({ user: { username: "mock-user" } });
 
-      const uniqueError = new PrismaClientKnownRequestError(
+      const uniqueError = new Prisma.PrismaClientKnownRequestError(
         "Unique constraint failed on the fields: (`username`)",
         {
           code: "P2002",
