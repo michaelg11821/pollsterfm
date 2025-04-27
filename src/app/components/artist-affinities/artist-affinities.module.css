@@ -1,0 +1,58 @@
+.affinitiesCardContainer {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.affinitiesCardHeading {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.affinitiesListingArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.affinityEntry:hover .affinityAudienceName {
+  color: white;
+}
+
+.affinityEntryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.affinityAudienceName {
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 0.2s ease-in-out;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.affinityPercentageScore {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #b07fff;
+}
+
+.affinityMeterBackground {
+  height: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.affinityMeterForeground {
+  height: 100%;
+  background-color: #8a4fff;
+  border-radius: 9999px;
+}
