@@ -44,7 +44,7 @@ function ClientArtistHeader({ artistData, originalQuery }: ClientProps) {
         </div>
         <div className={styles.profileDescriptionArea}>
           <div className={styles.profileDescriptionInner}>
-            <div>
+            <div className={styles.profileDescriptionInnerWrapper}>
               <div className={styles.profileMetadataLine}>
                 <span className={styles.profileArtistTypeBadge}>Artist</span>
               </div>
