@@ -1,5 +1,6 @@
 import { formatDistanceToNowStrict, type Month } from "date-fns";
 import { enUS } from "date-fns/locale";
+import { distance } from "fastest-levenshtein";
 
 /**
  * A helper function that parses the given ISO 8601 string and returns a string containing the strict formatted distance to now.
@@ -77,4 +78,36 @@ export async function fileToUint8Array(file: File): Promise<Uint8Array> {
   const buffer = await file.arrayBuffer();
 
   return new Uint8Array(buffer);
+}
+
+/**
+ * Removes diacritics, normalizes Unicode, and lowercases a string.
+ *
+ * @param str A string. Usually an artist name, an album name, or a track name.
+ * @returns The normalized string.
+ */
+export function normalizeString(str: string): string {
+  return str
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+/**
+ * Checks if two strings are similar. Results will vary based on the provided threshold.
+ *
+ * @param query A search query.
+ * @param candidate The string to compare to.
+ * @param threshold Default: 3. How "forgiving" the comparison will be. Generally a number from 2-4.
+ * @returns A boolean.
+ */
+export function isSimilar(
+  query: string,
+  candidate: string,
+  threshold = 3
+): boolean {
+  const normQuery = normalizeString(query);
+  const normCandidate = normalizeString(candidate);
+
+  return distance(normQuery, normCandidate) <= threshold;
 }
