@@ -10,7 +10,7 @@ import Link from "next/link";
 
 import Track from "@/app/components/track/track";
 
-import type { SpotifyRecentlyPlayedResponse } from "@/lib/types/externalResponses";
+import type { SpotifyRecentlyPlayedResponse } from "@/lib/types/spotifyResponses";
 
 import styles from "./page.module.css";
 
