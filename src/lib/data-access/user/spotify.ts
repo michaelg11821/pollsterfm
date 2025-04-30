@@ -7,7 +7,7 @@ import { prisma } from "../../prisma";
 import type {
   SpotifyCurrentlyPlayingResponse,
   SpotifyRecentlyPlayedResponse,
-} from "../../types/externalResponses";
+} from "../../types/spotifyResponses";
 
 /**
  * A function that returns an instance of the Pollster.fm Spotify API wrapper with valid credentials.

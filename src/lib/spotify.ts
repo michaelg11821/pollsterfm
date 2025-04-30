@@ -1,10 +1,10 @@
 import { prisma } from "./prisma";
 
 import type {
-  SpotifyCurrentlyPlayingResponse,
   SpotifyAccessTokenResponse,
+  SpotifyCurrentlyPlayingResponse,
   SpotifyRecentlyPlayedResponse,
-} from "./types/externalResponses";
+} from "./types/spotifyResponses";
 
 /**
  * A Spotify API wrapper based on individual users and made exclusively for Pollster.fm.
@@ -166,5 +166,8 @@ export default function SpotifyApi(
     }
   };
 
-  return { getCurrentlyPlayingTrack, getRecentlyPlayedTracks };
+  return {
+    getCurrentlyPlayingTrack,
+    getRecentlyPlayedTracks,
+  };
 }
