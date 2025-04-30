@@ -2,7 +2,7 @@
 
 import { Tag } from "@/lib/types/lastfm";
 import Image from "next/image";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import styles from "./artist-header.module.css";
 
 type ArtistData = {
@@ -52,12 +52,14 @@ function ClientArtistHeader({ artistData, originalQuery }: ClientProps) {
               {artistData.genres && (
                 <div className={styles.profileGenreList}>
                   {artistData.genres.map((genre, i) => (
-                    <span key={i} className={styles.profileGenreTag}>
-                      {typeof genre === "string" ? genre : genre.name}
+                    <Fragment key={i}>
+                      <span className={styles.profileGenreTag}>
+                        {typeof genre === "string" ? genre : genre.name}
+                      </span>
                       {i < artistData.genres!.length - 1 && (
                         <span className={styles.profileGenreDivider}>•</span>
                       )}
-                    </span>
+                    </Fragment>
                   ))}
                 </div>
               )}

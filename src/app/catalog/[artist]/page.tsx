@@ -1,11 +1,13 @@
 import ArtistAffinities from "@/app/components/artist-affinities/artist-affinities";
 import ArtistHeader from "@/app/components/artist-header/artist-header";
+import ClientArtistHeaderSkeleton from "@/app/components/artist-header/skeleton/skeleton";
 import Discography from "@/app/components/discography/discography";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import SimilarArtists from "@/app/components/similar-artists/similar-artists";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 import { getCachedArtist } from "@/lib/pollster/artist";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import styles from "./page.module.css";
 
 type ArtistProps = {
@@ -30,12 +32,13 @@ async function Artist({ params }: ArtistProps) {
 
   return (
     <main className={styles.pageContainer}>
-      <ArtistHeader artistName={artist} />
+      <Suspense fallback={<ClientArtistHeaderSkeleton />}>
+        <ArtistHeader artistName={artist} />
+      </Suspense>
       <div className={styles.contentContainer}>
         <div className={styles.contentGrid}>
           <aside className={styles.sidebar}>
             <ArtistAffinities />
-
             <SimilarArtists />
           </aside>
           <div className={styles.mainContent}>
