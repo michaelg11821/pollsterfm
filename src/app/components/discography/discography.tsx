@@ -34,7 +34,7 @@ async function Discography() {
   // get from last fm (most plentiful db)
 
   return (
-    <section className={styles.albumsSectionContainer}>
+    <div>
       <div className={styles.albumsSectionHeader}>
         <h2 className={styles.albumsSectionTitle}>Albums</h2>
         <button className={styles.albumsViewAllButton}>View All Albums</button>
@@ -44,17 +44,19 @@ async function Discography() {
         {topAlbums.map((album) => (
           <Link
             href={`/album/${album.id}`}
-            key={album.id} // Use a stable unique ID like album.id for the key
+            key={album.id}
             className={styles.albumCardLink}
           >
             <div className={styles.albumImageWrapper}>
-              <Image
-                src={album.image || "/placeholder-album.svg"} // Use a specific placeholder
-                alt={album.name}
-                fill // Use Next.js Image fill prop
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" // Example sizes prop
-                className={styles.albumImageElement}
-              />
+              {album.image && (
+                <Image
+                  src={album.image}
+                  alt={album.name}
+                  fill
+                  sizes="100%"
+                  className={styles.albumImageElement}
+                />
+              )}
             </div>
             <h3 className={styles.albumNameHeading}>{album.name}</h3>
             <div className={styles.albumMetadata}>
@@ -69,7 +71,7 @@ async function Discography() {
           </Link>
         ))}
       </div>
-    </section>
+    </div>
   );
 }
 

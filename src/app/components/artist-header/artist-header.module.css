@@ -1,7 +1,16 @@
 .profileInfoBox {
-  max-width: var(--max-wrapper-width);
   margin-left: auto;
   margin-right: auto;
+
+  padding: 0 20px;
+
+  max-width: var(--max-wrapper-width);
+}
+
+@media only screen and (min-width: 1200px) {
+  .profileInfoBox {
+    padding: 0;
+  }
 }
 
 .profileDetailRow {

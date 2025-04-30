@@ -19,10 +19,6 @@
   gap: 0.75rem;
 }
 
-.affinityEntry:hover .affinityAudienceName {
-  color: white;
-}
-
 .affinityEntryHeader {
   display: flex;
   justify-content: space-between;
@@ -30,9 +26,8 @@
   margin-bottom: 0.25rem;
 }
 
-.affinityAudienceName {
+.affinityName {
   color: rgba(255, 255, 255, 0.8);
-  transition: color 0.2s ease-in-out;
   font-size: 0.875rem;
   line-height: 1.25rem;
 }

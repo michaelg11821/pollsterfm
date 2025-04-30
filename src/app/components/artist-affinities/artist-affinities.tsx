@@ -15,9 +15,7 @@ function ArtistAffinities() {
         {topAffinities.map((affinity, i) => (
           <div key={i} className={styles.affinityEntry}>
             <div className={styles.affinityEntryHeader}>
-              <span className={styles.affinityAudienceName}>
-                {affinity.name}
-              </span>
+              <span className={styles.affinityName}>{affinity.name}</span>
               <span className={styles.affinityPercentageScore}>
                 {affinity.score}%
               </span>
