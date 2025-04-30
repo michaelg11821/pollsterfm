@@ -19,6 +19,7 @@
     "@prisma/client": "^6.6.0",
     "@supabase/supabase-js": "^2.49.4",
     "date-fns": "^4.1.0",
+    "fastest-levenshtein": "^1.0.16",
     "lucide-react": "^0.487.0",
     "next": "^15.2.3",
     "next-auth": "^5.0.0-beta.25",
