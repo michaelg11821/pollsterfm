@@ -35,7 +35,7 @@
   position: relative;
   height: 6rem;
   width: 6rem;
-  border-radius: 9999px;
+  border-radius: 0.5rem;
   overflow: hidden;
   flex-shrink: 0;
 }
