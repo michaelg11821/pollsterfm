@@ -37,15 +37,15 @@ async function Artist({ params }: ArtistProps) {
       </Suspense>
       <div className={styles.contentContainer}>
         <div className={styles.contentGrid}>
+          <div className={styles.mainContent}>
+            <FeaturedIn />
+            <TopListeners />
+            <Discography />
+          </div>
           <aside className={styles.sidebar}>
             <ArtistAffinities />
             <SimilarArtists />
           </aside>
-          <div className={styles.mainContent}>
-            <Discography />
-            <TopListeners />
-            <FeaturedIn />
-          </div>
         </div>
       </div>
     </main>

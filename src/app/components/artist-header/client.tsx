@@ -2,6 +2,7 @@
 
 import { Tag } from "@/lib/types/lastfm";
 import Image from "next/image";
+import Link from "next/link";
 import { Fragment, useEffect } from "react";
 import styles from "./artist-header.module.css";
 
@@ -11,12 +12,15 @@ type ArtistData = {
   genres: string[] | Tag[] | null;
 };
 
-type ClientProps = {
+type ClientArtistHeaderProps = {
   artistData: ArtistData;
   originalQuery: string;
 };
 
-function ClientArtistHeader({ artistData, originalQuery }: ClientProps) {
+function ClientArtistHeader({
+  artistData,
+  originalQuery,
+}: ClientArtistHeaderProps) {
   useEffect(() => {
     if (originalQuery !== artistData.name) {
       window.history.replaceState(
@@ -26,6 +30,19 @@ function ClientArtistHeader({ artistData, originalQuery }: ClientProps) {
       );
     }
   }, [artistData.name, originalQuery]);
+
+  const genres = artistData.genres?.slice(0, 5).map((genre, i) => (
+    <Fragment key={i}>
+      <span className={styles.profileGenreTag}>
+        {typeof genre === "string" ? genre : genre.name}
+      </span>
+      {artistData.genres && i < artistData.genres.length - 1 ? (
+        <span className={styles.profileGenreDivider}>•</span>
+      ) : (
+        ""
+      )}
+    </Fragment>
+  ));
 
   return (
     <div className={styles.profileInfoBox}>
@@ -49,18 +66,15 @@ function ClientArtistHeader({ artistData, originalQuery }: ClientProps) {
                 <span className={styles.profileArtistTypeBadge}>Artist</span>
               </div>
               <h1 className={styles.profileDisplayName}>{artistData.name}</h1>
-              {artistData.genres && (
+              {genres && (
                 <div className={styles.profileGenreList}>
-                  {artistData.genres.map((genre, i) => (
-                    <Fragment key={i}>
-                      <span className={styles.profileGenreTag}>
-                        {typeof genre === "string" ? genre : genre.name}
-                      </span>
-                      {i < artistData.genres!.length - 1 && (
-                        <span className={styles.profileGenreDivider}>•</span>
-                      )}
-                    </Fragment>
-                  ))}
+                  {genres} ...
+                  <Link
+                    href={`/catalog/${encodeURIComponent(artistData.name)}/genres`}
+                    className={styles.moreGenres}
+                  >
+                    more
+                  </Link>
                 </div>
               )}
             </div>

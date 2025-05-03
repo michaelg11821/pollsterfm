@@ -1,0 +1,8 @@
+.genresPageContainer {
+  max-width: var(--max-wrapper-width);
+  margin-left: auto;
+  margin-right: auto;
+  color: white;
+
+  padding: 1.5rem 0;
+}
