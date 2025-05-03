@@ -67,7 +67,7 @@ function ClientArtistGenresFull({
           <p className={styles.genresHeaderSubtitle}>All Genres</p>
         </div>
       </div>
-      {genres && (
+      {genres && genres.length > 0 ? (
         <div className={styles.genresMainGrid}>
           <div className={styles.genresListCard}>
             <div className={styles.genresListCardContent}>
@@ -75,6 +75,8 @@ function ClientArtistGenresFull({
             </div>
           </div>
         </div>
+      ) : (
+        <p>No genres available.</p>
       )}
     </>
   );

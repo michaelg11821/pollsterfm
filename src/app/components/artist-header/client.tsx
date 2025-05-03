@@ -68,7 +68,7 @@ function ClientArtistHeader({
                 <span className={styles.profileArtistTypeBadge}>Artist</span>
               </div>
               <h1 className={styles.profileDisplayName}>{artistData.name}</h1>
-              {genres && (
+              {genres && genres.length > 0 ? (
                 <div className={styles.profileGenreList}>
                   {genres} ...
                   <Link
@@ -78,6 +78,8 @@ function ClientArtistHeader({
                     more
                   </Link>
                 </div>
+              ) : (
+                ""
               )}
               <div className={styles.profileLinksWrapper}>
                 {artistData.spotifyUrl && (
