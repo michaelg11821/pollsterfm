@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { getFirstLastfmArtistFromQuery } from "../lastfm";
+import { getArtistTags, getFirstLastfmArtistFromQuery } from "../lastfm";
 import { getFirstSpotifyArtistFromQuery } from "../spotifyClient";
 import type { FirstArtistResult } from "../types/serverResponses";
 
@@ -29,7 +29,10 @@ async function findFirstArtistByName(
       return {
         name: spotifyArtist.name,
         image: spotifyArtist.images[0].url,
-        genres: spotifyArtist.genres,
+        genres:
+          spotifyArtist.genres.length !== 0
+            ? spotifyArtist.genres
+            : await getArtistTags(spotifyArtist.name),
         spotifyUrl: spotifyArtist.external_urls.spotify,
         lastfmUrl: lastfmArtist.url,
       };
