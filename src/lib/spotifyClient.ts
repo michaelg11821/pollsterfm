@@ -52,7 +52,7 @@ export async function getFirstSpotifyArtistFromQuery(artistQuery: string) {
     const credentials = await getClientCredentials();
 
     const res = await fetch(
-      `https://api.spotify.com/v1/search?q=artist%3A${artistQuery}&type=artist`,
+      `https://api.spotify.com/v1/search?q=${artistQuery}&type=artist`,
       { headers: { Authorization: `Bearer ${credentials}` } }
     );
 
