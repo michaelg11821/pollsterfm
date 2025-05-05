@@ -1,9 +1,10 @@
 import ArtistAffinities from "@/app/components/artist-affinities/artist-affinities";
 import ArtistHeader from "@/app/components/artist-header/artist-header";
 import ClientArtistHeaderSkeleton from "@/app/components/artist-header/skeleton/skeleton";
-import Discography from "@/app/components/discography/discography";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import SimilarArtists from "@/app/components/similar-artists/similar-artists";
+import TopAlbumsSkeleton from "@/app/components/top-albums/skeleton/skeleton";
+import TopAlbums from "@/app/components/top-albums/top-albums";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 import { getCachedArtist } from "@/lib/pollster/artist";
 import { redirect } from "next/navigation";
@@ -40,7 +41,9 @@ async function Artist({ params }: ArtistProps) {
           <div className={styles.mainContent}>
             <FeaturedIn />
             <TopListeners />
-            <Discography />
+            <Suspense fallback={<TopAlbumsSkeleton />}>
+              <TopAlbums artistName={artist} />
+            </Suspense>
           </div>
           <aside className={styles.sidebar}>
             <ArtistAffinities />
