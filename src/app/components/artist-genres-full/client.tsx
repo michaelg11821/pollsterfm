@@ -33,11 +33,11 @@ function ClientArtistGenresFull({
   }, [artistData.name, originalQuery]);
 
   const genres = artistData.genres?.map((genre, i) => (
-    <Link href="#" key={i} className={styles.genreListItem}>
+    <div key={i} className={styles.genreListItem}>
       <span className={styles.genreListItemName}>
         {typeof genre === "string" ? genre : genre.name}
       </span>
-    </Link>
+    </div>
   ));
 
   return (
