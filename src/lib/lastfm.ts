@@ -3,12 +3,19 @@
 import type {
   LastfmArtistSearchResponse,
   LastfmArtistTagsResponse,
+  LastfmArtistTopAlbumsResponse,
 } from "./types/lastfmResponses";
 import { isSimilar } from "./utils";
 
 const apiKey = process.env.LASTFM_API_KEY!;
 const suffix = `&api_key=${apiKey}&format=json`;
 
+/**
+ * Gets tags (genres) for an artist on Last.fm.
+ *
+ * @param artistName The name of an artist on Last.fm.
+ * @returns The tags for an artist.
+ */
 export async function getArtistTags(artistName: string) {
   try {
     const res = await fetch(
@@ -36,7 +43,7 @@ export async function getArtistTags(artistName: string) {
 /**
  * Returns the first artist found from the Last.fm API with the given query.
  *
- * @param artistQuery The name of an artist.
+ * @param artistQuery The name of an artist on Last.fm.
  * @returns The first artist found with the given query.
  */
 export async function getFirstLastfmArtistFromQuery(artistQuery: string) {
@@ -71,6 +78,34 @@ export async function getFirstLastfmArtistFromQuery(artistQuery: string) {
     }
   } catch (err: unknown) {
     console.error("error getting first artist from query:", err);
+
+    return null;
+  }
+}
+
+/**
+ * Gets the (first 5) top albums for an artist on Last.fm.
+ *
+ * @param artistName The name of an artist on Last.fm.
+ * @returns The top albums for the given artist.
+ */
+export async function getLastfmArtistTopAlbums(artistName: string) {
+  try {
+    const res = await fetch(
+      `http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=${artistName}${suffix}`
+    );
+
+    if (!res.ok) throw new Error(`failed to get top albums for ${artistName}`);
+
+    const topAlbums: LastfmArtistTopAlbumsResponse = await res.json();
+
+    if (!topAlbums.topalbums.album) {
+      throw new Error("no albums found");
+    }
+
+    return topAlbums.topalbums.album.slice(0, 5);
+  } catch (err: unknown) {
+    console.error(`error getting top albums for ${artistName}:`, err);
 
     return null;
   }

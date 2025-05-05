@@ -25,9 +25,17 @@ export type Artist = {
 };
 
 export interface Album {
+  id: string;
+  external_urls: {
+    /**
+     * The {@link https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids|Spotify URL} for the object.
+     */
+    spotify: string;
+  };
   name: string;
   artists: SimplifiedArtist[];
   images: Image[];
+  release_date: string;
 }
 
 export interface Track {

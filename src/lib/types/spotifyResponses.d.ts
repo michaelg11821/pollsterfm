@@ -30,3 +30,7 @@ export type SpotifyArtistSearchResponse = {
     items: Artist[];
   };
 };
+
+export type SpotifyArtistTopTracksResponse = {
+  tracks: Track[];
+};
