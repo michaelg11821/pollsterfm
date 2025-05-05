@@ -22,8 +22,8 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
   return (
     <div>
       <div className={styles.albumsSectionHeader}>
-        <h2 className={styles.albumsSectionTitle}>Albums</h2>
-        <button className={styles.albumsViewAllButton}>View All Albums</button>
+        <h2 className={styles.albumsSectionTitle}>Top Albums</h2>
+        <button className={styles.albumsViewAllButton}>View Discography</button>
       </div>
 
       <div className={styles.albumsGridContainer}>
