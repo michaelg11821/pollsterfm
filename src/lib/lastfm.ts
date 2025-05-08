@@ -1,6 +1,7 @@
 "use server";
 
 import type {
+  LastfmArtistAlbumsResponse,
   LastfmArtistSearchResponse,
   LastfmArtistTagsResponse,
   LastfmArtistTopAlbumsResponse,
@@ -104,6 +105,37 @@ export async function getLastfmArtistTopAlbums(artistName: string) {
     }
 
     return topAlbums.topalbums.album.slice(0, 5);
+  } catch (err: unknown) {
+    console.error(`error getting top albums for ${artistName}:`, err);
+
+    return null;
+  }
+}
+
+/**
+ * Gets 50 albums for an artist on Last.fm. Defaults to page 1.
+ *
+ * @param artistName The name of an artist on Last.fm.
+ * @returns The top albums for the given artist.
+ */
+export async function getLastfmArtistAlbums(
+  artistName: string,
+  page: number = 1
+) {
+  try {
+    const res = await fetch(
+      `http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=${artistName}&page=${page}${suffix}`
+    );
+
+    if (!res.ok) throw new Error(`failed to get albums for ${artistName}`);
+
+    const topAlbums: LastfmArtistAlbumsResponse = await res.json();
+
+    if (!topAlbums.topalbums.album) {
+      throw new Error("no albums found");
+    }
+
+    return topAlbums.topalbums.album;
   } catch (err: unknown) {
     console.error(`error getting top albums for ${artistName}:`, err);
 
