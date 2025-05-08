@@ -29,7 +29,7 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
       <div className={styles.albumsGridContainer}>
         {topAlbumsData.map((album, index) => (
           <Link
-            href={`/catalog/${artistData.name}/albums/${album.name}`}
+            href={`/catalog/${artistData.name}/discography/${encodeURIComponent(album.name)}`}
             key={index}
             className={styles.albumCardLink}
           >
