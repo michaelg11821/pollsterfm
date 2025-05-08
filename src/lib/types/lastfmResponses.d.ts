@@ -19,3 +19,5 @@ export type LastfmArtistTopAlbumsResponse = {
     album: Album[];
   };
 };
+
+export type LastfmArtistAlbumsResponse = LastfmArtistTopAlbumsResponse;
