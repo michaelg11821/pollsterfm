@@ -125,3 +125,13 @@
 @utility content-wrapper {
   max-width: var(--max-wrapper-width);
 }
+
+@utility centered-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 80svh;
+}
