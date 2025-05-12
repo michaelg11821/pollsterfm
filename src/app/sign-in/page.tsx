@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { siteName } from "@/config";
