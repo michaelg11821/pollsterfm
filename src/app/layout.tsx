@@ -32,7 +32,7 @@ export default function RootLayout({
       className={`${lexend.variable} antialiased`}
       suppressHydrationWarning
     >
-      <body>
+      <body className="min-h-svh">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
