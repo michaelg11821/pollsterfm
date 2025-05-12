@@ -3,9 +3,9 @@ import Link from "next/link";
 
 function Footer() {
   return (
-    <footer className="border-t p-20">
+    <footer className="border-t p-5">
       <div className="content-wrapper mx-auto my-0">
-        <div className="mb-12 grid grid-cols-2 gap-8">
+        <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
           <div>
             <div className="mb-6 flex items-center gap-3">
               <span className="text-xl font-semibold">{siteName}</span>
@@ -120,9 +120,9 @@ function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 border-t pt-8">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Pollster.fm. All rights reserved.
+        <div className="flex flex-col items-center gap-4 border-t pt-8 md:flex-row md:justify-between">
+          <p className="text-muted-foreground text-sm md:mb-0">
+            © {new Date().getFullYear()} {siteName}. All rights reserved.
           </p>
 
           <div className="flex gap-6">
