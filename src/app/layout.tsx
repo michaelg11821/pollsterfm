@@ -6,6 +6,7 @@ import { toastManager } from "../lib/toast";
 import Nav from "./components/nav/nav";
 import { ThemeProvider } from "./components/theme-provider";
 
+import Footer from "./components/footer/footer";
 import ToastList from "./components/toast-list/toast-list";
 import "./globals.css";
 
@@ -41,7 +42,8 @@ export default function RootLayout({
           <Toast.Provider toastManager={toastManager}>
             <Nav />
             {children}
-            <Toast.Viewport className="absolute w-full max-w-75 mt-0 mb-0 ml-auto mr-auto bottom-8 right-8 left-auto top-auto">
+            <Footer />
+            <Toast.Viewport className="absolute top-auto right-8 bottom-8 left-auto mt-0 mr-auto mb-0 ml-auto w-full max-w-75">
               <ToastList />
             </Toast.Viewport>
           </Toast.Provider>
