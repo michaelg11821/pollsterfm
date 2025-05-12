@@ -15,7 +15,7 @@ async function Nav() {
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-25 flex w-full items-center justify-center border-b px-5 py-3">
       <div className="content-wrapper flex w-full">
         <nav className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-12">
+          <div className="flex items-center gap-12.5">
             <h1 className="text-2xl font-semibold">
               <Link href="/">{siteName}</Link>
             </h1>
