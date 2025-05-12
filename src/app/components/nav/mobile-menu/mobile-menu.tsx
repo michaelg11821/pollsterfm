@@ -21,38 +21,38 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
       <div className="md:hidden">
         <button
           type="button"
-          className="flex flex-col justify-center items-center bg-inherit transition-[background-color] w-10 h-10 border-none rounded-lg p-1.5 cursor-pointer hover:bg-accent"
+          className="hover:bg-accent flex h-10 w-10 cursor-pointer flex-col items-center justify-center rounded-lg border-none bg-inherit p-1.5 transition-[background-color]"
           title="Toggle menu"
           aria-label={`${mobileMenuOpen ? "Close" : "Open"} menu`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
-            <X className="w-7.5 h-7.5" />
+            <X className="h-7.5 w-7.5" />
           ) : (
-            <Menu className="w-7.5 h-7.5" />
+            <Menu className="h-7.5 w-7.5" />
           )}
         </button>
       </div>
       {mobileMenuOpen && (
-        <div className="mt-12.5 -ml-5 absolute z-50 w-full md:hidden">
+        <div className="absolute z-50 mt-12.5 -ml-5 w-full md:hidden">
           <div
-            className="flex flex-col bg-background gap-5 w-full h-screen z-50"
+            className="bg-background/95 supports-[backdrop-filter]:bg-background/60 z-50 flex h-screen w-full flex-col gap-5"
             onClick={() => setMobileMenuOpen(false)}
           >
-            <ul className="flex flex-col gap-2.5 list-none">
+            <ul className="flex list-none flex-col gap-2.5 py-5">
               {username ? (
                 <>
                   <li>
                     <Link
                       href={`/user/${username}`}
-                      className="bg-inherit w-full h-12.5 pl-5 border-none rounded-[10px] transition-[background-color] text-left text-lg cursor-pointer hover:bg-accent flex items-center gap-2.5"
+                      className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center gap-2.5 rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                     >
                       {profileIcon && (
-                        <div className="w-9 h-9 relative">
+                        <div className="relative h-9 w-9">
                           <Image
                             src={profileIcon}
                             fill
-                            className="object-cover rounded-full"
+                            className="rounded-full object-cover"
                             alt=""
                           />
                         </div>
@@ -63,7 +63,7 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
                   <li>
                     <Link
                       href=""
-                      className="bg-inherit w-full h-12.5 pl-5 border-none rounded-[10px] transition-[background-color] text-left text-lg cursor-pointer flex items-center hover:bg-accent"
+                      className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                     >
                       Account Settings
                     </Link>
@@ -71,7 +71,7 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
                   <li>
                     <button
                       type="button"
-                      className="bg-inherit w-full h-12.5 pl-5 border-none rounded-[10px] transition-[background-color] text-left text-lg cursor-pointer flex items-center hover:bg-accent"
+                      className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                       onClick={handleSignOut}
                     >
                       Sign Out
@@ -82,18 +82,18 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
                 <li>
                   <Link
                     href="sign-in"
-                    className="-mb-5 bg-inherit w-full h-12.5 pl-5 border-none rounded-[10px] transition-[background-color] text-left text-lg cursor-pointer flex items-center hover:bg-accent"
+                    className="hover:bg-accent -mb-5 flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                   >
                     Sign In
                   </Link>
                 </li>
               )}
             </ul>
-            <ul className="flex flex-col gap-2.5 list-none border-t py-5">
+            <ul className="flex list-none flex-col gap-2.5 border-t py-5">
               <li>
                 <Link
                   href=""
-                  className="bg-inherit w-full h-12.5 pl-5 border-none rounded-[10px] transition-[background-color] text-left text-lg cursor-pointer flex items-center hover:bg-accent"
+                  className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                 >
                   Polls
                 </Link>
@@ -101,7 +101,7 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
               <li>
                 <Link
                   href=""
-                  className="bg-inherit w-full h-12.5 pl-5 border-none rounded-[10px] transition-[background-color] text-left text-lg cursor-pointer flex items-center hover:bg-accent"
+                  className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                 >
                   Reviews
                 </Link>
@@ -109,7 +109,7 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
               <li>
                 <Link
                   href=""
-                  className="bg-inherit w-full h-12.5 pl-5 border-none rounded-[10px] transition-[background-color] text-left text-lg cursor-pointer flex items-center hover:bg-accent"
+                  className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                 >
                   Community
                 </Link>
