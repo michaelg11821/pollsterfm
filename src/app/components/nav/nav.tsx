@@ -12,22 +12,37 @@ async function Nav() {
   const user = session?.user;
 
   return (
-    <header className="flex justify-center items-center sticky w-full py-3 px-5 border-b bg-background/95 top-0 z-25 supports-[backdrop-filter]:bg-background/60">
-      <div className="flex content-wrapper w-full">
-        <nav className="flex justify-between items-center w-full">
+    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-25 flex w-full items-center justify-center border-b px-5 py-3">
+      <div className="content-wrapper flex w-full">
+        <nav className="flex w-full items-center justify-between">
           <div className="flex items-center gap-12">
             <h1 className="text-2xl font-semibold">
               <Link href="/">{siteName}</Link>
             </h1>
-            <ul className="list-none hidden md:flex md:gap-6">
-              <li className="text-muted-foreground transition-[color] text-center hover:text-foreground">
-                <Link href="">Polls</Link>
+            <ul className="hidden list-none md:flex md:gap-6">
+              <li>
+                <Link
+                  href=""
+                  className="text-muted-foreground hover:text-foreground text-center transition-[color]"
+                >
+                  Polls
+                </Link>
               </li>
-              <li className="text-muted-foreground transition-[color] text-center hover:text-foreground">
-                <Link href="">Reviews</Link>
+              <li>
+                <Link
+                  href=""
+                  className="text-muted-foreground hover:text-foreground text-center transition-[color]"
+                >
+                  Reviews
+                </Link>
               </li>
-              <li className="text-muted-foreground transition-[color] text-center hover:text-foreground">
-                <Link href="">Community</Link>
+              <li>
+                <Link
+                  href=""
+                  className="text-muted-foreground hover:text-foreground text-center transition-[color]"
+                >
+                  Community
+                </Link>
               </li>
             </ul>
           </div>
