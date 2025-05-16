@@ -1,7 +1,10 @@
 import ThemeToggle from "./components/theme-toggle";
 
-import { ArrowRight, Search } from "lucide-react";
-import { Button } from "./components/ui/button";
+import { ArrowRight, ChevronRight, Search } from "lucide-react";
+import Link from "next/link";
+import { Badge } from "./components/ui/badge";
+import { Button, buttonVariants } from "./components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 
 function Home() {
   return (
@@ -41,8 +44,8 @@ function Home() {
           </div>
 
           <div className="hidden md:relative md:mx-auto md:mb-20 md:block md:max-w-168">
-            <div className="bg-foreground/10 hover:border-muted-foreground/50 focus-within:border-foreground flex items-center rounded-full border p-2 pl-6 transition-[border-color]">
-              <Search className="ml-3 h-5 w-5" />
+            <div className="bg-foreground/10 hover:border-muted-foreground/40 border-muted-foreground/20 focus-within:ring-foreground/60 flex items-center rounded-full border-2 p-2 pl-6 transition-[border-color] focus-within:ring-2">
+              <Search className="mr-3 h-5 w-5" />
               <input
                 type="text"
                 placeholder="Search for music, affinities, or people..."
@@ -56,6 +59,104 @@ function Home() {
                 Search
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div className="content-wrapper px-5">
+          <div className="mb-12 flex flex-col items-start justify-between md:flex-row md:items-center">
+            <div>
+              <p className="mb-4 text-3xl font-bold md:text-4xl">
+                Popular Polls
+              </p>
+              <p className="text-muted-foreground max-w-lg">
+                Discover what the community is voting on and add your voice to
+                the conversation.
+              </p>
+            </div>
+            <Link href="#" className={buttonVariants({ variant: "secondary" })}>
+              View All Polls <ChevronRight className="h-5 w-5" />
+            </Link>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              {
+                title: "Best Albums of 2023",
+                votes: 1243,
+                affinities: ["Contemporary", "Diverse"],
+                hot: true,
+              },
+              {
+                title: "Most Energetic Workout Songs",
+                votes: 876,
+                affinities: ["Energetic", "Motivational"],
+              },
+              {
+                title: "Albums That Define Gen Z",
+                votes: 754,
+                affinities: ["Cultural", "Defining"],
+              },
+              {
+                title: "Best Vocal Performances",
+                votes: 692,
+                affinities: ["Technical", "Emotional"],
+              },
+              {
+                title: "Most Innovative Production",
+                votes: 587,
+                affinities: ["Experimental", "Creative"],
+              },
+              {
+                title: "Songs That Make You Cry",
+                votes: 521,
+                affinities: ["Emotional", "Vulnerable"],
+              },
+            ].map((poll, i) => (
+              <Card
+                key={i}
+                className="hover:bg-accent max-h-112.5 cursor-pointer transition-[background-color]"
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2.5">
+                    {poll.title}
+                    {poll.hot && (
+                      <Badge
+                        className="bg-primary/20 text-primary"
+                        variant="default"
+                      >
+                        <span className="bg-primary h-2 w-2 rounded-full"></span>
+                        HOT
+                      </Badge>
+                    )}
+                  </CardTitle>
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    {poll.affinities.map((affinity, j) => (
+                      <Badge
+                        key={j}
+                        className="bg-card-foreground text-foreground/90 rounded-full text-xs"
+                        variant="secondary"
+                      >
+                        {affinity}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  {/* <div className={styles.voteCount}>
+                  <Image
+                    src={UsersIcon}
+                    width={20}
+                    height={20}
+                    className={styles.voteIcon}
+                    alt=""
+                  />
+                  <span>{poll.votes} votes</span>
+                </div> */}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
