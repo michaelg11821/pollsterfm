@@ -123,6 +123,9 @@
 }
 
 @utility content-wrapper {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
   max-width: var(--max-wrapper-width);
 }
 
