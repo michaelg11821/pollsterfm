@@ -12,7 +12,7 @@ async function Nav() {
   const user = session?.user;
 
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-25 flex h-16 w-full items-center border-b px-5 py-3 backdrop-blur">
+    <header className="bg-background sticky top-0 z-50 flex h-16 w-full items-center border-b px-5 py-3">
       <div className="content-wrapper flex w-full items-center">
         <nav className="flex w-full items-center justify-between">
           <div className="flex items-center gap-12.5">

@@ -20,46 +20,46 @@ function DesktopMenu({ profileIcon, username }: MenuProps) {
     <div className="hidden md:block">
       {username ? (
         <Menu.Root modal={false}>
-          <Menu.Trigger className="bg-background border-none rounded-full cursor-pointer flex items-center justify-center gap-1.5 m-0 outline-0 w-10 h-10 focus:outline-2 focus:outline-offset-2 relative">
+          <Menu.Trigger className="bg-background relative m-0 flex h-10 w-10 cursor-pointer items-center justify-center gap-1.5 rounded-full border-none outline-0 focus:outline-2 focus:outline-offset-2">
             {profileIcon && (
               <Image
                 src={profileIcon}
                 fill
-                className="object-cover rounded-full"
+                className="rounded-full object-cover"
                 alt="Menu"
               />
             )}
           </Menu.Trigger>
           <Menu.Portal>
             <Menu.Positioner
-              className="outline-0 isolate z-100"
+              className="isolate z-100 outline-0"
               sideOffset={7}
               alignOffset={-77}
               sticky={true}
             >
-              <Menu.Popup className="w-50 origin-[var(--transform-origin)] rounded-lg py-1 shadow-lg shadow-gray-200 outline outline-border transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 bg-background dark:shadow-none dark:-outline-offset-1">
+              <Menu.Popup className="outline-border bg-background w-50 origin-[var(--transform-origin)] rounded-lg py-1 shadow-lg shadow-gray-200 outline transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 dark:shadow-none dark:-outline-offset-1">
                 <Menu.Item
-                  className="flex items-center gap-2.5 cursor-pointer py-[9px] px-3.5 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0  data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-accent"
+                  className="data-[highlighted]:before:bg-accent flex cursor-pointer items-center gap-2.5 px-3.5 py-[9px] text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm"
                   render={
                     <Link
                       href={`/user/${username}`}
-                      className="block w-full h-full"
+                      className="block h-full w-full"
                     >
-                      <User className="w-5 h-5" />
+                      <User className="h-5 w-5" />
                       My Profile
                     </Link>
                   }
                 />
-                <Menu.Item className="flex items-center gap-2.5 cursor-pointer py-[9px] px-3.5 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0  data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-accent">
-                  <Settings className="w-5 h-5" />
+                <Menu.Item className="data-[highlighted]:before:bg-accent flex cursor-pointer items-center gap-2.5 px-3.5 py-[9px] text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm">
+                  <Settings className="h-5 w-5" />
                   Settings
                 </Menu.Item>
-                <Menu.Separator className="my-1.5 mx-4 h-[1px] bg-muted" />
+                <Menu.Separator className="bg-muted mx-4 my-1.5 h-[1px]" />
                 <Menu.Item
-                  className="flex items-center gap-2.5 cursor-pointer py-[9px] px-3.5 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0  data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm data-[highlighted]:before:bg-accent"
+                  className="data-[highlighted]:before:bg-accent flex cursor-pointer items-center gap-2.5 px-3.5 py-[9px] text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm"
                   onClick={handleSignOut}
                 >
-                  <LogOut className="w-5 h-5" /> Sign Out
+                  <LogOut className="h-5 w-5" /> Sign Out
                 </Menu.Item>
               </Menu.Popup>
             </Menu.Positioner>
