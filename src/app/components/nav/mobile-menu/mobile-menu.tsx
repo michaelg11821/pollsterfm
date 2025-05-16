@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Menu, X } from "lucide-react";
-import { MenuProps } from "../menuProps";
+import type { MenuProps } from "../menuProps";
 
 function MobileMenu({ profileIcon, username }: MenuProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
