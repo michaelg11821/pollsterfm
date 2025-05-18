@@ -6,6 +6,7 @@ import { toastManager } from "../lib/toast";
 import Nav from "./components/nav/nav";
 import { ThemeProvider } from "./components/theme-provider";
 
+import { Suspense } from "react";
 import Footer from "./components/footer/footer";
 import ToastList from "./components/toast-list/toast-list";
 import "./globals.css";
@@ -40,7 +41,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Toast.Provider toastManager={toastManager}>
-            <Nav />
+            <Suspense>
+              <Nav />
+            </Suspense>
             {children}
             <Footer />
             <Toast.Viewport className="absolute top-auto right-8 bottom-8 left-auto mt-0 mr-auto mb-0 ml-auto w-full max-w-75">
