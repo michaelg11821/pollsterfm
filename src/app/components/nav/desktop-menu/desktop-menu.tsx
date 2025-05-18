@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Menu } from "@base-ui-components/react/menu";
 
 import { LogOut, Settings, User } from "lucide-react";
+import ThemeToggle from "../../theme-toggle";
 import { buttonVariants } from "../../ui/button";
 import type { MenuProps } from "../menuProps";
 
@@ -53,6 +54,11 @@ function DesktopMenu({ profileIcon, username }: MenuProps) {
                 <Menu.Item className="data-[highlighted]:before:bg-accent flex cursor-pointer items-center gap-2.5 px-3.5 py-[9px] text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm">
                   <Settings className="h-5 w-5" />
                   Settings
+                </Menu.Item>
+                <Menu.Separator className="bg-muted mx-4 my-1.5 h-[1px]" />
+                <Menu.Item className="flex items-center gap-2.5 px-3.5 py-[9px] text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm">
+                  <ThemeToggle />
+                  Appearance
                 </Menu.Item>
                 <Menu.Separator className="bg-muted mx-4 my-1.5 h-[1px]" />
                 <Menu.Item

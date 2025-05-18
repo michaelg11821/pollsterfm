@@ -1,6 +1,4 @@
-import ThemeToggle from "./components/theme-toggle";
-
-import { ArrowRight, ChevronRight, Search } from "lucide-react";
+import { ArrowRight, ChevronRight, Search, Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "./components/ui/badge";
 import { Button, buttonVariants } from "./components/ui/button";
@@ -9,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 function Home() {
   return (
     <main>
-      <section className="relative pt-24 pb-20">
+      <section className="relative overflow-x-clip pt-24 pb-20">
         <div className="absolute inset-0 will-change-transform">
           <div className="bg-primary/5 absolute top-1/4 left-1/4 h-[500px] w-[500px] rounded-full blur-[100px]"></div>
           <div className="bg-primary/5 absolute right-1/4 bottom-1/4 h-[600px] w-[600px] rounded-full blur-[100px]"></div>
@@ -62,6 +60,7 @@ function Home() {
           </div>
         </div>
       </section>
+
       <section>
         <div className="content-wrapper px-5">
           <div className="mb-12 flex flex-col items-start justify-between md:flex-row md:items-center">
@@ -130,11 +129,11 @@ function Home() {
                       </Badge>
                     )}
                   </CardTitle>
-                  <div className="mb-3 flex flex-wrap gap-2">
+                  <div className="my-1 flex flex-wrap gap-2">
                     {poll.affinities.map((affinity, j) => (
                       <Badge
                         key={j}
-                        className="bg-card-foreground text-foreground/90 rounded-full text-xs"
+                        className="bg-muted-foreground/20 text-foreground rounded-full text-xs font-light"
                         variant="secondary"
                       >
                         {affinity}
@@ -142,25 +141,61 @@ function Home() {
                     ))}
                   </div>
                 </CardHeader>
-
-                <CardContent>
-                  {/* <div className={styles.voteCount}>
-                  <Image
-                    src={UsersIcon}
-                    width={20}
-                    height={20}
-                    className={styles.voteIcon}
-                    alt=""
-                  />
-                  <span>{poll.votes} votes</span>
-                </div> */}
+                <CardContent className="-mt-5">
+                  <div className="text-muted-foreground flex items-center text-sm">
+                    <Users className="mr-1 h-5 w-5" />
+                    <span>{poll.votes} votes</span>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
       </section>
-      <ThemeToggle />
+
+      <section className="py-20">
+        <div className="content-wrapper px-5">
+          <div className="mb-12 flex flex-col items-start justify-between md:flex-row md:items-center">
+            <div>
+              <p className="mb-4 text-3xl font-bold md:text-4xl">
+                Discover Through Affinities
+              </p>
+              <p className="text-muted-foreground max-w-lg">
+                Affinities connect you with people who feel the same way about
+                music.
+              </p>
+            </div>
+            <Link href="#" className={buttonVariants({ variant: "secondary" })}>
+              View All Affinities <ChevronRight className="h-5 w-5" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {[
+              { name: "Introspective" },
+              { name: "Energetic" },
+              { name: "Melancholic" },
+              { name: "Euphoric" },
+              { name: "Nostalgic" },
+              { name: "Atmospheric" },
+              { name: "Dreamy" },
+              { name: "Intense" },
+              { name: "Soothing" },
+              { name: "Rebellious" },
+              { name: "Ethereal" },
+              { name: "Passionate" },
+            ].map((affinity, i) => (
+              <Card
+                key={i}
+                className="bg-primary/20 border-primary/20 hover:bg-primary/30 h-32 cursor-pointer justify-center transition-[background-color]"
+              >
+                <span className="self-center text-lg font-medium">
+                  {affinity.name}
+                </span>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

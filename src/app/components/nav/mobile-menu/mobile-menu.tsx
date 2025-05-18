@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Menu, X } from "lucide-react";
+import ThemeToggle from "../../theme-toggle";
 import type { MenuProps } from "../menuProps";
 
 function MobileMenu({ profileIcon, username }: MenuProps) {
@@ -34,12 +35,12 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
         </button>
       </div>
       {mobileMenuOpen && (
-        <div className="absolute z-50 mt-12.5 -ml-5 w-full md:hidden">
+        <div className="absolute z-50 mt-[732px] -ml-5 w-full md:hidden">
           <div
-            className="bg-background/95 supports-[backdrop-filter]:bg-background/60 z-50 flex h-screen w-full flex-col gap-5"
+            className="bg-background/95 supports-[backdrop-filter]:bg-background/60 z-50 flex h-screen w-full flex-col"
             onClick={() => setMobileMenuOpen(false)}
           >
-            <ul className="flex list-none flex-col gap-2.5 py-5">
+            <ul className="flex list-none flex-col gap-2.5 pt-5">
               {username ? (
                 <>
                   <li>
@@ -68,15 +69,23 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
                       Account Settings
                     </Link>
                   </li>
-                  <li>
-                    <button
-                      type="button"
-                      className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
-                      onClick={handleSignOut}
-                    >
-                      Sign Out
-                    </button>
-                  </li>
+                  <ul className="list-none border-t py-1">
+                    <li className="flex h-12.5 w-full items-center gap-2.5 rounded-[10px] border-none bg-inherit pl-5 text-left text-lg">
+                      <ThemeToggle />
+                      Appearance
+                    </li>
+                  </ul>
+                  <ul className="list-none border-t py-2">
+                    <li>
+                      <button
+                        type="button"
+                        className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
+                        onClick={handleSignOut}
+                      >
+                        Sign Out
+                      </button>
+                    </li>
+                  </ul>
                 </>
               ) : (
                 <li>
