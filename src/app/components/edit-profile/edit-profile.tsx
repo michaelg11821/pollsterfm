@@ -18,8 +18,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
-import { SquarePen } from "lucide-react";
+import { Camera, ImageIcon, SquarePen, Trash2 } from "lucide-react";
 
 import { updateProfile } from "@/lib/data-access/user/update";
 import { headerImageSchema, profileIconSchema } from "@/lib/schemas/user";
@@ -140,22 +147,22 @@ function EditProfile({
     }
   };
 
-  const handleProfileIconChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // const handleProfileIconChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
 
-    if (file) {
-      const bytes = await fileToUint8Array(file);
-      const fileBytesObj = { bytes, name: file.name, mimeType: file.type };
+  //   if (file) {
+  //     const bytes = await fileToUint8Array(file);
+  //     const fileBytesObj = { bytes, name: file.name, mimeType: file.type };
 
-      const isValid = validateFileBytes(fileBytesObj, profileIconSchema);
+  //     const isValid = validateFileBytes(fileBytesObj, profileIconSchema);
 
-      if (isValid)
-        setFormData((prev) => ({
-          ...prev,
-          newProfileIcon: fileBytesObj,
-        }));
-    }
-  };
+  //     if (isValid)
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         newProfileIcon: fileBytesObj,
+  //       }));
+  //   }
+  // };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, newName: e.target.value }));
@@ -212,18 +219,18 @@ function EditProfile({
     setHeaderImgPreview(null);
   };
 
-  const onProfileIconReset = () => {
-    if (headerImgInputRef.current) {
-      headerImgInputRef.current.value = "";
-    }
+  // const onProfileIconReset = () => {
+  //   if (headerImgInputRef.current) {
+  //     headerImgInputRef.current.value = "";
+  //   }
 
-    setFormData((prev) => ({
-      ...prev,
-      newProfileIcon: null,
-      deleteProfileIcon: true,
-    }));
-    setProfileIconPreview(null);
-  };
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     newProfileIcon: null,
+  //     deleteProfileIcon: true,
+  //   }));
+  //   setProfileIconPreview(null);
+  // };
 
   return (
     <Dialog
@@ -287,8 +294,8 @@ function EditProfile({
                 className="object-cover"
               />
             )}
-            {/* <Menu.Root>
-              <Menu.Trigger
+            <DropdownMenu>
+              <DropdownMenuTrigger
                 render={
                   <button
                     className="absolute top-2 right-2 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 p-0 text-white transition-[background-color]"
@@ -298,32 +305,22 @@ function EditProfile({
                   </button>
                 }
               />
-              <Menu.Portal>
-                <Menu.Positioner
-                  className={styles.Positioner}
-                  sideOffset={2}
-                  alignOffset={0}
+              <DropdownMenuContent sideOffset={2}>
+                <DropdownMenuItem
+                  onClick={() => headerImgInputRef.current?.click()}
                 >
-                  <Menu.Popup className={styles.MenuPopup}>
-                    <Menu.Item
-                      className={styles.MenuItem}
-                      onClick={() => headerImgInputRef.current?.click()}
-                    >
-                      <ImageIcon className="h-5 w-5" />
-                      Upload Image
-                    </Menu.Item>
-                    <Menu.Separator className={styles.Separator} />
-                    <Menu.Item
-                      className={styles.MenuItem}
-                      onClick={() => onHeaderImgReset()}
-                      data-testid="header-remove"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                      Remove Image
-                    </Menu.Item>
-                  </Menu.Popup>
-                </Menu.Positioner>
-              </Menu.Portal>
+                  <ImageIcon className="h-5 w-5" />
+                  Upload Image
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => onHeaderImgReset()}
+                  data-testid="header-remove"
+                >
+                  <Trash2 className="h-5 w-5" />
+                  Remove Image
+                </DropdownMenuItem>
+              </DropdownMenuContent>
               <input
                 type="file"
                 ref={headerImgInputRef}
@@ -333,7 +330,8 @@ function EditProfile({
                 data-testid="header-upload"
                 onChange={handleHeaderImgChange}
               />
-            </Menu.Root> */}
+            </DropdownMenu>
+
             <div className="absolute bottom-2 left-4 rounded-lg bg-black/60 px-2 py-1 text-xs text-white/80">
               Header Image
             </div>
