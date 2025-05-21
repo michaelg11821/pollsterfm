@@ -9,7 +9,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { Suspense } from "react";
 import Footer from "./components/footer/footer";
 import NavSkeleton from "./components/nav/skeleton";
-import ToastList from "./components/toast-list/toast-list";
+import ToastList from "./components/ui/toast-list";
 import "./globals.css";
 
 const lexend = Lexend({
