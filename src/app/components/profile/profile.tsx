@@ -103,7 +103,7 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
                 </div>
               )}
             </div>
-            <div className="mt-4 flex gap-4">
+            <div className="mt-4 flex gap-4 text-sm">
               <Link
                 href="#"
                 className="text-foreground/80 hover:text-foreground"
