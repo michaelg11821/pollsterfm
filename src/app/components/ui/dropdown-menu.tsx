@@ -18,12 +18,12 @@ const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 const DropdownMenuContent = forwardRef<
   ElementRef<typeof DropdownMenuPrimitive.Popup>,
   ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Positioner>
->(({ className, sideOffset = 0, alignOffset = 0, ...props }, ref) => (
+>(({ className, sideOffset = 0, alignOffset = 0, children, ...props }, ref) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Positioner
       alignOffset={alignOffset}
       sideOffset={sideOffset}
-      className="isolate z-25 outline-0"
+      className="outline-none"
       {...props}
     >
       <DropdownMenuPrimitive.Popup
@@ -32,7 +32,9 @@ const DropdownMenuContent = forwardRef<
           "bg-popover text-popover-foreground outline-border origin-[var(--transform-origin)] rounded-md py-1 shadow-lg shadow-gray-200 outline transition-[transform,scale,opacity] data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0 dark:shadow-none dark:-outline-offset-1",
           className,
         )}
-      />
+      >
+        {children}
+      </DropdownMenuPrimitive.Popup>
     </DropdownMenuPrimitive.Positioner>
   </DropdownMenuPrimitive.Portal>
 ));
@@ -47,7 +49,7 @@ const DropdownMenuItem = forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "data-[highlighted]:before:bg-popover/8 flex cursor-pointer px-2.5 py-1.5 text-sm leading-4 outline-0 select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm",
+      "data-[highlighted]:before:bg-popover-foreground/8 flex cursor-pointer items-center gap-2.5 px-2.5 py-1.5 text-[0.83rem] leading-4 outline-0 select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm",
       className,
     )}
     {...props}
