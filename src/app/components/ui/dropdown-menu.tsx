@@ -23,7 +23,7 @@ const DropdownMenuContent = forwardRef<
     <DropdownMenuPrimitive.Positioner
       alignOffset={alignOffset}
       sideOffset={sideOffset}
-      className="outline-none"
+      className="isolate z-100 outline-none"
       {...props}
     >
       <DropdownMenuPrimitive.Popup
