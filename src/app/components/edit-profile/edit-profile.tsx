@@ -31,7 +31,7 @@ import { Camera, ImageIcon, SquarePen, Trash2 } from "lucide-react";
 import { updateProfile } from "@/lib/data-access/user/update";
 import { headerImageSchema, profileIconSchema } from "@/lib/schemas/user";
 import { toastManager } from "@/lib/toast";
-import { fileToUint8Array, uInt8ArrayToBlobUrl } from "@/lib/utils";
+import { cn, fileToUint8Array, uInt8ArrayToBlobUrl } from "@/lib/utils";
 
 import type { EditProfileFormData, FileBytes } from "@/lib/types/formData";
 
@@ -147,22 +147,22 @@ function EditProfile({
     }
   };
 
-  // const handleProfileIconChange = async (e: ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
+  const handleProfileIconChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
 
-  //   if (file) {
-  //     const bytes = await fileToUint8Array(file);
-  //     const fileBytesObj = { bytes, name: file.name, mimeType: file.type };
+    if (file) {
+      const bytes = await fileToUint8Array(file);
+      const fileBytesObj = { bytes, name: file.name, mimeType: file.type };
 
-  //     const isValid = validateFileBytes(fileBytesObj, profileIconSchema);
+      const isValid = validateFileBytes(fileBytesObj, profileIconSchema);
 
-  //     if (isValid)
-  //       setFormData((prev) => ({
-  //         ...prev,
-  //         newProfileIcon: fileBytesObj,
-  //       }));
-  //   }
-  // };
+      if (isValid)
+        setFormData((prev) => ({
+          ...prev,
+          newProfileIcon: fileBytesObj,
+        }));
+    }
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, newName: e.target.value }));
@@ -219,18 +219,18 @@ function EditProfile({
     setHeaderImgPreview(null);
   };
 
-  // const onProfileIconReset = () => {
-  //   if (headerImgInputRef.current) {
-  //     headerImgInputRef.current.value = "";
-  //   }
+  const onProfileIconReset = () => {
+    if (headerImgInputRef.current) {
+      headerImgInputRef.current.value = "";
+    }
 
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     newProfileIcon: null,
-  //     deleteProfileIcon: true,
-  //   }));
-  //   setProfileIconPreview(null);
-  // };
+    setFormData((prev) => ({
+      ...prev,
+      newProfileIcon: null,
+      deleteProfileIcon: true,
+    }));
+    setProfileIconPreview(null);
+  };
 
   return (
     <Dialog
@@ -298,7 +298,7 @@ function EditProfile({
               <DropdownMenuTrigger
                 render={
                   <button
-                    className="absolute top-2 right-2 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 p-0 text-white transition-[background-color]"
+                    className="absolute top-2 right-2 inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 p-0 text-white transition-[background-color]"
                     aria-label="Upload header image"
                   >
                     <Camera className="h-4 w-4" />
@@ -331,7 +331,6 @@ function EditProfile({
                 onChange={handleHeaderImgChange}
               />
             </DropdownMenu>
-
             <div className="absolute bottom-2 left-4 rounded-lg bg-black/60 px-2 py-1 text-xs text-white/80">
               Header Image
             </div>
@@ -347,8 +346,8 @@ function EditProfile({
                   className="rounded-full object-cover"
                 />
               )}
-              {/* <Menu.Root>
-                <Menu.Trigger
+              <DropdownMenu>
+                <DropdownMenuTrigger
                   render={
                     <button
                       className="absolute right-0 bottom-0 inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 p-0 text-white transition-[background-color]"
@@ -358,32 +357,22 @@ function EditProfile({
                     </button>
                   }
                 />
-                <Menu.Portal>
-                  <Menu.Positioner
-                    className={styles.Positioner}
-                    sideOffset={2}
-                    alignOffset={-20}
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onClick={() => profilePicInputRef.current?.click()}
                   >
-                    <Menu.Popup className={styles.MenuPopup}>
-                      <Menu.Item
-                        className={styles.MenuItem}
-                        onClick={() => profilePicInputRef.current?.click()}
-                      >
-                        <ImageIcon className="h-5 w-5" />
-                        Upload Image
-                      </Menu.Item>
-                      <Menu.Separator className={styles.Separator} />
-                      <Menu.Item
-                        className={styles.MenuItem}
-                        onClick={() => onProfileIconReset()}
-                        data-testid="profile-picture-remove"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                        Remove Image
-                      </Menu.Item>
-                    </Menu.Popup>
-                  </Menu.Positioner>
-                </Menu.Portal>
+                    <ImageIcon className="h-5 w-5" />
+                    Upload Image
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => onProfileIconReset()}
+                    data-testid="profile-picture-remove"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                    Remove Image
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
                 <input
                   type="file"
                   ref={profilePicInputRef}
@@ -394,7 +383,7 @@ function EditProfile({
                   data-testid="profile-picture-upload"
                   onChange={handleProfileIconChange}
                 />
-              </Menu.Root> */}
+              </DropdownMenu>
             </div>
             <div className="text-foreground text-sm">
               <p className="font-medium">Profile Picture</p>
@@ -453,10 +442,13 @@ function EditProfile({
           </div>
           <div className="mt-8 flex justify-end gap-2 border-t pt-4">
             <DialogClose
-              className={buttonVariants({
-                variant: "outlineWithPointer",
-                size: "default",
-              })}
+              className={cn(
+                buttonVariants({
+                  variant: "outline",
+                  size: "default",
+                }),
+                "cursor-pointer",
+              )}
               type="button"
               disabled={saving}
             >
