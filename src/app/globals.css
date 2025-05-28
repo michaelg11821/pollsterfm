@@ -40,6 +40,20 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-reaction-float: reactionFloat 1s ease-out forwards;
+
+  @keyframes reactionFloat {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1) rotate(0deg);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -40px) scale(1.2) rotate(var(--rotation));
+    }
+  }
 }
 
 :root {

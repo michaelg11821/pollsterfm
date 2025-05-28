@@ -1,6 +1,12 @@
+import NowPlaying from "@/app/components/now-playing/now-playing";
+import NowPlayingSkeleton from "@/app/components/now-playing/skeleton";
 import ProfileHeader from "@/app/components/profile/profile";
 import ProfileHeaderSkeleton from "@/app/components/profile/skeleton";
+import { buttonVariants } from "@/app/components/ui/button";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { ChevronRight } from "lucide-react";
 import { type Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -27,29 +33,31 @@ async function Profile({ params }: ProfileProps) {
         <Suspense fallback={<ProfileHeaderSkeleton />}>
           <ProfileHeader username={username} />
         </Suspense>
-        {/* <section className={styles.recentlyPlayed}>
-          <div className={styles.sectionWrapper}>
-            <div className={styles.recentlyPlayedHeader}>
-              <h2 className={styles.sectionTitle}>Recently Played</h2>
+        <section className="py-6">
+          <div className="content-wrapper px-5 xl:p-0">
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-xl font-bold">Recently Played</h2>
               <Link
-                className={styles.viewHistory}
+                className={buttonVariants({ variant: "ghost" })}
                 href={`/user/${username}/history`}
               >
-                View More{" "}
-                <Image src={RightChevron} width={20} height={20} alt="" />
+                View More <ChevronRight className="h-5 w-5" />
               </Link>
             </div>
-            <div className={styles.tracksContainer}>
-              <Suspense fallback={<NowPlayingSkeleton />}>
-                <NowPlaying username={username} />
-              </Suspense>
-              <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
+
+            <Card>
+              <CardContent>
+                <Suspense fallback={<NowPlayingSkeleton />}>
+                  <NowPlaying username={username} />
+                </Suspense>
+                {/* <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
                 <RecentlyPlayed username={username} limit={4} />
-              </Suspense>
-            </div>
+              </Suspense> */}
+              </CardContent>
+            </Card>
           </div>
         </section>
-        <section className={styles.affinities}>
+        {/* <section className={styles.affinities}>
           <div className={styles.sectionWrapper}>
             <Suspense fallback={<AffinitiesSkeleton />}>
               <Affinities />

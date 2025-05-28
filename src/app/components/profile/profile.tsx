@@ -34,16 +34,17 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
 
   return (
     <>
-      <div className="relative h-36 w-full bg-[linear-gradient(to_right,oklch(0.40_0.05_286.033_/_50%),oklch(0.22_0.08_286.033_/_50%))] xl:h-48">
+      <div className="relative h-36 w-full xl:h-48">
         {profile.headerImage && (
           <Image
             src={profile.headerImage}
             alt=""
             fill
             sizes="100%"
-            className="object-cover opacity-4"
+            className="object-cover"
           />
         )}
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_0%,rgba(0,0,0,0.35)_70%,rgba(0,0,0,0.7)_100%)]" />
       </div>
       <div className="content-wrapper relative px-5 xl:p-0">
         <div className="relative -mt-16 flex flex-col gap-6 md:-mt-20 md:flex-row">
@@ -64,8 +65,10 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
           <div className="-mt-7.5 flex-1 pt-2 md:mt-0 md:pt-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h1 className="text-2xl font-bold">{profile.name}</h1>
-                <p className="text-muted-foreground">@{username}</p>
+                <h1 className="text-2xl font-bold text-white">
+                  {profile.name}
+                </h1>
+                <p className="text-[#9F9F9A]">@{username}</p>
               </div>
               <div className="flex items-end gap-2">
                 {loggedInUser?.username === username ? (
@@ -88,7 +91,7 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
                   variant="outline"
                   className="cursor-pointer bg-transparent px-2.5 py-3.5"
                 >
-                  <Ellipsis className="h-5 w-5" />
+                  <Ellipsis className="text-muted-foreground h-5 w-5" />
                 </Button>
               </div>
             </div>
