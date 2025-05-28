@@ -18,7 +18,7 @@ function Track({ album, trackTitle, playedAt }: TrackProps) {
   return (
     <Link
       className="hover:bg-foreground/10 flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-[background-color]"
-      href="#"
+      href={`/catalog/${album.artists[0].name}/${album.name}/${trackTitle}`}
     >
       <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg">
         <Image src={album.images[0].url} alt="" fill sizes="100%" priority />
