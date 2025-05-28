@@ -2,6 +2,8 @@ import NowPlaying from "@/app/components/now-playing/now-playing";
 import NowPlayingSkeleton from "@/app/components/now-playing/skeleton";
 import ProfileHeader from "@/app/components/profile/profile";
 import ProfileHeaderSkeleton from "@/app/components/profile/skeleton";
+import RecentlyPlayed from "@/app/components/recently-played/recently-played";
+import RecentlyPlayedSkeleton from "@/app/components/recently-played/skeleton";
 import { buttonVariants } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { ChevronRight } from "lucide-react";
@@ -50,9 +52,9 @@ async function Profile({ params }: ProfileProps) {
                 <Suspense fallback={<NowPlayingSkeleton />}>
                   <NowPlaying username={username} />
                 </Suspense>
-                {/* <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
-                <RecentlyPlayed username={username} limit={4} />
-              </Suspense> */}
+                <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
+                  <RecentlyPlayed username={username} limit={4} />
+                </Suspense>
               </CardContent>
             </Card>
           </div>

@@ -24,7 +24,7 @@ async function NowPlaying({ username }: NowPlayingProps) {
 
   return (
     <div className="mb-6 flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center">
-      <div className="relative mx-auto my-0 h-24 w-24 shrink-0 overflow-hidden rounded-xl sm:m-0 sm:h-18 sm:w-18">
+      <div className="relative mx-auto my-0 h-24 w-24 shrink-0 overflow-hidden rounded-lg sm:m-0 sm:h-18 sm:w-18">
         <Image
           src={currentlyPlaying.item.album.images[0].url}
           alt=""
