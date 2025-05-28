@@ -1,3 +1,5 @@
+import Affinities from "@/app/components/affinities/affinities";
+import AffinitiesSkeleton from "@/app/components/affinities/skeleton";
 import NowPlaying from "@/app/components/now-playing/now-playing";
 import NowPlayingSkeleton from "@/app/components/now-playing/skeleton";
 import ProfileHeader from "@/app/components/profile/profile";
@@ -59,13 +61,13 @@ async function Profile({ params }: ProfileProps) {
             </Card>
           </div>
         </section>
-        {/* <section className={styles.affinities}>
-          <div className={styles.sectionWrapper}>
+        <section className="px-0 py-9">
+          <div className="content-wrapper px-5 xl:p-0">
             <Suspense fallback={<AffinitiesSkeleton />}>
               <Affinities />
             </Suspense>
           </div>
-        </section> */}
+        </section>
       </div>
     </main>
   );
