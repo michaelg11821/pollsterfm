@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Track from "../../track/track";
 import { MAX_TRACKS_WITHOUT_IMPORT, TRACK_CHUNK_SIZE } from "./config";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const hasImport = false;
 
 function SpotifyListeningHistory() {

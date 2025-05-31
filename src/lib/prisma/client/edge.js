@@ -229,7 +229,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/michaelgarcia/repos/pollsterfm/src/lib/prisma/client",
+      "value": "/home/leavesturninsideyou/repos/pollsterfm/src/lib/prisma/client",
       "fromEnvVar": null
     },
     "config": {
@@ -238,7 +238,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "debian-openssl-3.0.x",
         "native": true
       },
       {
@@ -247,7 +247,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/michaelgarcia/repos/pollsterfm/src/lib/prisma/schema.prisma",
+    "sourceFilePath": "/home/leavesturninsideyou/repos/pollsterfm/src/lib/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
