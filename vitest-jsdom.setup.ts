@@ -5,6 +5,12 @@ import { TextEncoder } from "util";
 
 afterEach(() => {
   cleanup();
+
+  vi.restoreAllMocks();
+});
+
+afterAll(() => {
+  vi.unstubAllGlobals();
 });
 
 globalThis.URL.createObjectURL = vi.fn(() => "blob:fake-url");
