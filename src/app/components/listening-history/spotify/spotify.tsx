@@ -7,12 +7,19 @@ import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Track from "../../track/track";
-import { MAX_TRACKS_WITHOUT_IMPORT, TRACK_CHUNK_SIZE } from "./config";
+import {
+  MAX_TRACKS_WITHOUT_IMPORT,
+  TRACK_CHUNK_SIZE,
+  trackFetchingError,
+} from "./config";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const hasImport = false;
+type SpotifyListeningHistoryProps = {
+  historyImported: boolean;
+};
 
-function SpotifyListeningHistory() {
+function SpotifyListeningHistory({
+  historyImported = false,
+}: SpotifyListeningHistoryProps) {
   // show a toast on error
   const [tracks, setTracks] = useState<SpotifyRecentlyPlayedResponse["items"]>(
     [],
@@ -37,13 +44,13 @@ function SpotifyListeningHistory() {
       );
 
       if (!response || !response.items) {
-        throw new Error("Failed to load tracks. Please try again.");
+        throw new Error(trackFetchingError);
       }
 
       setTracks((prevTracks) => {
         const newTracks = [...prevTracks, ...response.items];
 
-        if (newTracks.length >= MAX_TRACKS_WITHOUT_IMPORT) {
+        if (newTracks.length >= MAX_TRACKS_WITHOUT_IMPORT && !historyImported) {
           setHasMore(false);
         }
 
@@ -65,7 +72,7 @@ function SpotifyListeningHistory() {
     } finally {
       setLoading(false);
     }
-  }, [username, loading, hasMore, nextUrl]);
+  }, [username, loading, hasMore, nextUrl, historyImported]);
 
   useEffect(() => {
     getTracks();
