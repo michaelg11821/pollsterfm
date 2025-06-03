@@ -1,6 +1,5 @@
 import { getRecentlyPlayedTracks } from "@/lib/data-access/user/spotify";
 import type { PlayHistory } from "@/lib/types/spotify";
-// import type { SpotifyRecentlyPlayedResponse } from "@/lib/types/spotifyResponses";
 import { act, render, screen } from "@testing-library/react";
 import {
   MAX_TRACKS_WITHOUT_IMPORT,
