@@ -11,17 +11,20 @@ import { callbackUrl } from "./config";
 
 import { verifyTurnstile } from "../../../lib/actions";
 
+import { toastManager } from "@/lib/toast";
 import SpotifySvg from "../../../../public/spotify.svg";
 import { Button } from "../ui/button";
 
 function ProviderLogins() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSignIn = async () => {
     if (!turnstileToken) {
-      return setError("Please complete the verification.");
+      return toastManager.add({
+        title: "Error",
+        description: "Please complete the verification.",
+      });
     }
 
     try {
@@ -32,12 +35,18 @@ function ProviderLogins() {
       if (result.success) {
         return signIn("spotify", { callbackUrl });
       } else {
-        return setError("Verification failed. Please try again.");
+        return toastManager.add({
+          title: "Error",
+          description: "Verification failed. Please try again.",
+        });
       }
     } catch (err: unknown) {
       console.error(err);
 
-      return setError("Verification failed. Please try again.");
+      return toastManager.add({
+        title: "Error",
+        description: "Verification failed. Please try again.",
+      });
     } finally {
       return setLoading(false);
     }
@@ -45,7 +54,6 @@ function ProviderLogins() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-6">
-      {error && <p className="text-primary">{error}</p>}
       {loading && <p>Please wait...</p>}
       <Button
         variant="outline"
@@ -61,7 +69,12 @@ function ProviderLogins() {
       <Turnstile
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
         onSuccess={(token) => setTurnstileToken(token)}
-        onError={() => setError("Verification failed. Please try again.")}
+        onError={() =>
+          toastManager.add({
+            title: "Error",
+            description: "Verification failed. Please try again.",
+          })
+        }
       />
     </div>
   );
