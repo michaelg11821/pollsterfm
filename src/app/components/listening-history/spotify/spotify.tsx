@@ -20,7 +20,6 @@ type SpotifyListeningHistoryProps = {
 function SpotifyListeningHistory({
   historyImported = false,
 }: SpotifyListeningHistoryProps) {
-  // show a toast on error
   const [tracks, setTracks] = useState<SpotifyRecentlyPlayedResponse["items"]>(
     [],
   );
@@ -108,13 +107,11 @@ function SpotifyListeningHistory({
 
   return (
     <>
-      <div className="content-wrapper flex flex-col gap-1 px-5 py-2.5 xl:p-0">
-        {trackItems}
-      </div>
-      <div className="content-wrapper px-5 xl:p-0">
+      <div className="flex flex-col gap-1.5 py-2.5">{trackItems}</div>
+      <div>
         <div
           ref={loaderRef}
-          className="flex justify-center px-0 py-8"
+          className="flex justify-center px-0 py-6"
           data-testid="loader-ref"
         >
           {loading && (

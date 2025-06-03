@@ -8,6 +8,7 @@ import RecentlyPlayed from "@/app/components/recently-played/recently-played";
 import RecentlyPlayedSkeleton from "@/app/components/recently-played/skeleton";
 import { buttonVariants } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
+import { siteName } from "@/config";
 import { ChevronRight } from "lucide-react";
 import { type Metadata } from "next";
 import Link from "next/link";
@@ -19,8 +20,8 @@ type ProfileProps = {
 };
 
 export const metadata: Metadata = {
-  title: "(username) | Pollster.fm",
-  description: "Check out (username)'s profile on Pollster.fm!",
+  title: `(username) | ${siteName}`,
+  description: `Check out (username)'s profile on ${siteName}!`,
 };
 
 async function Profile({ params }: ProfileProps) {
@@ -28,8 +29,8 @@ async function Profile({ params }: ProfileProps) {
 
   if (!username) return redirect("/not-found");
 
-  metadata.title = `${username} | Pollster.fm`;
-  metadata.description = `Check out ${username}'s profile on Pollster.fm!`;
+  metadata.title = `${username} | ${siteName}`;
+  metadata.description = `Check out ${username}'s profile on ${siteName}!`;
 
   return (
     <main>
