@@ -1,1 +1,1 @@
-export const callbackUrl = "/my-profile";
+export const profilePath = "/my-profile";
