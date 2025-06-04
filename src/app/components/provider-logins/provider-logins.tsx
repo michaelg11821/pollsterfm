@@ -7,17 +7,24 @@ import { Turnstile } from "@marsidev/react-turnstile";
 
 import Image from "next/image";
 
-import { callbackUrl } from "./config";
+import { profilePath } from "./config";
 
 import { verifyTurnstile } from "../../../lib/actions";
 
 import { toastManager } from "@/lib/toast";
+import { useSearchParams } from "next/navigation";
 import SpotifySvg from "../../../../public/spotify.svg";
 import { Button } from "../ui/button";
 
 function ProviderLogins() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirectTo");
+  const decodedRedirectPath = redirectPath
+    ? decodeURIComponent(redirectPath)
+    : null;
 
   const handleSignIn = async () => {
     if (!turnstileToken) {
@@ -33,7 +40,9 @@ function ProviderLogins() {
       const result = await verifyTurnstile(turnstileToken);
 
       if (result.success) {
-        return signIn("spotify", { callbackUrl });
+        return signIn("spotify", {
+          redirectTo: decodedRedirectPath ?? profilePath,
+        });
       } else {
         return toastManager.add({
           title: "Error",

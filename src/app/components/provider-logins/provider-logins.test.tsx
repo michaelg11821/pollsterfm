@@ -1,11 +1,13 @@
 import userEvent from "@testing-library/user-event";
 
-import { callbackUrl } from "./config";
+import { profilePath } from "./config";
 
 import { render, screen, waitFor } from "@testing-library/react";
 import { signIn } from "next-auth/react";
 
+import TestToastWrapper from "@/lib/__tests__/utils/test-toast-wrapper";
 import { verifyTurnstile } from "@/lib/actions";
+import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 import ProviderLogins from "./provider-logins";
 
 vi.mock("../../../lib/actions", () => ({
@@ -28,7 +30,7 @@ vi.mock("next-auth/react", () => ({
       error: null,
       status: 200,
       ok: true,
-      url: options?.callbackUrl || callbackUrl,
+      url: options?.profilePath || profilePath,
     });
   }),
 }));
@@ -46,6 +48,15 @@ vi.mock("@marsidev/react-turnstile", () => ({
   },
 }));
 
+vi.mock(import("next/navigation"), async (importOriginal) => {
+  const actual = await importOriginal();
+
+  return {
+    ...actual,
+    useSearchParams: vi.fn(() => new ReadonlyURLSearchParams()),
+  };
+});
+
 describe("ProviderLogins", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -54,7 +65,7 @@ describe("ProviderLogins", () => {
   it("calls signIn after successful Turnstile verification", async () => {
     const user = userEvent.setup();
 
-    render(<ProviderLogins />);
+    render(<ProviderLogins />, { wrapper: TestToastWrapper });
 
     const turnstile = screen.getByTestId("turnstile");
 
@@ -70,7 +81,7 @@ describe("ProviderLogins", () => {
 
     await waitFor(() => {
       expect(signIn).toHaveBeenCalledWith("spotify", {
-        callbackUrl,
+        redirectTo: profilePath,
       });
     });
   });
@@ -78,7 +89,7 @@ describe("ProviderLogins", () => {
   it("shows loading state during verification", async () => {
     const user = userEvent.setup();
 
-    render(<ProviderLogins />);
+    render(<ProviderLogins />, { wrapper: TestToastWrapper });
 
     const turnstile = screen.getByTestId("turnstile");
 
@@ -99,6 +110,37 @@ describe("ProviderLogins", () => {
       { timeout: 200 },
     );
   });
+
+  it("redirectTo after successful sign in", async () => {
+    const mockedUseSearchParams = vi.mocked(useSearchParams);
+    mockedUseSearchParams.mockReturnValue(
+      new ReadonlyURLSearchParams({
+        redirectTo: encodeURIComponent("/settings"),
+      }),
+    );
+
+    const user = userEvent.setup();
+
+    render(<ProviderLogins />, { wrapper: TestToastWrapper });
+
+    const turnstile = screen.getByTestId("turnstile");
+
+    await user.click(turnstile);
+
+    await waitFor(() => {
+      expect(screen.getByText("Sign in with Spotify")).not.toBeDisabled();
+    });
+
+    const spotifySignIn = screen.getByText("Sign in with Spotify");
+
+    await user.click(spotifySignIn);
+
+    await waitFor(() => {
+      expect(signIn).toHaveBeenCalledWith("spotify", {
+        redirectTo: "/settings",
+      });
+    });
+  });
 });
 
 describe("ProviderLogins errors", () => {
@@ -109,7 +151,7 @@ describe("ProviderLogins errors", () => {
   it("sign in without turnstile token fails", async () => {
     const user = userEvent.setup();
 
-    render(<ProviderLogins />);
+    render(<ProviderLogins />, { wrapper: TestToastWrapper });
 
     const spotifySignIn = screen.getByRole("button", {
       name: "Sign in with Spotify",
@@ -135,7 +177,7 @@ describe("ProviderLogins errors", () => {
 
     const user = userEvent.setup();
 
-    render(<ProviderLogins />);
+    render(<ProviderLogins />, { wrapper: TestToastWrapper });
 
     const turnstile = screen.getByTestId("turnstile");
     await user.click(turnstile);
