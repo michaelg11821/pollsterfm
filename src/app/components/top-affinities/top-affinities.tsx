@@ -2,7 +2,13 @@ import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { Card, CardContent, CardHeader } from "../ui/card";
 
-async function Affinities() {
+type TopAffinitiesProps = {
+  category: "user" | "artist" | "album" | "track";
+  itemName: string;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function TopAffinities({ category, itemName }: TopAffinitiesProps) {
   const temporaryAffinities = [
     { name: "Nostalgic", score: 92 },
     { name: "Atmospheric", score: 87 },
@@ -44,4 +50,4 @@ async function Affinities() {
   );
 }
 
-export default Affinities;
+export default TopAffinities;

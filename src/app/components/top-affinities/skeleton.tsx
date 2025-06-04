@@ -1,7 +1,7 @@
 import { buttonVariants } from "../ui/button";
 import { Card, CardContent, CardHeader } from "../ui/card";
 
-function AffinitiesSkeleton() {
+function TopAffinitiesSkeleton() {
   const placeholderItems: null[] = Array(6).fill(null);
 
   return (
@@ -27,4 +27,4 @@ function AffinitiesSkeleton() {
   );
 }
 
-export default AffinitiesSkeleton;
+export default TopAffinitiesSkeleton;
