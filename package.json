@@ -60,6 +60,6 @@
     "vitest-mock-extended": "^3.1.0"
   },
   "prisma": {
-    "schema": "src/lib/prisma/schema.prisma"
+    "schema": "./prisma/schema.prisma"
   }
 }
