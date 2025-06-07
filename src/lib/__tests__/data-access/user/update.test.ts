@@ -5,8 +5,8 @@ import { supabaseMock } from "../../../__mocks__/supabase";
 
 import { auth } from "../../../auth";
 
-import { Prisma } from "@/lib/prisma/client";
 import { type MockedFunction } from "vitest";
+import { Prisma } from "../../../../../prisma/client";
 
 vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
