@@ -11,7 +11,7 @@ import type { FirstArtistResult } from "../types/internalResponses";
 import type { TopAlbum } from "../types/pollster";
 
 /**
- * Returns information about the first artists that appear in each search.
+ * Returns information about the first artists that appear in each search. The result is cached by Next.js.
  *
  * Currently searches Spotify and Last.fm. Images from Last.fm are not provided.
  *
