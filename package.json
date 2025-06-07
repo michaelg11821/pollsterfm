@@ -10,8 +10,7 @@
     "test": "vitest --config vitest.config.ts",
     "migrate:dev": "dotenv -e .env.development -- pnpm dlx prisma migrate dev",
     "migrate:prod": "pnpm dlx prisma migrate deploy",
-    "prisma:generate": "pnpm dlx prisma generate --schema=./src/lib/prisma/schema.prisma",
-    "postinstall": "pnpm dlx prisma generate --schema=./src/lib/prisma/schema.prisma"
+    "postinstall": "prisma generate && ./scripts/copy-prisma-binary.sh"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.0",
