@@ -1,6 +1,5 @@
 generator client {
     provider      = "prisma-client"
-    output        = "./client"
     binaryTargets = ["native", "darwin-arm64", "rhel-openssl-3.0.x"]
 }
 
