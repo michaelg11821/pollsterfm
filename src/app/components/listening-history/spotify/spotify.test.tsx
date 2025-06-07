@@ -1,6 +1,6 @@
 import { getRecentlyPlayedTracks } from "@/lib/data-access/user/spotify";
 import type { PlayHistory } from "@/lib/types/spotify";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import {
   MAX_TRACKS_WITHOUT_IMPORT,
   TRACK_CHUNK_SIZE,
@@ -92,8 +92,10 @@ describe("spotify listening history", () => {
         render(<SpotifyListeningHistory historyImported={false} />);
       });
 
-      const initialTracks = await screen.findAllByText("taylor swift song");
-      expect(initialTracks.length).toBe(TRACK_CHUNK_SIZE);
+      await waitFor(() => {
+        const initialTracks = screen.getAllByText("taylor swift song");
+        expect(initialTracks.length).toBe(TRACK_CHUNK_SIZE);
+      });
 
       const loaderElement = screen.getByTestId("loader-ref");
 
@@ -101,15 +103,19 @@ describe("spotify listening history", () => {
         io.enterNode(loaderElement);
       });
 
-      const moreTracks = await screen.findAllByText("taylor swift song");
-      expect(moreTracks.length).toBe(MAX_TRACKS_WITHOUT_IMPORT);
+      await waitFor(() => {
+        const moreTracks = screen.getAllByText("taylor swift song");
+        expect(moreTracks.length).toBe(MAX_TRACKS_WITHOUT_IMPORT);
+      });
 
       act(() => {
         io.enterNode(loaderElement);
       });
 
-      const sameAsMoreTracks = await screen.findAllByText("taylor swift song");
-      expect(sameAsMoreTracks.length).toBe(MAX_TRACKS_WITHOUT_IMPORT);
+      await waitFor(() => {
+        const sameAsMoreTracks = screen.getAllByText("taylor swift song");
+        expect(sameAsMoreTracks.length).toBe(MAX_TRACKS_WITHOUT_IMPORT);
+      });
     });
   });
 
