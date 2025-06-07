@@ -11,7 +11,7 @@ import { getSupabaseFileName } from "@/lib/utils";
 import type { EditProfileFormData } from "@/lib/types/formData";
 import type { UpdateProfileResult } from "@/lib/types/internalResponses";
 import { ZodError } from "zod";
-import { Prisma } from "../../../../prisma/client";
+import { Prisma } from "../../prisma/client";
 
 /**
  * A function that updates the authenticated user's profile with the given form data.
