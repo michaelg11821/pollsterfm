@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { formatDistanceToNowStrict, type Month } from "date-fns";
 import { enUS } from "date-fns/locale";
+import { distance } from "fastest-levenshtein";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -79,4 +80,36 @@ export function dateStringDistanceToNow(dateString: string): string {
       addSuffix: true,
     });
   }
+}
+
+/**
+ * Removes diacritics, normalizes Unicode, and lowercases a string.
+ *
+ * @param str A string. Usually an artist name, an album name, or a track name.
+ * @returns The normalized string.
+ */
+export function normalizeString(str: string): string {
+  return str
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+/**
+ * Checks if two strings are similar. Results will vary based on the provided threshold.
+ *
+ * @param query A search query.
+ * @param candidate The string to compare to.
+ * @param threshold Default: 3. How "forgiving" the comparison will be. Generally a number from 2-4.
+ * @returns A boolean.
+ */
+export function isSimilar(
+  query: string,
+  candidate: string,
+  threshold = 3,
+): boolean {
+  const normQuery = normalizeString(query);
+  const normCandidate = normalizeString(candidate);
+
+  return distance(normQuery, normCandidate) <= threshold;
 }
