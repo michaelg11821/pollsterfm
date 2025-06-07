@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "../ui/badge";
+import { buttonVariants } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 const similarArtists = [
@@ -45,8 +46,13 @@ function SimilarTo({ category, itemName }: SimilarToProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Similar {upperCategory}s</CardTitle>
+      <CardHeader className="mb-0 flex items-center justify-between">
+        <CardTitle className="text-xl font-bold">
+          Similar {upperCategory}s
+        </CardTitle>
+        <Link href="#" className={buttonVariants({ variant: "ghost" })}>
+          View All
+        </Link>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
