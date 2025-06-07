@@ -17,20 +17,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Run linter
-        run: npm run lint
+        run: pnpm run lint
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
 
       - name: Run tests
-        run: npm run test
+        run: pnpm run test
 
       - name: Apply database migrations
-        run: npm run migrate:prod
+        run: pnpm run migrate:prod
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
