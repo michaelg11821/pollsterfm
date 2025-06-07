@@ -51,7 +51,7 @@ async function TopListeners({ category, itemName }: TopListenersProps) {
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold">Top Listeners</h2>
         <Link href="#" className={buttonVariants({ variant: "outline" })}>
-          View All Listeners
+          View All
         </Link>
       </div>
 
