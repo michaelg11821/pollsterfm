@@ -47,7 +47,7 @@ export default function RootLayout({
             </Suspense>
             {children}
             <Footer />
-            <Toast.Viewport className="absolute top-auto right-8 bottom-8 left-auto mt-0 mr-auto mb-0 ml-auto w-full max-w-75">
+            <Toast.Viewport className="fixed top-auto right-4 bottom-4 left-auto mx-auto my-0 w-62.5 sm:right-8 sm:bottom-8 sm:w-75">
               <ToastList />
             </Toast.Viewport>
           </Toast.Provider>
