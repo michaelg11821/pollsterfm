@@ -1,12 +1,12 @@
 import ArtistHeader from "@/app/components/artist/artist";
 import ArtistHeaderSkeleton from "@/app/components/artist/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
-import TopAffinities from "@/app/components/top-affinities/top-affinities";
-import TopListeners from "@/app/components/top-listeners/top-listeners";
-// import SimilarArtists from "@/app/components/similar-artists/similar-artists";
-// import TopAlbumsSkeleton from "@/app/components/top-albums/skeleton/skeleton";
-// import TopAlbums from "@/app/components/top-albums/top-albums";
+import SimilarTo from "@/app/components/similar-to/similar-to";
 import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
+import TopAffinities from "@/app/components/top-affinities/top-affinities";
+import TopAlbumsSkeleton from "@/app/components/top-albums/skeleton";
+import TopAlbums from "@/app/components/top-albums/top-albums";
+import TopListeners from "@/app/components/top-listeners/top-listeners";
 import { siteName } from "@/config";
 import { findFirstArtistByName } from "@/lib/pollster/artist";
 import { redirect } from "next/navigation";
@@ -42,16 +42,15 @@ async function Artist({ params }: ArtistProps) {
           <div className="flex flex-col gap-10 lg:col-span-3">
             <FeaturedIn category="artist" itemName={artist} />
             <TopListeners category="artist" itemName={artist} />
-            {/* 
             <Suspense fallback={<TopAlbumsSkeleton />}>
               <TopAlbums artistName={artist} />
-            </Suspense> */}
+            </Suspense>
           </div>
           <aside className="flex flex-col gap-8 lg:col-span-1">
             <Suspense fallback={<TopAffinitiesSkeleton />}>
               <TopAffinities category="artist" itemName={artist} />
             </Suspense>
-            {/* <SimilarArtists /> */}
+            <SimilarTo category="artist" itemName={artist} />
           </aside>
         </div>
       </div>
