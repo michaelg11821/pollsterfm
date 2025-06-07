@@ -3,10 +3,10 @@
 import { getRecentlyPlayedTracks } from "@/lib/data-access/user/spotify";
 import { toastManager } from "@/lib/toast";
 import { SpotifyRecentlyPlayedResponse } from "@/lib/types/spotifyResponses";
-import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Track from "../../track/track";
+import LoadingIndicator from "../../ui/loading-indicator";
 import {
   MAX_TRACKS_WITHOUT_IMPORT,
   TRACK_CHUNK_SIZE,
@@ -108,20 +108,11 @@ function SpotifyListeningHistory({
   return (
     <>
       <div className="flex flex-col gap-1.5 py-2.5">{trackItems}</div>
-      <div>
-        <div
-          ref={loaderRef}
-          className="flex justify-center px-0 py-6"
-          data-testid="loader-ref"
-        >
-          {loading && (
-            <div className="text-muted-foreground flex items-center gap-5">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Loading more tracks...</span>
-            </div>
-          )}
-        </div>
-      </div>
+      <LoadingIndicator
+        ref={loaderRef}
+        loading={loading}
+        message="Loading more tracks..."
+      />
     </>
   );
 }
