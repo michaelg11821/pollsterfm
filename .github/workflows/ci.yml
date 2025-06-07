@@ -8,29 +8,34 @@ on:
 
 jobs:
   build-test-lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        node-version: [20]
+      steps:
+        - uses: actions/checkout@v4
+        - name: Install pnpm
+          uses: pnpm/action-setup@v4
+          with:
+            version: 10
+        - name: Use Node.js ${{ matrix.node-version }}
+          uses: actions/setup-node@v4
+          with:
+            node-version: ${{ matrix.node-version }}
+            cache: "pnpm"
 
-    steps:
-      - uses: actions/checkout@v3
+        - name: Install dependencies
+          run: pnpm install
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-          cache: "pnpm"
+        - name: Run linter
+          run: pnpm lint
+          env:
+            SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
 
-      - name: Install dependencies
-        run: pnpm install
+        - name: Run tests
+          run: pnpm test
 
-      - name: Run linter
-        run: pnpm run lint
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-
-      - name: Run tests
-        run: pnpm run test
-
-      - name: Apply database migrations
-        run: pnpm run migrate:prod
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        - name: Apply database migrations
+          run: pnpm migrate:prod
+          env:
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
