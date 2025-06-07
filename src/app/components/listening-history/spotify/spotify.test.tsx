@@ -58,11 +58,6 @@ const thirdBatch = Array.from({ length: TRACK_CHUNK_SIZE }, (_, i) => ({
   track: { ...trackTemplate.track, id: `third_batch_${i}` },
 }));
 
-const fourthBatch = Array.from({ length: TRACK_CHUNK_SIZE }, (_, i) => ({
-  ...trackTemplate,
-  track: { ...trackTemplate.track, id: `fourth_batch_${i}` },
-}));
-
 vi.mock("@/lib/data-access/user/spotify", () => ({
   getRecentlyPlayedTracks: vi.fn(),
   __esModule: true,
@@ -138,11 +133,6 @@ describe("spotify listening history", () => {
           items: thirdBatch,
           next: "url-for-page-4",
           progress_ms: 789,
-        })
-        .mockResolvedValueOnce({
-          items: fourthBatch,
-          next: "url-for-page-5",
-          progress_ms: 142,
         });
 
       act(() => {
