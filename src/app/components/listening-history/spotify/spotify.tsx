@@ -28,12 +28,16 @@ function SpotifyListeningHistory({
   const [hasMore, setHasMore] = useState<boolean>(true);
 
   const { username } = useParams<{ username: string }>();
+
   const loaderRef = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef<boolean>(false);
+  const hasMoreRef = useRef<boolean>(true);
 
   const getTracks = useCallback(async () => {
-    if (loading || !hasMore) return;
+    if (loadingRef.current || !hasMoreRef.current) return;
 
     try {
+      loadingRef.current = true;
       setLoading(true);
 
       const response = await getRecentlyPlayedTracks(
@@ -50,6 +54,7 @@ function SpotifyListeningHistory({
         const newTracks = [...prevTracks, ...response.items];
 
         if (newTracks.length >= MAX_TRACKS_WITHOUT_IMPORT && !historyImported) {
+          hasMoreRef.current = false;
           setHasMore(false);
         }
 
@@ -67,18 +72,20 @@ function SpotifyListeningHistory({
         });
       }
 
+      hasMoreRef.current = false;
       setHasMore(false);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
-  }, [username, loading, hasMore, nextUrl, historyImported]);
+  }, [username, nextUrl, historyImported]);
 
   useEffect(() => {
     getTracks();
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+        if (entries[0].isIntersecting && hasMoreRef.current) {
           getTracks();
         }
       },
