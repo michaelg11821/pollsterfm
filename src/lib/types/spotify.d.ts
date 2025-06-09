@@ -58,3 +58,9 @@ export type PlayHistory = {
    */
   played_at: string;
 };
+
+export type SimplifiedAlbum = {
+  images: Image[];
+  name: string;
+  release_date: string;
+};

@@ -20,4 +20,12 @@ export type LastfmArtistTopAlbumsResponse = {
   };
 };
 
-export type LastfmArtistAlbumsResponse = LastfmArtistTopAlbumsResponse;
+export type LastfmArtistAlbumsResponse = {
+  topalbums: {
+    album: Album[];
+    "@attr": {
+      page: string;
+      totalPages: string;
+    };
+  };
+};

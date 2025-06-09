@@ -21,7 +21,10 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold">Top Albums</h2>
-        <Link href="#" className={buttonVariants({ variant: "outline" })}>
+        <Link
+          href={`/catalog/${artistName}/discography`}
+          className={buttonVariants({ variant: "outline" })}
+        >
           View Discography
         </Link>
       </div>

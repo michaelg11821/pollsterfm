@@ -1,14 +1,20 @@
 import {
   getArtistTags,
   getFirstLastfmArtistFromQuery,
+  getLastfmArtistAlbums,
   getLastfmArtistTopAlbums,
 } from "../lastfm";
 import {
   getFirstSpotifyArtistFromQuery,
+  getSpotifyArtistAlbums,
   getSpotifyArtistTopAlbums,
 } from "../spotifyClient";
-import type { FirstArtistResult } from "../types/internalResponses";
-import type { TopAlbum } from "../types/pollster";
+import type {
+  ArtistAlbumsResponse,
+  FirstArtistResult,
+} from "../types/internalResponses";
+import type { PollsterAlbum, TopAlbum } from "../types/pollster";
+import { ALBUM_PAGE_LIMIT } from "./config";
 
 /**
  * Returns information about the first artists that appear in each search. The result is cached by Next.js.
@@ -123,6 +129,77 @@ export async function getTopAlbums(artistData: FirstArtistResult) {
     }
   } catch (err: unknown) {
     console.error(`error getting top albums for ${name}:`, err);
+
+    return null;
+  }
+}
+
+/**
+ * Gets a page of albums for an artist. Platform-agnostic.
+ *
+ * @param artistData The name and URLs for the platforms the artist is on. See FirstArtistResult and ... (more to come).
+ * @param  page The desired page of albums. 1 by default.
+ * @returns The page of albums for an artist.
+ */
+export async function getAlbums(
+  artistData: FirstArtistResult,
+  page: number = 1,
+): Promise<ArtistAlbumsResponse | null> {
+  const { name, spotifyUrl, lastfmUrl } = artistData;
+
+  try {
+    if ((!spotifyUrl && lastfmUrl) || (lastfmUrl && spotifyUrl)) {
+      const lastfmAlbums = await getLastfmArtistAlbums(name, page);
+
+      if (!lastfmAlbums) throw new Error("no results from lastfm");
+
+      const normalizedAlbums: PollsterAlbum[] = lastfmAlbums.album
+        .filter((album) => album.name !== "(null)")
+        .map((album) => {
+          return {
+            name: album.name,
+            images: album.image.map((img) => {
+              return {
+                url: img["#text"],
+              };
+            }),
+            releaseDate: null, // last fm does not provide release dates
+          };
+        });
+
+      const totalPages = Number(lastfmAlbums["@attr"].totalPages);
+
+      // and eventually get pollster ratings here
+
+      return { albums: normalizedAlbums, totalPages };
+    } else if (spotifyUrl && !lastfmUrl) {
+      const parts = new URL(spotifyUrl).pathname.split("/");
+      const spotifyId = parts[parts.length - 1];
+
+      const spotifyAlbums = await getSpotifyArtistAlbums(spotifyId, page);
+
+      if (!spotifyAlbums) throw new Error("no results from spotify");
+
+      const normalizedAlbums: PollsterAlbum[] = spotifyAlbums.items.map(
+        (album) => {
+          return {
+            name: album.name,
+            images: album.images,
+            releaseDate: album.release_date,
+          };
+        },
+      );
+
+      const totalPages = Math.ceil(spotifyAlbums.total / ALBUM_PAGE_LIMIT);
+
+      // and eventually get pollster ratings here
+
+      return { albums: normalizedAlbums, totalPages };
+    } else {
+      return null;
+    }
+  } catch (err: unknown) {
+    console.error(`error getting albums for ${name}:`, err);
 
     return null;
   }

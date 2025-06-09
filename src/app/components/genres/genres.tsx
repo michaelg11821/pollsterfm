@@ -15,13 +15,7 @@ async function Genres({ category, itemName }: GenresProps) {
 
       if (!artistData || !artistData.genres) return <p>{noGenresMsg}</p>;
 
-      return (
-        <ClientGenres
-          itemData={artistData}
-          originalQuery={itemName}
-          category="artist"
-        />
-      );
+      return <ClientGenres itemData={artistData} category="artist" />;
   }
 }
 

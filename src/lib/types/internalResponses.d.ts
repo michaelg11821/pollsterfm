@@ -1,3 +1,5 @@
+import type { PollsterAlbum } from "./pollster";
+
 export type UpdateProfileResult =
   | { success: true }
   | {
@@ -11,4 +13,9 @@ export type FirstArtistResult = {
   genres: string[] | Tag[] | null;
   spotifyUrl: string | null;
   lastfmUrl: string | null;
+};
+
+export type ArtistAlbumsResponse = {
+  albums: PollsterAlbum[];
+  totalPages: number;
 };

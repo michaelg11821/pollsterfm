@@ -1,7 +1,9 @@
 "use server";
 
+import { ALBUM_PAGE_LIMIT } from "./pollster/config";
 import type { Track } from "./types/spotify";
 import type {
+  SpotifyArtistAlbumsResponse,
   SpotifyArtistSearchResponse,
   SpotifyArtistTopTracksResponse,
   SpotifyClientCredentialsResponse,
@@ -88,9 +90,8 @@ export async function getFirstSpotifyArtistFromQuery(artistQuery: string) {
  * Returns the top albums from the artist that maps to the given Spotify ID.
  *
  * change?
- * 
+ *
  * @param spotifyId The {@link https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids|Spotify ID} for the artist.
-
  * @returns The top albums from the artist that maps to the given Spotify ID.
  */
 export async function getSpotifyArtistTopAlbums(spotifyId: string) {
@@ -121,6 +122,41 @@ export async function getSpotifyArtistTopAlbums(spotifyId: string) {
     return Array.from(topAlbums.values());
   } catch (err: unknown) {
     console.error("error getting top albums:", err);
+
+    return null;
+  }
+}
+
+/**
+ * Returns the page of albums from the artist that maps to the given Spotify ID.
+ *
+ * @param spotifyId The {@link https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids|Spotify ID} for the artist.
+ * @param page The desired page of albums. 1 by default.
+ * @returns The page of albums from the artist that maps to the given Spotify ID.
+ */
+export async function getSpotifyArtistAlbums(
+  spotifyId: string,
+  page: number = 1,
+) {
+  try {
+    const credentials = await getClientCredentials();
+
+    if (!credentials) throw new Error("invalid credentials");
+
+    const pageOffset = ALBUM_PAGE_LIMIT * page;
+
+    const res = await fetch(
+      `https://api.spotify.com/v1/artists/${spotifyId}/albums?limit=${ALBUM_PAGE_LIMIT}&offset=${pageOffset}`,
+      { headers: { Authorization: `Bearer ${credentials}` } },
+    );
+
+    if (!res.ok) throw new Error("failed to get albums");
+
+    const albums: SpotifyArtistAlbumsResponse = await res.json();
+
+    return albums;
+  } catch (err: unknown) {
+    console.error("error getting albums:", err);
 
     return null;
   }

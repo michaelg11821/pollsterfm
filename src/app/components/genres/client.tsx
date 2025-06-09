@@ -18,24 +18,17 @@ type ArtistData = {
 
 type ClientGenresProps = {
   itemData: ArtistData; // | AlbumData and so on...
-  originalQuery: string;
   category: "artist" | "album" | "track";
 };
 
-function ClientGenres({
-  itemData,
-  originalQuery,
-  category,
-}: ClientGenresProps) {
+function ClientGenres({ itemData, category }: ClientGenresProps) {
   useEffect(() => {
-    if (originalQuery !== itemData.name) {
-      window.history.replaceState(
-        null,
-        "",
-        `/catalog/${encodeURIComponent(itemData.name)}/genres`,
-      );
-    }
-  }, [itemData.name, originalQuery]);
+    window.history.replaceState(
+      null,
+      "",
+      `/catalog/${encodeURIComponent(itemData.name)}/genres`,
+    );
+  }, [itemData.name]);
 
   const genres = itemData.genres?.map((genre, i) => (
     <div

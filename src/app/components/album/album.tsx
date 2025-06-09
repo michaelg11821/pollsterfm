@@ -8,22 +8,25 @@ import Image from "next/image";
 type AlbumProps = {
   artistName: string;
   albumData: TopAlbum; // add other types (ratings)
+  imgIndex?: number;
 };
 
-function Album({ artistName, albumData }: AlbumProps) {
+function Album({ artistName, albumData, imgIndex = 0 }: AlbumProps) {
   return (
     <Link
       href={`/catalog/${encodeURIComponent(artistName)}/discography/${encodeURIComponent(albumData.name)}`}
       className="bg-card hover:bg-accent block rounded-xl border p-4 no-underline shadow-md transition-all hover:transform-[scale(1.02)] dark:shadow-none"
     >
       <div className="relative mb-3 aspect-square w-full rounded-sm">
-        <Image
-          src={albumData.images[0].url}
-          alt={albumData.name}
-          fill
-          sizes="100%"
-          className="rounded-sm object-cover"
-        />
+        {albumData.images[imgIndex].url !== "" && (
+          <Image
+            src={albumData.images[imgIndex].url}
+            alt={albumData.name}
+            fill
+            sizes="100%"
+            className="rounded-sm object-cover"
+          />
+        )}
       </div>
       <h3 className="m-0 overflow-hidden overflow-ellipsis whitespace-nowrap">
         {albumData.name}

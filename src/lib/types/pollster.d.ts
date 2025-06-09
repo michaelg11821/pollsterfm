@@ -8,3 +8,5 @@ export type TopAlbum = {
   releaseDate: string | null;
   // rating
 };
+
+export type PollsterAlbum = TopAlbum;

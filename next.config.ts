@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: supabaseUrl.hostname,
       },
+      {
+        protocol: "https",
+        hostname: "lastfm.freetls.fastly.net",
+      },
     ],
   },
   webpack: (config, { isServer }) => {

@@ -1,5 +1,6 @@
 "use server";
 
+import { ALBUM_PAGE_LIMIT } from "./pollster/config";
 import type {
   LastfmArtistAlbumsResponse,
   LastfmArtistSearchResponse,
@@ -113,10 +114,11 @@ export async function getLastfmArtistTopAlbums(artistName: string) {
 }
 
 /**
- * Gets 50 albums for an artist on Last.fm. Defaults to page 1.
+ * Gets a page of albums for an artist on Last.fm.
  *
  * @param artistName The name of an artist on Last.fm.
- * @returns The top albums for the given artist.
+ * @param page The page of albums. Defaults to 1.
+ * @returns The albums for the given artist.
  */
 export async function getLastfmArtistAlbums(
   artistName: string,
@@ -124,18 +126,18 @@ export async function getLastfmArtistAlbums(
 ) {
   try {
     const res = await fetch(
-      `http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=${artistName}&page=${page}${suffix}`,
+      `http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=${artistName}&limit=${ALBUM_PAGE_LIMIT}&page=${page}${suffix}`,
     );
 
     if (!res.ok) throw new Error(`failed to get albums for ${artistName}`);
 
-    const topAlbums: LastfmArtistAlbumsResponse = await res.json();
+    const albums: LastfmArtistAlbumsResponse = await res.json();
 
-    if (!topAlbums.topalbums.album) {
+    if (!albums.topalbums.album) {
       throw new Error("no albums found");
     }
 
-    return topAlbums.topalbums.album;
+    return albums.topalbums;
   } catch (err: unknown) {
     console.error(`error getting top albums for ${artistName}:`, err);
 

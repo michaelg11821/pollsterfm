@@ -1,4 +1,4 @@
-import type { Artist, PlayHistory, Track } from "./spotify";
+import type { Artist, PlayHistory, SimplifiedAlbum, Track } from "./spotify";
 
 export type SpotifyAccessTokenResponse = {
   access_token: string;
@@ -33,4 +33,11 @@ export type SpotifyArtistSearchResponse = {
 
 export type SpotifyArtistTopTracksResponse = {
   tracks: Track[];
+};
+
+export type SpotifyArtistAlbumsResponse = {
+  next: string | null;
+  offset: number;
+  total: number;
+  items: SimplifiedAlbum[];
 };
