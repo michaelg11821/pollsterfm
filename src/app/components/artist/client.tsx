@@ -1,22 +1,14 @@
 "use client";
 
-import type { Tag } from "@/lib/types/lastfm";
 import { useEffect } from "react";
 
+import type { ArtistData } from "@/lib/types/internalResponses";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment } from "react";
+import TopGenres from "../top-genres/top-genres";
 import { Badge } from "../ui/badge";
 import { buttonVariants } from "../ui/button";
-
-type ArtistData = {
-  name: string;
-  image: string | null;
-  genres: string[] | Tag[] | null;
-  spotifyUrl: string | null;
-  lastfmUrl: string | null;
-};
 
 type ClientArtistHeaderProps = {
   artistData: ArtistData;
@@ -30,19 +22,6 @@ function ClientArtistHeader({ artistData }: ClientArtistHeaderProps) {
       `/catalog/${encodeURIComponent(artistData.name)}`,
     );
   }, [artistData.name]);
-
-  const genres = artistData.genres?.slice(0, 5).map((genre, i) => (
-    <Fragment key={i}>
-      <span className="text-muted-foreground text-sm">
-        {typeof genre === "string" ? genre : genre.name}
-      </span>
-      {artistData.genres && i < artistData.genres.length - 1 ? (
-        <span className="text-muted-foreground/50">•</span>
-      ) : (
-        ""
-      )}
-    </Fragment>
-  ));
 
   return (
     <div className="content-wrapper px-5 py-0 xl:p-0">
@@ -70,19 +49,10 @@ function ClientArtistHeader({ artistData }: ClientArtistHeaderProps) {
               <h1 className="text-4xl font-bold md:text-5xl">
                 {artistData.name}
               </h1>
-              {genres && genres.length > 0 ? (
-                <div className="mt-2 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 md:justify-start">
-                  {genres} ...
-                  <Link
-                    href={`/catalog/${encodeURIComponent(artistData.name)}/genres`}
-                    className="text-primary inline-block text-sm no-underline transition-[color] hover:underline"
-                  >
-                    more
-                  </Link>
-                </div>
-              ) : (
-                ""
-              )}
+              <TopGenres
+                genres={artistData.genres}
+                pollsterUrl={`/catalog/${encodeURIComponent(artistData.name)}/genres`}
+              />
               <div className="flex items-center gap-3 pt-2.5">
                 {artistData.spotifyUrl && (
                   <Link

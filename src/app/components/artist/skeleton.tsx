@@ -1,3 +1,5 @@
+import TopGenresSkeleton from "../top-genres/skeleton";
+
 function ArtistHeaderSkeleton() {
   return (
     <div className="content-wrapper px-5 py-0 xl:p-0">
@@ -12,13 +14,7 @@ function ArtistHeaderSkeleton() {
                 <div className="skeleton h-5 w-12.5 animate-pulse rounded-md"></div>
               </div>
               <div className="skeleton h-7.5 w-50 animate-pulse rounded-lg md:h-10"></div>
-              <div className="mt-2 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 md:justify-start">
-                <div className="skeleton h-5 w-15 animate-pulse rounded-lg"></div>
-                <div className="skeleton h-2 w-2 animate-pulse rounded-full"></div>
-                <div className="skeleton h-5 w-15 animate-pulse rounded-lg"></div>
-                <div className="skeleton h-2 w-2 animate-pulse rounded-full"></div>
-                <div className="skeleton h-5 w-15 animate-pulse rounded-lg"></div>
-              </div>
+              <TopGenresSkeleton />
             </div>
             <div className="skeleton h-9 w-25 animate-pulse self-center rounded-md md:self-end"></div>
           </div>
