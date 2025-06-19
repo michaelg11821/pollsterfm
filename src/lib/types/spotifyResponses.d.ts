@@ -41,3 +41,13 @@ export type SpotifyArtistAlbumsResponse = {
   total: number;
   items: SimplifiedAlbum[];
 };
+
+export type SpotifyAlbumSearchResponse = {
+  albums: {
+    items: SimplifiedAlbum[];
+  };
+};
+
+export type SpotifyRelatedArtistsResponse = {
+  artists: Artist[];
+};

@@ -1,49 +1,14 @@
 "use server";
 
-import { ALBUM_PAGE_LIMIT } from "./pollster/config";
-import type { Track } from "./types/spotify";
+import { ALBUM_PAGE_LIMIT } from "../pollster/config";
+import type { Track } from "../types/spotify";
 import type {
   SpotifyArtistAlbumsResponse,
   SpotifyArtistSearchResponse,
   SpotifyArtistTopTracksResponse,
-  SpotifyClientCredentialsResponse,
-} from "./types/spotifyResponses";
-import { isSimilar } from "./utils";
-
-/**
- * Returns client credentials from Spotify.
- *
- * @returns A valid access token for the client.
- */
-async function getClientCredentials(): Promise<string | null> {
-  const clientId = process.env.AUTH_SPOTIFY_ID!;
-  const clientSecret = process.env.AUTH_SPOTIFY_SECRET!;
-
-  try {
-    const res = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization:
-          "Basic " +
-          Buffer.from(clientId + ":" + clientSecret).toString("base64"),
-      },
-      body: new URLSearchParams({
-        grant_type: "client_credentials",
-      }),
-    });
-
-    if (!res.ok) throw new Error("failed to get client credentials");
-
-    const credentials: SpotifyClientCredentialsResponse = await res.json();
-
-    return credentials.access_token;
-  } catch (err: unknown) {
-    console.error("error getting client credentials:", err);
-
-    return null;
-  }
-}
+} from "../types/spotifyResponses";
+import { isSimilar } from "../utils";
+import { getClientCredentials } from "./credentials";
 
 /**
  * Returns the first artist found from the Spotify API with the given query.
@@ -58,7 +23,7 @@ export async function getFirstSpotifyArtistFromQuery(artistQuery: string) {
     if (!credentials) throw new Error("invalid credentials");
 
     const res = await fetch(
-      `https://api.spotify.com/v1/search?q=${artistQuery}&type=artist`,
+      `https://api.spotify.com/v1/search?q=${artistQuery.toLowerCase()}&type=artist&limit=1`,
       { headers: { Authorization: `Bearer ${credentials}` } },
     );
 
@@ -88,8 +53,6 @@ export async function getFirstSpotifyArtistFromQuery(artistQuery: string) {
 
 /**
  * Returns the top albums from the artist that maps to the given Spotify ID.
- *
- * change?
  *
  * @param spotifyId The {@link https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids|Spotify ID} for the artist.
  * @returns The top albums from the artist that maps to the given Spotify ID.

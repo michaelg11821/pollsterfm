@@ -1,16 +1,15 @@
 "use server";
 
-import { ALBUM_PAGE_LIMIT } from "./pollster/config";
+import { ALBUM_PAGE_LIMIT } from "../pollster/config";
 import type {
   LastfmArtistAlbumsResponse,
   LastfmArtistSearchResponse,
   LastfmArtistTagsResponse,
   LastfmArtistTopAlbumsResponse,
-} from "./types/lastfmResponses";
-import { isSimilar } from "./utils";
-
-const apiKey = process.env.LASTFM_API_KEY!;
-const suffix = `&api_key=${apiKey}&format=json`;
+  LastfmSimilarArtistsResponse,
+} from "../types/lastfmResponses";
+import { isSimilar } from "../utils";
+import { suffix } from "./suffix";
 
 /**
  * Gets tags (genres) for an artist on Last.fm.
@@ -36,7 +35,7 @@ export async function getArtistTags(artistName: string) {
 
     return tags;
   } catch (err: unknown) {
-    console.error("error getting first artist from query:", err);
+    console.error("error getting artist tags:", err);
 
     return null;
   }
@@ -51,7 +50,7 @@ export async function getArtistTags(artistName: string) {
 export async function getFirstLastfmArtistFromQuery(artistQuery: string) {
   try {
     const res = await fetch(
-      `http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=${artistQuery}${suffix}`,
+      `http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=${artistQuery}&limit=1${suffix}`,
     );
 
     if (!res.ok) throw new Error("failed to get first artist from query");
@@ -140,6 +139,37 @@ export async function getLastfmArtistAlbums(
     return albums.topalbums;
   } catch (err: unknown) {
     console.error(`error getting top albums for ${artistName}:`, err);
+
+    return null;
+  }
+}
+
+/**
+ * Returns artists on Last.fm similar to the one provided.
+ *
+ * @param artistName The name of an artist on Last.fm.
+ * @param amount The amount of artists to return. Default is 4.
+ * @returns The similar artists on Last.fm.
+ */
+export async function getSimilarLastfmArtists(
+  artistName: string,
+  amount: number = 4,
+) {
+  try {
+    const res = await fetch(
+      `http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=${artistName}${suffix}`,
+    );
+
+    if (!res.ok)
+      throw new Error(`failed to get similar artists for ${artistName}`);
+
+    const results: LastfmSimilarArtistsResponse = await res.json();
+
+    const relatedArtists = results.similarartists.artist.slice(0, amount);
+
+    return relatedArtists;
+  } catch (err: unknown) {
+    console.error("error getting similar artists:", err);
 
     return null;
   }

@@ -3,17 +3,18 @@ import {
   getFirstLastfmArtistFromQuery,
   getLastfmArtistAlbums,
   getLastfmArtistTopAlbums,
-} from "../lastfm";
+  getSimilarLastfmArtists,
+} from "../lastfm/artist";
 import {
   getFirstSpotifyArtistFromQuery,
   getSpotifyArtistAlbums,
   getSpotifyArtistTopAlbums,
-} from "../spotifyClient";
+} from "../spotify/artist";
 import type {
   ArtistAlbumsResponse,
   FirstArtistResult,
 } from "../types/internalResponses";
-import type { PollsterAlbum, TopAlbum } from "../types/pollster";
+import type { PollsterAlbum, SimilarArtist, TopAlbum } from "../types/pollster";
 import { ALBUM_PAGE_LIMIT } from "./config";
 
 /**
@@ -200,6 +201,46 @@ export async function getAlbums(
     }
   } catch (err: unknown) {
     console.error(`error getting albums for ${name}:`, err);
+
+    return null;
+  }
+}
+
+/**
+ * Gets similar/related artists to the one provided. Platform-agnostic.
+ *
+ * @param artistData The name and URLs for the platforms the artist is on. See FirstArtistResult and ... (more to come).
+ * @param amount The amount of artists to return. Default is 4.
+ * @returns The similar/related artists, if any.
+ */
+export async function getSimilarArtists(
+  artistData: FirstArtistResult,
+  amount: number = 4,
+) {
+  const { name, lastfmUrl } = artistData;
+
+  try {
+    if (lastfmUrl) {
+      const lastfmSimilarArtists = await getSimilarLastfmArtists(name, amount);
+
+      if (!lastfmSimilarArtists) throw new Error("no results from lastfm");
+
+      const normalizedSimilarArtists: SimilarArtist[] =
+        lastfmSimilarArtists.map((artist) => {
+          return {
+            name: artist.name,
+            image: null,
+          };
+        });
+
+      // and eventually get affinity match percentage here
+
+      return normalizedSimilarArtists;
+    } else {
+      return null;
+    }
+  } catch (err: unknown) {
+    console.error(`error getting similar artists for ${name}:`, err);
 
     return null;
   }

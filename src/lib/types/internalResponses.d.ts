@@ -19,3 +19,21 @@ export type ArtistAlbumsResponse = {
   albums: PollsterAlbum[];
   totalPages: number;
 };
+
+export type FirstAlbumResult = FirstArtistResult; // & ratings, etc.
+
+export type AlbumData = {
+  name: string;
+  image: string | null;
+  genres: string[] | Tag[] | null;
+  spotifyUrl: string | null;
+  lastfmUrl: string | null;
+};
+
+export type ArtistData = {
+  name: string;
+  image: string | null;
+  genres: string[] | Tag[] | null;
+  spotifyUrl: string | null;
+  lastfmUrl: string | null;
+};

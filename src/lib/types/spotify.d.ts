@@ -63,4 +63,10 @@ export type SimplifiedAlbum = {
   images: Image[];
   name: string;
   release_date: string;
+  external_urls: {
+    /**
+     * The {@link https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids|Spotify URL} for the object.
+     */
+    spotify: string;
+  };
 };
