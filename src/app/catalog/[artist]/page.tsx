@@ -1,6 +1,7 @@
 import ArtistHeader from "@/app/components/artist/artist";
 import ArtistHeaderSkeleton from "@/app/components/artist/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
+import SimilarArtistsSkeleton from "@/app/components/similar-to/artists/skeleton";
 import SimilarTo from "@/app/components/similar-to/similar-to";
 import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
 import TopAffinities from "@/app/components/top-affinities/top-affinities";
@@ -50,7 +51,9 @@ async function Artist({ params }: ArtistProps) {
             <Suspense fallback={<TopAffinitiesSkeleton />}>
               <TopAffinities category="artist" itemName={artist} />
             </Suspense>
-            <SimilarTo category="artist" itemName={artist} />
+            <Suspense fallback={<SimilarArtistsSkeleton />}>
+              <SimilarTo category="artist" artistName={artist} />
+            </Suspense>
           </aside>
         </div>
       </div>
