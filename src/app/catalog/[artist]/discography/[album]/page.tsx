@@ -1,7 +1,6 @@
 import AlbumHeader from "@/app/components/album-header/album-header";
 import AlbumHeaderSkeleton from "@/app/components/album-header/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
-import SimilarTo from "@/app/components/similar-to/similar-to";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 // import Link from "next/link";
 import { Suspense } from "react";
@@ -20,15 +19,6 @@ async function AlbumPage({ params }: AlbumPageProps) {
       </Suspense>
       <div className="content-wrapper mt-10 px-5 py-0 xl:p-0">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-          <aside className="space-y-8 lg:col-span-1">
-            <Suspense>
-              <SimilarTo
-                artistName={artist}
-                albumName={album}
-                category="album"
-              />
-            </Suspense>
-          </aside>
           <div className="space-y-10 lg:col-span-3">
             {/* make into component "album-tracks" */}
             {/* <section>
