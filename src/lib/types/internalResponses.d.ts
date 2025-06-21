@@ -20,20 +20,10 @@ export type ArtistAlbumsResponse = {
   totalPages: number;
 };
 
-export type FirstAlbumResult = FirstArtistResult; // & ratings, etc.
+export type FirstAlbumResult = {
+  artists: string[];
+} & FirstArtistResult; // & ratings, etc.
 
-export type AlbumData = {
-  name: string;
-  image: string | null;
-  genres: string[] | Tag[] | null;
-  spotifyUrl: string | null;
-  lastfmUrl: string | null;
-};
+export type AlbumData = FirstAlbumResult;
 
-export type ArtistData = {
-  name: string;
-  image: string | null;
-  genres: string[] | Tag[] | null;
-  spotifyUrl: string | null;
-  lastfmUrl: string | null;
-};
+export type ArtistData = FirstArtistResult;

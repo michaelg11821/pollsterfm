@@ -11,18 +11,17 @@ import { Badge } from "../ui/badge";
 import { buttonVariants } from "../ui/button";
 
 type ClientAlbumHeaderProps = {
-  artistName: string;
   albumData: AlbumData;
 };
 
-function ClientAlbumHeader({ artistName, albumData }: ClientAlbumHeaderProps) {
+function ClientAlbumHeader({ albumData }: ClientAlbumHeaderProps) {
   useEffect(() => {
     window.history.replaceState(
       null,
       "",
-      `/catalog/${encodeURIComponent(artistName)}/discography/${encodeURIComponent(albumData.name)}`,
+      `/catalog/${encodeURIComponent(albumData.artists[0])}/discography/${encodeURIComponent(albumData.name)}`,
     );
-  }, [artistName, albumData.name]);
+  }, [albumData.artists, albumData.name]);
 
   return (
     <div className="content-wrapper px-5 py-0 xl:p-0">
@@ -51,13 +50,31 @@ function ClientAlbumHeader({ artistName, albumData }: ClientAlbumHeaderProps) {
               <h1 className="text-3xl font-bold md:text-4xl">
                 {albumData.name}
               </h1>
-              <div className="mt-1">
-                <Link
-                  href={`/catalog/${encodeURIComponent(artistName)}/`}
-                  className="text-primary inline-block text-xl no-underline transition-[color] hover:underline"
-                >
-                  {decodeURIComponent(artistName)}
-                </Link>
+              <div className="mt-1 flex gap-1">
+                {albumData.artists.map((name, index) => {
+                  if (index !== albumData.artists.length - 1) {
+                    return (
+                      <Link
+                        key={`${name}-${index}`}
+                        href={`/catalog/${encodeURIComponent(name)}/`}
+                        className="text-primary inline-block text-xl no-underline transition-[color] hover:underline"
+                      >
+                        {name}
+                        <span className="text-foreground">,</span>
+                      </Link>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={`${name}-${index}`}
+                      href={`/catalog/${encodeURIComponent(name)}/`}
+                      className="text-primary inline-block text-xl no-underline transition-[color] hover:underline"
+                    >
+                      {name}
+                    </Link>
+                  );
+                })}
               </div>
 
               <div className="mt-4 flex items-center justify-center gap-3 md:justify-start">
@@ -116,7 +133,7 @@ function ClientAlbumHeader({ artistName, albumData }: ClientAlbumHeaderProps) {
 
               <TopGenres
                 genres={albumData.genres}
-                pollsterUrl={`/catalog/${encodeURIComponent(artistName)}/${encodeURIComponent(albumData.name)}/genres`}
+                pollsterUrl={`/catalog/${encodeURIComponent(albumData.artists[0])}/${encodeURIComponent(albumData.name)}/genres`}
               />
             </div>
             <Link

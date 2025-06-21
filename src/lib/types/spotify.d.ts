@@ -69,4 +69,12 @@ export type SimplifiedAlbum = {
      */
     spotify: string;
   };
+  artists: SimplifiedArtist[];
+};
+
+export type SimplifiedTrack = {
+  artists: SimplifiedArtist[];
+  duration_ms: number;
+  name: string;
+  track_number: number;
 };

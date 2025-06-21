@@ -18,6 +18,19 @@ export type Image = {
 
 export type Album = {
   name: string;
+  artist: string;
   url: string;
   image: Image[];
+};
+
+export type Track = {
+  duration: number;
+  url: string;
+  name: string;
+  "@attr": {
+    /**
+     * Track number on its corresponding album.
+     */
+    rank: number;
+  };
 };

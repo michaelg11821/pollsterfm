@@ -1,4 +1,4 @@
-import type { Album, Artist, Tag } from "./lastfm";
+import type { Album, Artist, Image, Tag, Track } from "./lastfm";
 
 export type LastfmArtistSearchResponse = {
   results: {
@@ -30,8 +30,6 @@ export type LastfmArtistAlbumsResponse = {
   };
 };
 
-export type LastfmAlbumTagsResponse = LastfmArtistTagsResponse;
-
 export type LastfmAlbumSearchResponse = {
   results: {
     albummatches: {
@@ -43,5 +41,15 @@ export type LastfmAlbumSearchResponse = {
 export type LastfmSimilarArtistsResponse = {
   similarartists: {
     artist: Artist[];
+  };
+};
+
+export type LastfmAlbumInfoResponse = {
+  album: {
+    tags: Tag[];
+    image: Image[];
+    tracks: Track[];
+    url: string;
+    name: string;
   };
 };

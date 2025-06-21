@@ -8,7 +8,7 @@ import type {
 /**
  * Returns information about the first albums that appear in each search. The result is cached by Next.js.
  *
- * @param artistData pollster.fm artist data.
+ * @param artistData See the FirstArtistResult type.
  * @param albumName The name of an album.
  * @returns An object containing an image, a name, and genres for the album.
  */
@@ -36,6 +36,7 @@ export async function findFirstAlbumByName(
     if (spotifyAlbum && lastfmAlbum) {
       return {
         name: spotifyAlbum.name,
+        artists: spotifyAlbum.artists.map(({ name }) => name),
         image: spotifyAlbum.images[0].url,
         genres: artistData.genres,
         spotifyUrl: spotifyAlbum.external_urls.spotify,
@@ -44,6 +45,7 @@ export async function findFirstAlbumByName(
     } else if (spotifyAlbum && !lastfmAlbum) {
       return {
         name: spotifyAlbum.name,
+        artists: spotifyAlbum.artists.map(({ name }) => name),
         image: spotifyAlbum.images[0].url,
         genres: artistData.genres,
         spotifyUrl: spotifyAlbum.external_urls.spotify,
@@ -52,6 +54,7 @@ export async function findFirstAlbumByName(
     } else if (!spotifyAlbum && lastfmAlbum) {
       return {
         name: lastfmAlbum.name,
+        artists: [lastfmAlbum.artist],
         image: lastfmAlbum.image[3]["#text"],
         genres: lastfmAlbum.genres,
         spotifyUrl: null,
