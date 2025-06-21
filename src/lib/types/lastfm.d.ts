@@ -33,4 +33,7 @@ export type Track = {
      */
     rank: number;
   };
+  artist: {
+    name: string;
+  };
 };

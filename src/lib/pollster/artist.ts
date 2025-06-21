@@ -108,17 +108,19 @@ export async function getTopAlbums(artistData: FirstArtistResult) {
 
       if (!lastfmTopAlbums) throw new Error("no results from lastfm");
 
-      const normalizedTopAlbums: TopAlbum[] = lastfmTopAlbums.map((album) => {
-        return {
-          name: album.name,
-          images: album.image.map((img) => {
-            return {
-              url: img["#text"],
-            };
-          }),
-          releaseDate: null, // last fm does not provide release dates
-        };
-      });
+      const normalizedTopAlbums: TopAlbum[] = lastfmTopAlbums
+        .map((album) => {
+          return {
+            name: album.name,
+            images: album.image.map((img) => {
+              return {
+                url: img["#text"],
+              };
+            }),
+            releaseDate: null, // last fm does not provide release dates
+          };
+        })
+        .filter((album) => album.name !== "(null)");
 
       // and eventually get pollster ratings here
 
@@ -153,7 +155,6 @@ export async function getAlbums(
       if (!lastfmAlbums) throw new Error("no results from lastfm");
 
       const normalizedAlbums: PollsterAlbum[] = lastfmAlbums.album
-        .filter((album) => album.name !== "(null)")
         .map((album) => {
           return {
             name: album.name,
@@ -164,7 +165,8 @@ export async function getAlbums(
             }),
             releaseDate: null, // last fm does not provide release dates
           };
-        });
+        })
+        .filter((album) => album.name !== "(null)");
 
       const totalPages = Number(lastfmAlbums["@attr"].totalPages);
 
