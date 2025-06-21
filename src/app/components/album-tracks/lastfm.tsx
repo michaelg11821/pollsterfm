@@ -6,8 +6,8 @@ import { LastfmAlbumInfoResponse } from "@/lib/types/lastfmResponses";
 import { secondsToDuration } from "@/lib/utils";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "../../ui/button";
-import LoadingIndicator from "../../ui/loading-indicator";
+import { Button } from "../ui/button";
+import LoadingIndicator from "../ui/loading-indicator";
 
 type LastfmAlbumTracksProps = {
   artistName: string;

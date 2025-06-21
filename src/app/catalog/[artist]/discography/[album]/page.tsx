@@ -1,6 +1,7 @@
 import AlbumHeader from "@/app/components/album-header/album-header";
 import AlbumHeaderSkeleton from "@/app/components/album-header/skeleton";
 import AlbumTracks from "@/app/components/album-tracks/album-tracks";
+import AlbumTracksSkeleton from "@/app/components/album-tracks/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 // import Link from "next/link";
@@ -21,7 +22,9 @@ async function AlbumPage({ params }: AlbumPageProps) {
       <div className="content-wrapper mt-10 px-5 py-0 xl:p-0">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           <div className="space-y-10 lg:col-span-3">
-            <AlbumTracks artistName={artist} albumName={album} />
+            <Suspense fallback={<AlbumTracksSkeleton />}>
+              <AlbumTracks artistName={artist} albumName={album} />
+            </Suspense>
             <TopListeners category="album" itemName={album} />
             <FeaturedIn category="album" itemName={album} />
             {/* make into component "album-reviews" */}

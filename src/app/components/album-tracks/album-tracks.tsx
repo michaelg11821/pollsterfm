@@ -1,6 +1,6 @@
 import { findFirstAlbumByName } from "@/lib/pollster/album";
 import { findFirstArtistByName } from "@/lib/pollster/artist";
-import LastfmAlbumTracks from "./lastfm/lastfm";
+import LastfmAlbumTracks from "./lastfm";
 
 type AlbumTracksProps = {
   artistName: string;
