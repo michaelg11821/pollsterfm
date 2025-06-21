@@ -1,8 +1,9 @@
 "use client";
 
 import { getLastfmAlbumTracks } from "@/lib/lastfm/album";
+import { ALBUM_PAGE_TRACK_LIMIT } from "@/lib/pollster/config";
 import { toastManager } from "@/lib/toast";
-import { LastfmAlbumInfoResponse } from "@/lib/types/lastfmResponses";
+import type { LastfmAlbumInfoResponse } from "@/lib/types/lastfmResponses";
 import { secondsToDuration } from "@/lib/utils";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -14,14 +15,12 @@ type LastfmAlbumTracksProps = {
   albumName: string;
 };
 
-const INITIAL_VISIBLE_COUNT = 20;
-
 function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
   const [tracks, setTracks] = useState<
     LastfmAlbumInfoResponse["album"]["tracks"]["track"]
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+  const [visibleCount, setVisibleCount] = useState(ALBUM_PAGE_TRACK_LIMIT);
 
   const loadingRef = useRef<boolean>(false);
 
@@ -69,7 +68,7 @@ function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
       <Link
         key={`${track.name}-${index}`}
         className="bg-foreground/5 hover:bg-foreground/10 flex cursor-pointer items-center gap-3 rounded-xl px-2 py-3 transition-[background-color]"
-        href={`/catalog/${artistName}/discography/${encodeURIComponent(albumName)}/${encodeURIComponent(track.name)}`}
+        href={`/catalog/${encodeURIComponent(artistName)}/discography/${encodeURIComponent(albumName)}/${encodeURIComponent(track.name)}`}
       >
         <div className="text-muted-foreground w-8 text-center">
           {track["@attr"].rank}
