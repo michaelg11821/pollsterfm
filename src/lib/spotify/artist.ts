@@ -1,6 +1,6 @@
 "use server";
 
-import { ALBUM_PAGE_LIMIT } from "../pollster/config";
+import { DISCOGRAPHY_PAGE_LIMIT } from "../pollster/config";
 import type { Track } from "../types/spotify";
 import type {
   SpotifyArtistAlbumsResponse,
@@ -106,10 +106,10 @@ export async function getSpotifyArtistAlbums(
 
     if (!credentials) throw new Error("invalid credentials");
 
-    const pageOffset = ALBUM_PAGE_LIMIT * page;
+    const pageOffset = DISCOGRAPHY_PAGE_LIMIT * page;
 
     const res = await fetch(
-      `https://api.spotify.com/v1/artists/${spotifyId}/albums?limit=${ALBUM_PAGE_LIMIT}&offset=${pageOffset}`,
+      `https://api.spotify.com/v1/artists/${spotifyId}/albums?limit=${DISCOGRAPHY_PAGE_LIMIT}&offset=${pageOffset}`,
       { headers: { Authorization: `Bearer ${credentials}` } },
     );
 

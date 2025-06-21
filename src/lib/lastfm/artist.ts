@@ -1,6 +1,6 @@
 "use server";
 
-import { ALBUM_PAGE_LIMIT } from "../pollster/config";
+import { DISCOGRAPHY_PAGE_LIMIT } from "../pollster/config";
 import type {
   LastfmArtistAlbumsResponse,
   LastfmArtistSearchResponse,
@@ -123,7 +123,7 @@ export async function getLastfmArtistAlbums(
 ) {
   try {
     const res = await fetch(
-      `http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=${artistName}&limit=${ALBUM_PAGE_LIMIT}&page=${page}${suffix}`,
+      `http://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=${artistName}&limit=${DISCOGRAPHY_PAGE_LIMIT}&page=${page}${suffix}`,
     );
 
     if (!res.ok) throw new Error(`failed to get albums for ${artistName}`);

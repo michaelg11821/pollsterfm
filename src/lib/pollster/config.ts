@@ -1,1 +1,3 @@
-export const ALBUM_PAGE_LIMIT = 10;
+export const DISCOGRAPHY_PAGE_LIMIT = 10;
+
+export const ALBUM_PAGE_TRACK_LIMIT = 20;

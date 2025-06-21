@@ -14,7 +14,7 @@ import type {
   FirstArtistResult,
 } from "../types/internalResponses";
 import type { PollsterAlbum, SimilarArtist, TopAlbum } from "../types/pollster";
-import { ALBUM_PAGE_LIMIT } from "./config";
+import { DISCOGRAPHY_PAGE_LIMIT } from "./config";
 
 /**
  * Returns information about the first artists that appear in each search. The result is cached by Next.js.
@@ -191,7 +191,9 @@ export async function getAlbums(
         },
       );
 
-      const totalPages = Math.ceil(spotifyAlbums.total / ALBUM_PAGE_LIMIT);
+      const totalPages = Math.ceil(
+        spotifyAlbums.total / DISCOGRAPHY_PAGE_LIMIT,
+      );
 
       // and eventually get pollster ratings here
 
