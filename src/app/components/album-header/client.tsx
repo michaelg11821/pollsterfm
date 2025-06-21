@@ -95,7 +95,12 @@ function ClientAlbumHeader({ albumData }: ClientAlbumHeaderProps) {
                       <span className="text-white/60 text-sm ml-1">({albumData.ratingsCount.toLocaleString()})</span>
                     </div> */}
               </div>
-
+              <div className="-mt-4 mb-3">
+                <TopGenres
+                  genres={albumData.genres}
+                  pollsterUrl={`/catalog/${encodeURIComponent(albumData.artists[0])}/${encodeURIComponent(albumData.name)}/genres`}
+                />
+              </div>
               <div className="flex items-center gap-3">
                 {albumData.spotifyUrl && (
                   <Link
@@ -130,11 +135,6 @@ function ClientAlbumHeader({ albumData }: ClientAlbumHeaderProps) {
                   </Link>
                 )}
               </div>
-
-              <TopGenres
-                genres={albumData.genres}
-                pollsterUrl={`/catalog/${encodeURIComponent(albumData.artists[0])}/${encodeURIComponent(albumData.name)}/genres`}
-              />
             </div>
             <Link
               href="#"

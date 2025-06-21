@@ -77,9 +77,9 @@ export async function findFirstArtistByName(
 }
 
 /**
- * Gets the top albums for an artist. Platform-agnostic.
+ * Gets the top albums for an artist. Platform-neutral.
  *
- * @param artistData The name and URLs for the platforms the artist is on. See FirstArtistResult and ... (more to come).
+ * @param artistData The name and URLs for the platforms the artist is on.
  * @returns The top albums for an artist.
  */
 export async function getTopAlbums(artistData: FirstArtistResult) {
@@ -136,7 +136,7 @@ export async function getTopAlbums(artistData: FirstArtistResult) {
 }
 
 /**
- * Gets a page of albums for an artist. Platform-agnostic.
+ * Gets a page of albums for an artist. Platform-neutral.
  *
  * @param artistData The name and URLs for the platforms the artist is on. See FirstArtistResult and ... (more to come).
  * @param  page The desired page of albums. 1 by default.
@@ -207,7 +207,7 @@ export async function getAlbums(
 }
 
 /**
- * Gets similar/related artists to the one provided. Platform-agnostic.
+ * Gets similar/related artists to the one provided. Platform-neutral.
  *
  * @param artistData The name and URLs for the platforms the artist is on. See FirstArtistResult and ... (more to come).
  * @param amount The amount of artists to return. Default is 4.

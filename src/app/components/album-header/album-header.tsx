@@ -16,9 +16,7 @@ async function AlbumHeader({ artistName, albumName }: AlbumHeaderProps) {
 
   if (!albumData) return null;
 
-  return (
-    <ClientAlbumHeader artistName={artistData.name} albumData={albumData} />
-  );
+  return <ClientAlbumHeader albumData={albumData} />;
 }
 
 export default AlbumHeader;
