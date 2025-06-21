@@ -12,7 +12,7 @@ async function DiscographyPage(props: DiscographyPageProps) {
   const { page } = await props.searchParams;
 
   return (
-    <main className="content-wrapper px-5 py-6 xl:p-0">
+    <main className="content-wrapper px-5 py-6 xl:px-0">
       <Suspense fallback={<DiscographySkeleton />}>
         <Discography artistName={artist} page={page} />
       </Suspense>
