@@ -7,6 +7,7 @@ import Image from "next/image";
 import Reactions from "../reactions/reactions";
 
 import { getName } from "@/lib/data-access/user/read";
+import Link from "next/link";
 import { Badge } from "../ui/badge";
 
 type NowPlayingProps = {
@@ -21,6 +22,10 @@ async function NowPlaying({ username }: NowPlayingProps) {
   if (currentlyPlaying.item.is_local) return null;
 
   const name = await getName(username);
+
+  const mainArtist = currentlyPlaying.item.album.artists[0].name;
+  const albumName = currentlyPlaying.item.album.name;
+  const trackName = currentlyPlaying.item.name;
 
   return (
     <div className="mb-6 flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center">
@@ -39,35 +44,43 @@ async function NowPlaying({ username }: NowPlayingProps) {
             Now Playing
           </Badge>
         </div>
-        <h3 className="overflow-hidden font-bold overflow-ellipsis whitespace-nowrap">
+        <Link
+          href={`/catalog/${encodeURIComponent(mainArtist)}/discography/${encodeURIComponent(albumName)}/${encodeURIComponent(trackName)}`}
+          className="overflow-hidden font-bold overflow-ellipsis whitespace-nowrap"
+        >
           {currentlyPlaying.item.name}
-        </h3>
+        </Link>
         <p className="flex justify-center gap-1 sm:justify-start">
           {currentlyPlaying.item.album.artists.map(({ name }, index) => {
             if (index !== currentlyPlaying.item!.album.artists.length - 1) {
               return (
-                <span
+                <Link
                   key={randomUUID()}
+                  href={`/catalog/${encodeURIComponent(name)}`}
                   className="text-muted-foreground overflow-hidden text-sm overflow-ellipsis whitespace-nowrap"
                 >
                   {name},{" "}
-                </span>
+                </Link>
               );
             }
 
             return (
-              <span
+              <Link
                 key={randomUUID()}
+                href={`/catalog/${encodeURIComponent(name)}`}
                 className="text-muted-foreground overflow-hidden text-sm overflow-ellipsis whitespace-nowrap"
               >
                 {name}
-              </span>
+              </Link>
             );
           })}{" "}
-          <span className="text-muted-foreground overflow-hidden text-sm overflow-ellipsis whitespace-nowrap">
+          <Link
+            href={`/catalog/${encodeURIComponent(mainArtist)}/discography/${encodeURIComponent(albumName)}`}
+            className="text-muted-foreground overflow-hidden text-sm overflow-ellipsis whitespace-nowrap"
+          >
             {" "}
-            • {currentlyPlaying.item.album.name}
-          </span>
+            • {albumName}
+          </Link>
         </p>
       </div>
       <Reactions username={username} name={name} />
