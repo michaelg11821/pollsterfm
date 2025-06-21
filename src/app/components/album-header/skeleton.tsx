@@ -33,13 +33,11 @@ function AlbumHeaderSkeleton() {
                   <div className="skeleton ml-1 h-5 w-20 animate-pulse rounded-lg"></div>
                 </div> */}
               </div>
-
+              <TopGenresSkeleton />
               <div className="mt-4 flex items-center gap-3">
                 <div className="skeleton h-6 w-24 animate-pulse rounded-lg"></div>
                 <div className="skeleton h-6 w-24 animate-pulse rounded-lg"></div>
               </div>
-
-              <TopGenresSkeleton />
             </div>
             <div className="skeleton h-10 w-32 animate-pulse self-center rounded-lg md:self-end"></div>
           </div>
