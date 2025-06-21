@@ -1,8 +1,8 @@
 "use server";
 
 import type {
+  LastfmAlbumInfoResponse,
   LastfmAlbumSearchResponse,
-  LastfmAlbumTagsResponse,
 } from "../types/lastfmResponses";
 import { isSimilar } from "../utils";
 import { suffix } from "./suffix";
@@ -13,17 +13,20 @@ import { suffix } from "./suffix";
  * @param albumName The name of an album on Last.fm.
  * @returns The tags for an album.
  */
-export async function getAlbumTags(artistName: string, albumName: string) {
+export async function getLastfmAlbumTags(
+  artistName: string,
+  albumName: string,
+) {
   try {
     const res = await fetch(
-      `http://ws.audioscrobbler.com/2.0/?method=album.gettoptags&artist=${artistName}&album=${albumName}${suffix}`,
+      `http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=${artistName}&album=${albumName}${suffix}`,
     );
 
     if (!res.ok) throw new Error("failed to get album tags");
 
-    const results: LastfmAlbumTagsResponse = await res.json();
+    const results: LastfmAlbumInfoResponse = await res.json();
 
-    const tags = results.toptags.tag;
+    const tags = results.album.tags.tag;
 
     if (!tags) {
       throw new Error("no valid result");
@@ -67,8 +70,9 @@ export async function getFirstLastfmAlbumFromQuery(
     if (match) {
       return {
         name: firstAlbum.name,
+        artist: firstAlbum.artist,
         image: firstAlbum.image,
-        genres: await getAlbumTags(artistName, firstAlbum.name),
+        genres: await getLastfmAlbumTags(artistName, firstAlbum.name),
         url: firstAlbum.url,
       };
     } else {
@@ -76,6 +80,40 @@ export async function getFirstLastfmAlbumFromQuery(
     }
   } catch (err: unknown) {
     console.error("error getting first album from query:", err);
+
+    return null;
+  }
+}
+
+/**
+ * Returns the tracks on the given album.
+ *
+ * @param artistName The name of an artist.
+ * @param albumName The name of an album.
+ * @returns The tracks on the given album.
+ */
+export async function getLastfmAlbumTracks(
+  artistName: string,
+  albumName: string,
+) {
+  try {
+    const res = await fetch(
+      `http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=${artistName}&album=${albumName}${suffix}`,
+    );
+
+    if (!res.ok) throw new Error("failed to get album tracks");
+
+    const results: LastfmAlbumInfoResponse = await res.json();
+
+    const tracks = results.album.tracks;
+
+    if (!tracks) {
+      throw new Error("no valid result");
+    }
+
+    return tracks;
+  } catch (err: unknown) {
+    console.error("error getting album tracks:", err);
 
     return null;
   }

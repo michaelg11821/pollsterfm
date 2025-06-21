@@ -17,7 +17,7 @@ import { suffix } from "./suffix";
  * @param artistName The name of an artist on Last.fm.
  * @returns The tags for an artist.
  */
-export async function getArtistTags(artistName: string) {
+export async function getLastfmArtistTags(artistName: string) {
   try {
     const res = await fetch(
       `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=${artistName}${suffix}`,
@@ -29,7 +29,7 @@ export async function getArtistTags(artistName: string) {
 
     const tags = results.toptags.tag;
 
-    if (!tags) {
+    if (!tags || tags.length === 0) {
       throw new Error("no valid result");
     }
 
@@ -66,12 +66,10 @@ export async function getFirstLastfmArtistFromQuery(artistQuery: string) {
     const match = isSimilar(artistQuery, firstArtist.name);
 
     if (match) {
-      const tags = await getArtistTags(firstArtist.name);
-
       return {
         name: firstArtist.name,
         image: null,
-        genres: tags,
+        genres: await getLastfmArtistTags(firstArtist.name),
         url: firstArtist.url,
       };
     } else {

@@ -1,5 +1,4 @@
 import {
-  getArtistTags,
   getFirstLastfmArtistFromQuery,
   getLastfmArtistAlbums,
   getLastfmArtistTopAlbums,
@@ -43,10 +42,7 @@ export async function findFirstArtistByName(
       return {
         name: spotifyArtist.name,
         image: spotifyArtist.images[0].url,
-        genres:
-          spotifyArtist.genres.length !== 0
-            ? spotifyArtist.genres
-            : await getArtistTags(spotifyArtist.name),
+        genres: spotifyArtist.genres,
         spotifyUrl: spotifyArtist.external_urls.spotify,
         lastfmUrl: lastfmArtist.url,
       };
@@ -62,7 +58,9 @@ export async function findFirstArtistByName(
       return {
         name: lastfmArtist.name,
         image: null,
-        genres: lastfmArtist.genres,
+        genres: lastfmArtist.genres
+          ? lastfmArtist.genres.map(({ name }) => name)
+          : null,
         spotifyUrl: null,
         lastfmUrl: lastfmArtist.url,
       };

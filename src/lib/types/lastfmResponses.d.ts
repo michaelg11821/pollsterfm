@@ -46,9 +46,13 @@ export type LastfmSimilarArtistsResponse = {
 
 export type LastfmAlbumInfoResponse = {
   album: {
-    tags: Tag[];
+    tags: {
+      tag: Tag[];
+    };
     image: Image[];
-    tracks: Track[];
+    tracks: {
+      track: Track[];
+    };
     url: string;
     name: string;
   };

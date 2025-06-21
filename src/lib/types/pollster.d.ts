@@ -1,5 +1,3 @@
-import type { Tag } from "./lastfm";
-
 type TopAlbumImage = {
   url: string;
 };
@@ -12,8 +10,6 @@ export type TopAlbum = {
 };
 
 export type PollsterAlbum = TopAlbum;
-
-export type PollsterGenres = string[] | Tag[] | null;
 
 export type SimilarArtist = {
   name: string;

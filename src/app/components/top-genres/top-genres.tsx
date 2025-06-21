@@ -1,16 +1,17 @@
-import type { PollsterGenres } from "@/lib/types/pollster";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 
 type TopGenresProps = {
-  genres: PollsterGenres;
+  genres: string[] | null;
   pollsterUrl: string;
 };
 
 function TopGenres({ genres, pollsterUrl }: TopGenresProps) {
-  const asJsx = genres?.slice(0, 5).map((genre, i) => (
+  if (!genres) return null;
+
+  const asJsx = genres.slice(0, 5).map((genre, i) => (
     <Badge key={i} variant="outline" className="select-none">
-      {typeof genre === "string" ? genre : genre.name}
+      {genre}
     </Badge>
   ));
 
@@ -19,7 +20,7 @@ function TopGenres({ genres, pollsterUrl }: TopGenresProps) {
       {asJsx && asJsx.length > 0 ? (
         <div className="mt-2 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 md:justify-start">
           {asJsx}{" "}
-          {genres!.length > 5 && (
+          {genres.length > 5 && (
             <>
               ...
               <Link
