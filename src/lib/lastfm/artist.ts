@@ -29,7 +29,7 @@ export async function getLastfmArtistTags(artistName: string) {
 
     const tags = results.toptags.tag;
 
-    if (!tags || tags.length === 0) {
+    if (!tags) {
       throw new Error("no valid result");
     }
 
