@@ -1,5 +1,6 @@
 import AlbumHeader from "@/app/components/album-header/album-header";
 import AlbumHeaderSkeleton from "@/app/components/album-header/skeleton";
+import AlbumTracks from "@/app/components/album-tracks/album-tracks";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 // import Link from "next/link";
@@ -20,36 +21,7 @@ async function AlbumPage({ params }: AlbumPageProps) {
       <div className="content-wrapper mt-10 px-5 py-0 xl:p-0">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           <div className="space-y-10 lg:col-span-3">
-            {/* make into component "album-tracks" */}
-            {/* <section>
-             
-                <h2 className="text-xl font-bold">Tracks</h2>
-              
-
-              <div className="space-y-2">
-                {albumData.tracks.map((track, index) => (
-                  <div
-                    key={index}
-                    className="bg-white/5 hover:bg-white/10 transition-colors rounded-lg p-3 flex items-center cursor-pointer"
-                  >
-                    <div className="w-8 text-white/60 text-center">{track.number}</div>
-                    <div className="flex-1 min-w-0">
-                      <Link
-                        href={`/track/${track.id}`}
-                        className="font-medium hover:underline block truncate"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {track.name}
-                      </Link>
-                      <div className="flex items-center text-white/60 text-xs">
-                        <span>{track.plays} plays</span>
-                      </div>
-                    </div>
-                    <div className="text-white/60 text-sm">{track.duration}</div>
-                  </div>
-                ))}
-              </div>
-            </section> */}
+            <AlbumTracks artistName={artist} albumName={album} />
             <TopListeners category="album" itemName={album} />
             <FeaturedIn category="album" itemName={album} />
             {/* make into component "album-reviews" */}

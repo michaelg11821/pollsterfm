@@ -113,3 +113,24 @@ export function isSimilar(
 
   return distance(normQuery, normCandidate) <= threshold;
 }
+
+/**
+ * Converts a number of seconds into a duration.
+ *
+ * Example: 117 seconds -> 1:57.
+ *
+ * @param secondsVal A number of seconds.
+ */
+export function secondsToDuration(secondsVal: number) {
+  const hrs = Math.floor(secondsVal / 3600);
+  const mins = Math.floor((secondsVal % 3600) / 60);
+  const secs = Math.floor(secondsVal % 60);
+
+  const paddedSecs = secs.toString().padStart(2, "0");
+  const paddedMins =
+    hrs > 0 ? mins.toString().padStart(2, "0") : mins.toString();
+
+  return hrs > 0
+    ? `${hrs}:${paddedMins}:${paddedSecs}`
+    : `${mins}:${paddedSecs}`;
+}
