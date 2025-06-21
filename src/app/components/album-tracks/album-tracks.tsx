@@ -1,6 +1,7 @@
 import { findFirstAlbumByName } from "@/lib/pollster/album";
 import { findFirstArtistByName } from "@/lib/pollster/artist";
 import LastfmAlbumTracks from "./lastfm";
+import SpotifyAlbumTracks from "./spotify";
 
 type AlbumTracksProps = {
   artistName: string;
@@ -27,7 +28,13 @@ async function AlbumTracks({ artistName, albumName }: AlbumTracksProps) {
           artistName={artistData.name}
           albumName={albumData.name}
         />
-      ) : null}
+      ) : (
+        <SpotifyAlbumTracks
+          artistName={artistData.name}
+          albumName={albumData.name}
+          spotifyUrl={albumData.spotifyUrl}
+        />
+      )}
     </section>
   );
 }

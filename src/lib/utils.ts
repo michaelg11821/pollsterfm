@@ -120,11 +120,35 @@ export function isSimilar(
  * Example: 117 seconds -> 1:57.
  *
  * @param secondsVal A number of seconds.
+ * @returns A duration.
  */
 export function secondsToDuration(secondsVal: number) {
   const hrs = Math.floor(secondsVal / 3600);
   const mins = Math.floor((secondsVal % 3600) / 60);
   const secs = Math.floor(secondsVal % 60);
+
+  const paddedSecs = secs.toString().padStart(2, "0");
+  const paddedMins =
+    hrs > 0 ? mins.toString().padStart(2, "0") : mins.toString();
+
+  return hrs > 0
+    ? `${hrs}:${paddedMins}:${paddedSecs}`
+    : `${mins}:${paddedSecs}`;
+}
+
+/**
+ * Converts a number of milliseconds into a duration.
+ *
+ * Example: 65000 ms -> 1:05.
+ *
+ * @param ms A number of milliseconds.
+ * @returns A duration.
+ */
+export function msToDuration(ms: number) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hrs = Math.floor(totalSeconds / 3600);
+  const mins = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
 
   const paddedSecs = secs.toString().padStart(2, "0");
   const paddedMins =
