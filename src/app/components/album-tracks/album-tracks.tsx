@@ -8,9 +8,6 @@ type AlbumTracksProps = {
   albumName: string;
 };
 
-// have "more" button that passes non-null next url into getAlbumTracks
-// get album data in here
-
 async function AlbumTracks({ artistName, albumName }: AlbumTracksProps) {
   const artistData = await findFirstArtistByName(artistName);
 
