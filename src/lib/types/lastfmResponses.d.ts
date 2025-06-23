@@ -57,3 +57,27 @@ export type LastfmAlbumInfoResponse = {
     name: string;
   };
 };
+
+export type LastfmTrackSearchResponse = {
+  results: {
+    trackmatches: {
+      track: Track[];
+    };
+  };
+};
+
+export type LastfmTrackInfoResponse = {
+  track: {
+    toptags: {
+      tag: Tag[];
+    };
+    album: {
+      artist: string;
+      title: string;
+      url: string;
+      image: Image[];
+    };
+    url: string;
+    name: string;
+  };
+};

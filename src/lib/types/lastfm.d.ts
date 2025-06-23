@@ -36,4 +36,7 @@ export type Track = {
   artist: {
     name: string;
   };
+  album: {
+    title: string;
+  };
 };

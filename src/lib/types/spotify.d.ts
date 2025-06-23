@@ -43,6 +43,12 @@ export type Track = {
   duration_ms: number;
   name: string;
   is_local: boolean;
+  external_urls: {
+    /**
+     * The {@link https://developer.spotify.com/documentation/web-api/concepts/spotify-uris-ids|Spotify URL} for the object.
+     */
+    spotify: string;
+  };
 };
 
 export type PlayHistory = {

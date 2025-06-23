@@ -11,6 +11,7 @@ import { getClientCredentials } from "./credentials";
 /**
  * Returns the first album found from the Spotify API with the given query.
  *
+ * @param artistName The name of an artist.
  * @param albumQuery The name of an album.
  * @returns The first album found with the given query.
  */

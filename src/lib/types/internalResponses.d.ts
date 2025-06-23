@@ -24,6 +24,12 @@ export type FirstAlbumResult = {
   artists: string[];
 } & FirstArtistResult; // & ratings, etc.
 
+export type FirstTrackResult = {
+  albumName: string;
+} & FirstAlbumResult;
+
 export type AlbumData = FirstAlbumResult;
 
 export type ArtistData = FirstArtistResult;
+
+export type TrackData = FirstTrackResult;

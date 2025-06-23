@@ -62,3 +62,9 @@ export type SpotifyAlbumTracksResponse = {
   next: string | null;
   items: SimplifiedTrack[];
 };
+
+export type SpotifyTrackSearchResponse = {
+  tracks: {
+    items: Track[];
+  };
+};

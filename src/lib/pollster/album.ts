@@ -1,7 +1,4 @@
-import {
-  getFirstLastfmAlbumFromQuery,
-  getLastfmAlbumTags,
-} from "../lastfm/album";
+import { getFirstLastfmAlbumFromQuery } from "../lastfm/album";
 import { getFirstSpotifyAlbumFromQuery } from "../spotify/album";
 import type {
   FirstAlbumResult,
@@ -37,17 +34,12 @@ export async function findFirstAlbumByName(
     ]);
 
     if (spotifyAlbum && lastfmAlbum) {
-      const genresFromLastfm = await getLastfmAlbumTags(
-        artistData.name,
-        sanitized,
-      );
-
       return {
         name: spotifyAlbum.name,
         artists: spotifyAlbum.artists.map(({ name }) => name),
         image: spotifyAlbum.images[0].url,
-        genres: genresFromLastfm
-          ? genresFromLastfm.map(({ name }) => name)
+        genres: lastfmAlbum.genres
+          ? lastfmAlbum.genres.map(({ name }) => name)
           : null,
         spotifyUrl: spotifyAlbum.external_urls.spotify,
         lastfmUrl: lastfmAlbum.url,

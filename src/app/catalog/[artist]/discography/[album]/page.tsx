@@ -4,12 +4,33 @@ import AlbumTracks from "@/app/components/album-tracks/album-tracks";
 import AlbumTracksSkeleton from "@/app/components/album-tracks/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
+import { siteName } from "@/config";
+import { findFirstAlbumByName } from "@/lib/pollster/album";
+import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { redirect } from "next/navigation";
 // import Link from "next/link";
 import { Suspense } from "react";
 
 type AlbumPageProps = {
   params: Promise<{ artist: string; album: string }>;
 };
+
+export async function generateMetadata({ params }: AlbumPageProps) {
+  const { artist, album } = await params;
+
+  const artistData = await findFirstArtistByName(artist);
+
+  if (!artistData) redirect("/not-found");
+
+  const albumData = await findFirstAlbumByName(artistData, album);
+
+  if (!albumData) redirect("/not-found");
+
+  return {
+    title: `${albumData.name} — ${artistData.name} | ${siteName}`,
+    description: `Find more about ${albumData.name} by ${artistData.name} on ${siteName}.`,
+  };
+}
 
 async function AlbumPage({ params }: AlbumPageProps) {
   const { artist, album } = await params;
