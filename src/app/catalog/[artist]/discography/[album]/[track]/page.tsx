@@ -4,11 +4,37 @@ import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 import TrackHeaderSkeleton from "@/app/components/track-header/skeleton";
 import TrackHeader from "@/app/components/track-header/track-header";
+import { siteName } from "@/config";
+import { findFirstAlbumByName } from "@/lib/pollster/album";
+import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { findFirstTrackByName } from "@/lib/pollster/track";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 type TrackProps = {
   params: Promise<{ artist: string; album: string; track: string }>;
 };
+
+export async function generateMetadata({ params }: TrackProps) {
+  const { artist, album, track } = await params;
+
+  const artistData = await findFirstArtistByName(artist);
+
+  if (!artistData) return redirect("/not-found");
+
+  const albumData = await findFirstAlbumByName(artistData, album);
+
+  if (!albumData) return redirect("/not-found");
+
+  const trackData = await findFirstTrackByName(albumData, track);
+
+  if (!trackData) return redirect("/not-found");
+
+  return {
+    title: `${trackData.name} — ${artistData.name} | ${siteName}`,
+    description: `Find more about ${trackData.name} by ${artistData.name} on ${siteName}.`,
+  };
+}
 
 async function Track({ params }: TrackProps) {
   const { artist, album, track } = await params;
