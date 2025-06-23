@@ -45,7 +45,7 @@ export async function getFirstSpotifyTrackFromQuery(
       return null;
     }
   } catch (err: unknown) {
-    console.error("error getting first album from query:", err);
+    console.error("error getting first track from query:", err);
 
     return null;
   }
