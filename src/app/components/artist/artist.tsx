@@ -1,4 +1,5 @@
 import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { redirect } from "next/navigation";
 import ClientArtistHeader from "./client";
 
 type ArtistHeaderProps = {
@@ -8,7 +9,7 @@ type ArtistHeaderProps = {
 async function ArtistHeader({ artistName }: ArtistHeaderProps) {
   const artistData = await findFirstArtistByName(artistName);
 
-  if (!artistData) return null;
+  if (!artistData) return redirect("/not-found");
 
   return <ClientArtistHeader artistData={artistData} />;
 }

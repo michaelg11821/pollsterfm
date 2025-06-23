@@ -30,9 +30,9 @@ async function Discography({ artistName, page = "1" }: DiscographyProps) {
 
   const albumData = await getAlbums(artistData, currentPage);
 
-  const getVisiblePages = () => {
-    if (!albumData) return null;
+  if (!albumData) return redirect("/not-found");
 
+  const getVisiblePages = () => {
     const total = albumData.totalPages;
     const maxVisible = 5;
 
