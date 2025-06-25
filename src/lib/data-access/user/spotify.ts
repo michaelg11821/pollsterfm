@@ -50,6 +50,7 @@ function spotifyWithAuth(
             refresh_token: refresh,
             client_id: process.env.AUTH_SPOTIFY_ID!,
           }),
+          cache: "no-store",
         });
 
         const newTokensOrError: SpotifyAccessTokenResponse = await res.json();
@@ -145,10 +146,13 @@ function spotifyWithAuth(
       await validateSpotifyAccessToken();
 
       const res = next
-        ? await fetchWithRetry(next, { headers: getAuthHeader() })
+        ? await fetchWithRetry(next, {
+            headers: getAuthHeader(),
+            cache: "no-store",
+          })
         : await fetchWithRetry(
             `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
-            { headers: getAuthHeader() },
+            { headers: getAuthHeader(), cache: "no-store" },
           );
 
       if (!res.ok) throw new Error("failed to get recently played tracks");
