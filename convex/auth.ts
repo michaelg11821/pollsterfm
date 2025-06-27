@@ -1,0 +1,22 @@
+import Spotify from "@auth/core/providers/spotify";
+import { convexAuth } from "@convex-dev/auth/server";
+
+export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
+  providers: [
+    Spotify({
+      authorization:
+        "https://accounts.spotify.com/authorize?scope=user-read-playback-state user-read-currently-playing user-read-playback-position user-top-read user-read-recently-played user-read-email",
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      profile(spotifyProfile, tokens) {
+        return {
+          id: spotifyProfile.id,
+          name: spotifyProfile.display_name,
+          username: spotifyProfile.id,
+          email: spotifyProfile.email,
+          image: spotifyProfile.images?.[0]?.url,
+          spotifyProfileLink: spotifyProfile.external_urls.spotify,
+        };
+      },
+    }),
+  ],
+});

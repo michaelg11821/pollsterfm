@@ -1,5 +1,7 @@
+import { convexAuthNextjsMiddleware } from "@convex-dev/auth/nextjs/server";
+
+export default convexAuthNextjsMiddleware();
+
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
-  ],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };
