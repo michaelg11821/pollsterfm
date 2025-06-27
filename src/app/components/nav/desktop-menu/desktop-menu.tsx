@@ -1,6 +1,6 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { useAuthActions } from "@convex-dev/auth/react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -18,8 +18,10 @@ import {
 import type { MenuProps } from "../menuProps";
 
 function DesktopMenu({ profileIcon, username }: MenuProps) {
+  const { signOut } = useAuthActions();
+
   const handleSignOut = async () => {
-    await signOut({ redirectTo: "/" });
+    await signOut();
   };
 
   return (

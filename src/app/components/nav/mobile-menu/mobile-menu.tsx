@@ -1,6 +1,6 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 
 import Image from "next/image";
@@ -13,8 +13,10 @@ import type { MenuProps } from "../menuProps";
 function MobileMenu({ profileIcon, username }: MenuProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
+  const { signOut } = useAuthActions();
+
   const handleSignOut = async () => {
-    await signOut({ redirectTo: "/" });
+    await signOut();
   };
 
   return (
