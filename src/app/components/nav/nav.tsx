@@ -1,15 +1,16 @@
-import { auth } from "@/lib/auth";
-
 import Link from "next/link";
 
 import DesktopMenu from "./desktop-menu/desktop-menu";
 import MobileMenu from "./mobile-menu/mobile-menu";
 
 import { siteName } from "@/config";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchQuery } from "convex/nextjs";
 
 async function Nav() {
-  const session = await auth();
-  const user = session?.user;
+  const token = await convexAuthNextjsToken();
+  const user = await fetchQuery(api.user.currentUser, {}, { token });
 
   return (
     <header className="bg-background sticky top-0 z-50 flex h-16 w-full items-center border-b px-5 py-3">

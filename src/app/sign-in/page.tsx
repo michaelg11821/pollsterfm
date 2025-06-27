@@ -1,9 +1,13 @@
-import { auth } from "@/lib/auth";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 
 import { siteName } from "@/config";
+import { api } from "@/lib/convex/_generated/api";
+import { ConvexClientProvider } from "../components/ConvexClientProvider";
 import ProviderLogins from "../components/provider-logins/provider-logins";
+
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchQuery } from "convex/nextjs";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: `Sign In | ${siteName}`,
@@ -11,16 +15,17 @@ export const metadata: Metadata = {
 };
 
 async function SignIn() {
-  const session = await auth();
+  const token = await convexAuthNextjsToken();
+  const user = await fetchQuery(api.user.currentUser, {}, { token });
 
-  const user = session?.user;
-
-  if (user) return redirect("/profile");
+  if (user) return redirect(`/user/${user.username}`);
 
   return (
-    <main className="centered-main">
-      <ProviderLogins />
-    </main>
+    <ConvexClientProvider>
+      <main className="centered-main">
+        <ProviderLogins />
+      </main>
+    </ConvexClientProvider>
   );
 }
 
