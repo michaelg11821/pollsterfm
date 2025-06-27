@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
 
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -11,7 +10,10 @@ import { profilePath } from "./config";
 
 import { verifyTurnstile } from "../../../lib/actions";
 
+import { useAuthActions } from "@convex-dev/auth/react";
+
 import { toastManager } from "@/lib/toast";
+import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import SpotifySvg from "../../../../public/spotify.svg";
 import { Button } from "../ui/button";
@@ -25,6 +27,8 @@ function ProviderLogins() {
   const decodedRedirectPath = redirectPath
     ? decodeURIComponent(redirectPath)
     : null;
+
+  const { signIn } = useAuthActions();
 
   const handleSignIn = async () => {
     if (!turnstileToken) {
@@ -40,7 +44,7 @@ function ProviderLogins() {
       const result = await verifyTurnstile(turnstileToken);
 
       if (result.success) {
-        return signIn("spotify", {
+        return void signIn("spotify", {
           redirectTo: decodedRedirectPath ?? profilePath,
         });
       } else {
@@ -63,17 +67,23 @@ function ProviderLogins() {
 
   return (
     <div className="flex flex-col items-center justify-center gap-6">
-      {loading && <p>Please wait...</p>}
       <Button
         variant="outline"
         size="lg"
-        className="cursor-pointer gap-2.5 py-5.5"
+        className="min-w-62 cursor-pointer gap-2.5 py-5.5"
         type="button"
         onClick={handleSignIn}
-        disabled={!turnstileToken}
+        disabled={!turnstileToken || loading}
       >
-        <Image src={SpotifySvg} width={30} height={30} alt="" priority />
-        Sign in with Spotify
+        {!loading ? (
+          <>
+            {" "}
+            <Image src={SpotifySvg} width={30} height={30} alt="" priority />
+            Sign in with Spotify
+          </>
+        ) : (
+          <Loader2 className="h-5 w-62 animate-spin" />
+        )}
       </Button>
       <Turnstile
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
