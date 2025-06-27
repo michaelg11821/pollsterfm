@@ -7,8 +7,9 @@ import { toastManager } from "../lib/toast";
 import Nav from "./components/nav/nav";
 import { ThemeProvider } from "./components/theme-provider";
 
-import { ConvexClientProvider } from "./components/ConvexClientProvider";
+import { Suspense } from "react";
 import Footer from "./components/footer/footer";
+import NavSkeleton from "./components/nav/skeleton";
 import ToastList from "./components/ui/toast-list";
 import "./globals.css";
 
@@ -43,9 +44,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Toast.Provider toastManager={toastManager}>
-              <ConvexClientProvider>
+              <Suspense fallback={<NavSkeleton />}>
                 <Nav />
-              </ConvexClientProvider>
+              </Suspense>
               {children}
               <Footer />
               <Toast.Viewport className="fixed top-auto right-4 bottom-4 left-auto mx-auto my-0 w-62.5 sm:right-8 sm:bottom-8 sm:w-75">
