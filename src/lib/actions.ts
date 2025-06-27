@@ -1,7 +1,7 @@
 "use server";
 
-import * as Ably from "ably";
-import { auth } from "./auth";
+// import * as Ably from "ably";
+// import { auth } from "./auth";
 
 /**
  * A function that verifies tokens from the Cloudflare Turnstile on the sign-in page.
@@ -38,21 +38,21 @@ export async function verifyTurnstile(token: string) {
   }
 }
 
-/**
- * A function that gets an auth token from Ably.
- *
- * @throws An error when a token cannot be obtained.
- * @returns A valid token.
- */
-export async function getAblyToken() {
-  const client = new Ably.Rest(process.env.ABLY_API_KEY!);
-  const user = await auth();
+// /**
+//  * A function that gets an auth token from Ably.
+//  *
+//  * @throws An error when a token cannot be obtained.
+//  * @returns A valid token.
+//  */
+// export async function getAblyToken() {
+//   const client = new Ably.Rest(process.env.ABLY_API_KEY!);
+//   const user = await auth();
 
-  if (!user) throw new Error("user not logged in");
+//   if (!user) throw new Error("user not logged in");
 
-  const tokenRequestData = await client.auth.createTokenRequest({
-    clientId: user.user.username,
-  });
+//   const tokenRequestData = await client.auth.createTokenRequest({
+//     clientId: user.user.username,
+//   });
 
-  return tokenRequestData;
-}
+//   return tokenRequestData;
+// }
