@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { LogOut, Settings, User } from "lucide-react";
-import ThemeToggle from "../../theme-toggle";
 import { buttonVariants } from "../../ui/button";
 import {
   DropdownMenu,
@@ -27,7 +26,7 @@ function DesktopMenu({ profileIcon, username }: MenuProps) {
   return (
     <div className="hidden md:block">
       {username ? (
-        <DropdownMenu modal={false}>
+        <DropdownMenu>
           <DropdownMenuTrigger className="bg-background relative m-0 flex h-10 w-10 cursor-pointer items-center justify-center gap-1.5 rounded-full border-none outline-0 focus:outline-2 focus:outline-offset-2">
             {profileIcon && (
               <Image
@@ -56,15 +55,15 @@ function DesktopMenu({ profileIcon, username }: MenuProps) {
                 </Link>
               }
             />
-            <DropdownMenuItem className="data-[highlighted]:before:bg-accent flex cursor-pointer items-center gap-2.5 px-3.5 py-[9px] text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm">
-              <Settings className="h-5 w-5" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="data-[highlighted]:before:bg-background flex cursor-default items-center gap-2.5 px-3.5 py-0.5 text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm">
-              <ThemeToggle />
-              Appearance
-            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="data-[highlighted]:before:bg-accent flex cursor-pointer items-center gap-2.5 px-3.5 py-[9px] text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm"
+              render={
+                <Link href="/settings" className="block h-full w-full">
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </Link>
+              }
+            ></DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="data-[highlighted]:before:bg-accent flex cursor-pointer items-center gap-2.5 px-3.5 py-[9px] text-sm leading-4 outline-none select-none data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm"
