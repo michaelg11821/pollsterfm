@@ -3,7 +3,8 @@ import NowPlayingSkeleton from "@/app/components/now-playing/skeleton";
 import ProfileHeader from "@/app/components/profile/profile";
 import RecentlyPlayed from "@/app/components/recently-played/recently-played";
 import RecentlyPlayedSkeleton from "@/app/components/recently-played/skeleton";
-// import RecentlyPlayed from "@/app/components/recently-played/recently-played";
+import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
+import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import { buttonVariants } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { siteName } from "@/config";
@@ -60,13 +61,13 @@ async function Profile({ params }: ProfileProps) {
             </Card>
           </div>
         </section>
-        {/* <section className="px-0 py-9">
+        <section className="px-0 py-9">
           <div className="content-wrapper px-5 xl:p-0">
             <Suspense fallback={<TopAffinitiesSkeleton />}>
               <TopAffinities category="user" itemName={username} />
             </Suspense>
           </div>
-        </section> */}
+        </section>
       </div>
     </main>
   );
