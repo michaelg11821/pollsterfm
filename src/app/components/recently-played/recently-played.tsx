@@ -1,7 +1,8 @@
 import { randomUUID } from "crypto";
 
-import { getRecentlyPlayedTracks } from "@/lib/data-access/user/spotify";
-
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import Track from "../track/track";
 
 type RecentlyPlayedProps = {
@@ -13,7 +14,12 @@ type RecentlyPlayedProps = {
 };
 
 async function RecentlyPlayed({ username, limit }: RecentlyPlayedProps) {
-  const recentTracks = await getRecentlyPlayedTracks(username, limit);
+  const token = await convexAuthNextjsToken();
+  const recentTracks = await fetchAction(
+    api.spotify.user.getRecentlyPlayedTracks,
+    { username, limit: limit ?? 20 },
+    { token },
+  );
 
   if (!recentTracks || !recentTracks.items)
     return <p>Error getting recently played tracks.</p>;
