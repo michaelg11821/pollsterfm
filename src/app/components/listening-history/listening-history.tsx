@@ -26,7 +26,10 @@ async function ListeningHistory({ username }: ListeningHistoryProps) {
           </AlertDescription>
         </Alert>
       )}
-      <SpotifyListeningHistory historyImported={hasImported} />
+      <SpotifyListeningHistory
+        historyImported={hasImported}
+        username={username}
+      />
     </div>
   ) : (
     <p>not implemented yet</p>

@@ -12,18 +12,21 @@ type HistoryProps = {
   params: Promise<{ username: string }>;
 };
 
-export const metadata: Metadata = {
-  title: `(username)'s listening history | ${siteName}`,
-  description: `Check out (username)'s listening history on ${siteName}!`,
-};
+export async function generateMetadata({
+  params,
+}: HistoryProps): Promise<Metadata> {
+  const { username } = await params;
+
+  return {
+    title: `${username}'s listening history | ${siteName}`,
+    description: `Check out ${username}'s listening history on ${siteName}!`,
+  };
+}
 
 async function History({ params }: HistoryProps) {
   const { username } = await params;
 
   if (!username) return redirect("/not-found");
-
-  metadata.title = `${username}'s listening history | ${siteName}`;
-  metadata.description = `Check out ${username}'s listening history on ${siteName}!`;
 
   return (
     <main className="content-wrapper px-3.5 py-8 pb-0 lg:px-0">

@@ -1,9 +1,9 @@
 "use client";
 
-import { getRecentlyPlayedTracks } from "@/lib/data-access/user/spotify";
+import { api } from "@/lib/convex/_generated/api";
 import { toastManager } from "@/lib/toast";
 import { SpotifyRecentlyPlayedResponse } from "@/lib/types/spotifyResponses";
-import { useParams } from "next/navigation";
+import { useAction } from "convex/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Track from "../../track/track";
 import LoadingIndicator from "../../ui/loading-indicator";
@@ -15,10 +15,12 @@ import {
 
 type SpotifyListeningHistoryProps = {
   historyImported: boolean;
+  username: string;
 };
 
 function SpotifyListeningHistory({
   historyImported = false,
+  username,
 }: SpotifyListeningHistoryProps) {
   const [tracks, setTracks] = useState<SpotifyRecentlyPlayedResponse["items"]>(
     [],
@@ -27,11 +29,13 @@ function SpotifyListeningHistory({
   const [nextUrl, setNextUrl] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const { username } = useParams<{ username: string }>();
-
   const loaderRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef<boolean>(false);
   const hasMoreRef = useRef<boolean>(true);
+
+  const getRecentlyPlayedTracks = useAction(
+    api.spotify.user.getRecentlyPlayedTracks,
+  );
 
   const getTracks = useCallback(async () => {
     if (loadingRef.current || !hasMoreRef.current) return;
@@ -40,11 +44,11 @@ function SpotifyListeningHistory({
       loadingRef.current = true;
       setLoading(true);
 
-      const response = await getRecentlyPlayedTracks(
+      const response = await getRecentlyPlayedTracks({
         username,
-        TRACK_CHUNK_SIZE,
-        nextUrl || undefined,
-      );
+        limit: TRACK_CHUNK_SIZE,
+        next: nextUrl || undefined,
+      });
 
       if (!response || !response.items) {
         throw new Error(trackFetchingError);
@@ -78,7 +82,7 @@ function SpotifyListeningHistory({
       loadingRef.current = false;
       setLoading(false);
     }
-  }, [username, nextUrl, historyImported]);
+  }, [getRecentlyPlayedTracks, username, nextUrl, historyImported]);
 
   useEffect(() => {
     getTracks();
