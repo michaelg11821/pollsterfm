@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 import {
   type ChangeEvent,
   type FormEvent,
@@ -28,25 +26,31 @@ import {
 
 import { Camera, ImageIcon, SquarePen, Trash2 } from "lucide-react";
 
-import { updateProfile } from "@/lib/data-access/user/update";
 import { headerImageSchema, profileIconSchema } from "@/lib/schemas/user";
 import { toastManager } from "@/lib/toast";
-import { cn, fileToUint8Array, uInt8ArrayToBlobUrl } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
-import type { EditProfileFormData, FileBytes } from "@/lib/types/formData";
+import type { EditProfileFormData } from "@/lib/types/formData";
 
 import { siteName } from "@/config";
+import { api } from "@/lib/convex/_generated/api";
+import { Id } from "@/lib/convex/_generated/dataModel";
+import { UpdateProfileArgs } from "@/lib/convex/user";
+import { editProfileSchema } from "@/lib/schemas/forms";
+import { useMutation, useQuery } from "convex/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ZodError } from "zod";
 import { Button, buttonVariants } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
 type EditProfileProps = {
-  headerImage: string | null;
-  profileIcon: string | null;
-  name: string | null;
+  headerImage: string | null | undefined;
+  profileIcon: string | undefined;
+  name: string | undefined;
   username: string;
-  aboutMe: string | null;
+  aboutMe: string | undefined;
 };
 
 function EditProfile({
@@ -57,12 +61,12 @@ function EditProfile({
   aboutMe,
 }: EditProfileProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [headerImgPreview, setHeaderImgPreview] = useState<string | null>(
-    headerImage,
-  );
-  const [profileIconPreview, setProfileIconPreview] = useState<string | null>(
-    profileIcon,
-  );
+  const [headerImgPreview, setHeaderImgPreview] = useState<
+    string | null | undefined
+  >(headerImage);
+  const [profileIconPreview, setProfileIconPreview] = useState<
+    string | null | undefined
+  >(profileIcon);
   const [saving, setSaving] = useState<boolean>(false);
   const [formData, setFormData] = useState<EditProfileFormData>({
     newHeaderImg: null,
@@ -70,8 +74,6 @@ function EditProfile({
     newName: name,
     newUsername: username,
     newAboutMe: aboutMe,
-    oldHeaderImg: headerImage,
-    oldProfileIcon: profileIcon,
     deleteHeaderImg: false,
     deleteProfileIcon: false,
   });
@@ -80,12 +82,20 @@ function EditProfile({
   const headerImgInputRef = useRef<HTMLInputElement>(null);
   const profilePicInputRef = useRef<HTMLInputElement>(null);
 
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const deleteImage = useMutation(api.files.deleteById);
+  const currentUser = useQuery(api.user.currentUser);
+  const existingUser = useQuery(api.user.checkForExisting, {
+    username: formData.newUsername,
+  });
+  const updateProfile = useMutation(api.user.updateProfile);
+
   const router = useRouter();
 
   useEffect(() => {
     if (!formData.newHeaderImg) return;
 
-    const imageUrl = uInt8ArrayToBlobUrl(formData.newHeaderImg.bytes);
+    const imageUrl = URL.createObjectURL(formData.newHeaderImg);
 
     setHeaderImgPreview(imageUrl);
 
@@ -95,18 +105,39 @@ function EditProfile({
   useEffect(() => {
     if (!formData.newProfileIcon) return;
 
-    const imageUrl = uInt8ArrayToBlobUrl(formData.newProfileIcon.bytes);
+    const imageUrl = URL.createObjectURL(formData.newProfileIcon);
 
     setProfileIconPreview(imageUrl);
 
     return () => URL.revokeObjectURL(imageUrl);
   }, [formData.newProfileIcon]);
 
-  const validateFileBytes = (
-    fileBytes: FileBytes,
+  useEffect(() => {
+    if (!open) {
+      setHeaderImgPreview(headerImage);
+      setProfileIconPreview(profileIcon);
+
+      setFormData({
+        newHeaderImg: null,
+        newProfileIcon: null,
+        newName: name,
+        newUsername: username,
+        newAboutMe: aboutMe,
+        deleteHeaderImg: false,
+        deleteProfileIcon: false,
+      });
+
+      if (formRef.current) {
+        formRef.current.reset();
+      }
+    }
+  }, [open, headerImage, profileIcon, name, username, aboutMe]);
+
+  const validateFile = (
+    file: File,
     schema: typeof headerImageSchema | typeof profileIconSchema,
   ) => {
-    const result = schema.safeParse(fileBytes);
+    const result = schema.safeParse(file);
 
     if (!result.success) {
       if (schema === headerImageSchema) {
@@ -119,10 +150,12 @@ function EditProfile({
         }
       }
 
-      toastManager.add({
-        title: "Error",
-        description: result.error.errors[0].message,
-      });
+      result.error.errors.forEach(({ message }) =>
+        toastManager.add({
+          title: "Error",
+          description: message,
+        }),
+      );
 
       return false;
     } else {
@@ -134,15 +167,12 @@ function EditProfile({
     const file = e.target.files?.[0];
 
     if (file) {
-      const bytes = await fileToUint8Array(file);
-      const fileBytesObj = { bytes, name: file.name, mimeType: file.type };
-
-      const isValid = validateFileBytes(fileBytesObj, headerImageSchema);
+      const isValid = validateFile(file, headerImageSchema);
 
       if (isValid)
         setFormData((prev) => ({
           ...prev,
-          newHeaderImg: fileBytesObj,
+          newHeaderImg: file,
         }));
     }
   };
@@ -151,15 +181,12 @@ function EditProfile({
     const file = e.target.files?.[0];
 
     if (file) {
-      const bytes = await fileToUint8Array(file);
-      const fileBytesObj = { bytes, name: file.name, mimeType: file.type };
-
-      const isValid = validateFileBytes(fileBytesObj, profileIconSchema);
+      const isValid = validateFile(file, profileIconSchema);
 
       if (isValid)
         setFormData((prev) => ({
           ...prev,
-          newProfileIcon: fileBytesObj,
+          newProfileIcon: file,
         }));
     }
   };
@@ -179,31 +206,123 @@ function EditProfile({
   const onSubmitChanges = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setSaving(true);
+    try {
+      if (!currentUser) throw new Error("Please log in to make changes.");
 
-    const result = await updateProfile(formData);
+      const result = editProfileSchema.parse(formData);
 
-    if (result.success) {
+      const {
+        newHeaderImg,
+        newProfileIcon,
+        newName,
+        newUsername,
+        newAboutMe,
+        deleteHeaderImg,
+        deleteProfileIcon,
+      } = result;
+
+      setSaving(true);
+
+      const args: UpdateProfileArgs = {
+        name: newName,
+        username: newUsername,
+        aboutMe: newAboutMe,
+      };
+
+      if (deleteHeaderImg && currentUser.headerImage) {
+        await deleteImage({ storageId: currentUser.headerImage });
+
+        args.headerImage = undefined;
+      }
+
+      if (deleteProfileIcon && currentUser.image) {
+        if (!currentUser.image.startsWith("https://")) {
+          await deleteImage({ storageId: currentUser.image as Id<"_storage"> });
+        }
+
+        args.image = undefined;
+      }
+
+      if (newProfileIcon) {
+        if (currentUser.image && !currentUser.image.startsWith("https://")) {
+          await deleteImage({ storageId: currentUser.image as Id<"_storage"> });
+        }
+
+        const uploadUrl = await generateUploadUrl();
+
+        const result = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": newProfileIcon.type },
+          body: newProfileIcon,
+        });
+
+        const { storageId } = await result.json();
+
+        args.image = storageId;
+      }
+
+      if (newHeaderImg) {
+        if (currentUser.headerImage) {
+          await deleteImage({ storageId: currentUser.headerImage });
+        }
+
+        const uploadUrl = await generateUploadUrl();
+
+        const result = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": newHeaderImg.type },
+          body: newHeaderImg,
+        });
+
+        const { storageId } = await result.json();
+
+        args.headerImage = storageId;
+      }
+
+      if (newUsername !== username && existingUser) {
+        throw new Error("Username already taken.");
+      } else {
+        await updateProfile(args);
+      }
+
+      router.replace(`/user/${newUsername}`);
+
       setOpen(false);
-
-      router.push(`/user/${formData.newUsername}`);
 
       toastManager.add({
         title: "Success",
         description: "Profile updated successfully.",
       });
-    } else {
-      console.error("error updating profile:", result.errors);
+    } catch (err: unknown) {
+      console.error(
+        `error updating profile for ${currentUser?.username}:`,
+        err,
+      );
 
-      result.errors?.forEach(({ message }) => {
+      if (err instanceof ZodError) {
+        err.issues.forEach(({ message }) => {
+          toastManager.add({
+            title: "Error",
+            description: message,
+          });
+        });
+      } else if (
+        err instanceof Error &&
+        err.message === "Username already taken."
+      ) {
         toastManager.add({
           title: "Error",
-          description: message,
+          description: err.message,
         });
-      });
+      } else {
+        toastManager.add({
+          title: "Error",
+          description: "An unexpected server error occurred. Please try again.",
+        });
+      }
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   };
 
   const onHeaderImgReset = () => {
@@ -216,12 +335,13 @@ function EditProfile({
       newHeaderImg: null,
       deleteHeaderImg: true,
     }));
+
     setHeaderImgPreview(null);
   };
 
   const onProfileIconReset = () => {
-    if (headerImgInputRef.current) {
-      headerImgInputRef.current.value = "";
+    if (profilePicInputRef.current) {
+      profilePicInputRef.current.value = "";
     }
 
     setFormData((prev) => ({
@@ -229,38 +349,12 @@ function EditProfile({
       newProfileIcon: null,
       deleteProfileIcon: true,
     }));
+
     setProfileIconPreview(null);
   };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(open) => {
-        if (!open) {
-          setTimeout(() => {
-            setHeaderImgPreview(headerImage);
-            setProfileIconPreview(profileIcon);
-            setFormData({
-              newHeaderImg: null,
-              newProfileIcon: null,
-              newName: name,
-              newUsername: username,
-              newAboutMe: aboutMe,
-              oldHeaderImg: headerImage,
-              oldProfileIcon: profileIcon,
-              deleteHeaderImg: false,
-              deleteProfileIcon: false,
-            });
-
-            if (formRef.current) {
-              formRef.current.reset();
-            }
-          }, 500);
-        }
-
-        setOpen(open);
-      }}
-    >
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
           <Button

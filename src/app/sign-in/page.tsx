@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { siteName } from "@/config";
 import { api } from "@/lib/convex/_generated/api";
-import { ConvexClientProvider } from "../components/ConvexClientProvider";
 import ProviderLogins from "../components/provider-logins/provider-logins";
 
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
@@ -21,11 +20,9 @@ async function SignIn() {
   if (user) return redirect(`/user/${user.username}`);
 
   return (
-    <ConvexClientProvider>
-      <main className="centered-main">
-        <ProviderLogins />
-      </main>
-    </ConvexClientProvider>
+    <main className="centered-main">
+      <ProviderLogins />
+    </main>
   );
 }
 

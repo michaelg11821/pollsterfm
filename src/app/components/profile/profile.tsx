@@ -1,8 +1,6 @@
-import { enUS } from "date-fns/locale";
-import { redirect } from "next/navigation";
+"use client";
 
-import { auth } from "@/lib/auth";
-import { getProfile } from "@/lib/data-access/user/read";
+import { enUS } from "date-fns/locale";
 
 import type { Month } from "date-fns";
 
@@ -10,27 +8,35 @@ import Image from "next/image";
 
 import EditProfile from "../edit-profile/edit-profile";
 
+import { api } from "@/lib/convex/_generated/api";
+import { useQuery } from "convex/react";
 import { Calendar, Ellipsis } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import ProfileHeaderSkeleton from "./skeleton";
 
 type ProfileHeaderProps = {
   username: string;
 };
 
-async function ProfileHeader({ username }: ProfileHeaderProps) {
-  const profile = await getProfile(username);
+function ProfileHeader({ username }: ProfileHeaderProps) {
+  const profile = useQuery(api.user.getProfile, { username });
+  const user = useQuery(api.user.currentUser);
 
-  if (!profile) return redirect("/not-found");
+  if (profile === undefined || user === undefined) {
+    return <ProfileHeaderSkeleton />;
+  }
 
-  const session = await auth();
-  const loggedInUser = session?.user;
+  if (profile === null) {
+    return null;
+  }
 
-  const joinMonth = profile.createdAt.getMonth() as Month;
+  const createdAtDate = new Date(profile.createdAt);
+  const joinMonth = createdAtDate.getMonth() as Month;
 
   const joinDate = `${enUS.localize.month(
     joinMonth,
-  )} ${profile.createdAt.getFullYear()}`;
+  )} ${createdAtDate.getFullYear()}`;
 
   return (
     <>
@@ -65,16 +71,14 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
           <div className="-mt-7.5 flex-1 pt-2 md:mt-0 md:pt-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-white">
-                  {profile.name}
-                </h1>
+                <h1 className="text-2xl font-bold">{profile.name}</h1>
                 <p className="text-[#9F9F9A]">@{username}</p>
               </div>
               <div className="flex items-end gap-2">
-                {loggedInUser?.username === username ? (
+                {user?.username === username ? (
                   <EditProfile
                     headerImage={profile.headerImage}
-                    profileIcon={profile.image}
+                    profileIcon={profile.image as string | undefined}
                     name={profile.name}
                     username={username}
                     aboutMe={profile.aboutMe}
@@ -82,7 +86,7 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
                 ) : (
                   <Button
                     variant="default"
-                    className="bg-background cursor-pointer px-4 py-2"
+                    className="bg-primary cursor-pointer px-4 py-2"
                   >
                     Follow
                   </Button>
@@ -99,7 +103,7 @@ async function ProfileHeader({ username }: ProfileHeaderProps) {
               {profile.aboutMe}
             </p>
             <div className="text-muted-foreground mt-4 flex flex-wrap gap-x-2 gap-y-6 text-sm">
-              {profile.createdAt && (
+              {createdAtDate && (
                 <div className="mr-6 flex items-center">
                   <Calendar className="mr-1 h-5 w-5" />
                   <span>Joined {joinDate}</span>

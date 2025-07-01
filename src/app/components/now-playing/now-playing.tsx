@@ -1,12 +1,12 @@
 import { randomUUID } from "crypto";
 
-import { getCurrentlyPlayingTrack } from "@/lib/data-access/user/spotify";
-
 import Image from "next/image";
 
 import Reactions from "../reactions/reactions";
 
-import { getName } from "@/lib/data-access/user/read";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 
@@ -15,13 +15,17 @@ type NowPlayingProps = {
 };
 
 async function NowPlaying({ username }: NowPlayingProps) {
-  const currentlyPlaying = await getCurrentlyPlayingTrack(username);
+  const token = await convexAuthNextjsToken();
+
+  const currentlyPlaying = await fetchAction(
+    api.spotify.user.getCurrentlyPlayingTrack,
+    { username },
+    { token },
+  );
 
   if (!currentlyPlaying || !currentlyPlaying.item) return null;
 
   if (currentlyPlaying.item.is_local) return null;
-
-  const name = await getName(username);
 
   const mainArtist = currentlyPlaying.item.album.artists[0].name;
   const albumName = currentlyPlaying.item.album.name;
@@ -83,7 +87,7 @@ async function NowPlaying({ username }: NowPlayingProps) {
           </Link>
         </p>
       </div>
-      <Reactions username={username} name={name} />
+      <Reactions username={username} />
     </div>
   );
 }

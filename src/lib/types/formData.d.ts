@@ -1,17 +1,9 @@
-type FileBytes = {
-  bytes: Uint8Array;
-  name: string;
-  mimeType: string;
-};
-
 export type EditProfileFormData = {
-  newHeaderImg: FileBytes | null;
-  newProfileIcon: FileBytes | null;
-  newName: string | null;
+  newHeaderImg: File | null;
+  newProfileIcon: File | null;
+  newName: string | undefined;
   newUsername: string;
-  newAboutMe: string | null;
-  oldHeaderImg: string | null;
-  oldProfileIcon: string | null;
+  newAboutMe: string | undefined;
   deleteHeaderImg: boolean;
   deleteProfileIcon: boolean;
 };

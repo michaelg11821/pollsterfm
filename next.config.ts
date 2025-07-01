@@ -1,7 +1,5 @@
 import type { NextConfig } from "next";
 
-const supabaseUrl = new URL(process.env.SUPABASE_URL!);
-
 const nextConfig: NextConfig = {
   images: {
     localPatterns: [
@@ -20,7 +18,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: supabaseUrl.hostname,
+        hostname: "honorable-salamander-88.convex.cloud",
       },
       {
         protocol: "https",

@@ -1,11 +1,7 @@
 import NowPlaying from "@/app/components/now-playing/now-playing";
 import NowPlayingSkeleton from "@/app/components/now-playing/skeleton";
 import ProfileHeader from "@/app/components/profile/profile";
-import ProfileHeaderSkeleton from "@/app/components/profile/skeleton";
-import RecentlyPlayed from "@/app/components/recently-played/recently-played";
-import RecentlyPlayedSkeleton from "@/app/components/recently-played/skeleton";
-import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
-import TopAffinities from "@/app/components/top-affinities/top-affinities";
+// import RecentlyPlayed from "@/app/components/recently-played/recently-played";
 import { buttonVariants } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { siteName } from "@/config";
@@ -19,25 +15,26 @@ type ProfileProps = {
   params: Promise<{ username: string }>;
 };
 
-export const metadata: Metadata = {
-  title: `(username) | ${siteName}`,
-  description: `Check out (username)'s profile on ${siteName}!`,
-};
+export async function generateMetadata({
+  params,
+}: ProfileProps): Promise<Metadata> {
+  const { username } = await params;
+
+  return {
+    title: `${username} | ${siteName}`,
+    description: `Check out ${username}'s profile on ${siteName}!`,
+  };
+}
 
 async function Profile({ params }: ProfileProps) {
   const { username } = await params;
 
   if (!username) return redirect("/not-found");
 
-  metadata.title = `${username} | ${siteName}`;
-  metadata.description = `Check out ${username}'s profile on ${siteName}!`;
-
   return (
     <main>
       <div className="pt-2">
-        <Suspense fallback={<ProfileHeaderSkeleton />}>
-          <ProfileHeader username={username} />
-        </Suspense>
+        <ProfileHeader username={username} />
         <section className="py-6">
           <div className="content-wrapper px-5 xl:p-0">
             <div className="mb-5 flex items-center justify-between">
@@ -54,20 +51,18 @@ async function Profile({ params }: ProfileProps) {
                 <Suspense fallback={<NowPlayingSkeleton />}>
                   <NowPlaying username={username} />
                 </Suspense>
-                <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
-                  <RecentlyPlayed username={username} limit={4} />
-                </Suspense>
+                {/* <RecentlyPlayed username={username} limit={4} /> */}
               </CardContent>
             </Card>
           </div>
         </section>
-        <section className="px-0 py-9">
+        {/* <section className="px-0 py-9">
           <div className="content-wrapper px-5 xl:p-0">
             <Suspense fallback={<TopAffinitiesSkeleton />}>
               <TopAffinities category="user" itemName={username} />
             </Suspense>
           </div>
-        </section>
+        </section> */}
       </div>
     </main>
   );

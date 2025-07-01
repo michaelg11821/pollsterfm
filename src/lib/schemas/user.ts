@@ -2,30 +2,25 @@ import { z } from "zod";
 
 const imageFileSizeLimit = 5 * 1024 * 1024; // 5 MB
 
-function makeFileBytesSchema(
+function makeFileSchema(
   acceptedMimeTypes: readonly string[],
   invalidTypeMessage: string,
 ) {
   return z
-    .object({
-      bytes: z
-        .instanceof(Uint8Array)
-        .refine((b) => b.byteLength <= imageFileSizeLimit, {
-          message: "File size should not exceed 5MB.",
-        }),
-      name: z.string(),
-      mimeType: z.string().refine((t) => acceptedMimeTypes.includes(t), {
-        message: invalidTypeMessage,
-      }),
+    .instanceof(File)
+    .refine((f) => f.size <= imageFileSizeLimit, {
+      message: "File size should not exceed 5MB.",
     })
-    .passthrough();
+    .refine((f) => acceptedMimeTypes.includes(f.type), {
+      message: invalidTypeMessage,
+    });
 }
 
 export const headerImageSchemaMessage =
   "Invalid file type. Accepted file types: .png, .jpeg, and .webp.";
 
 export const headerImageSchema = z.nullable(
-  makeFileBytesSchema(
+  makeFileSchema(
     ["image/png", "image/jpeg", "image/webp"],
     headerImageSchemaMessage,
   ),
@@ -35,7 +30,7 @@ export const profileIconSchemaMessage =
   "Invalid file type. Accepted file types: .png, .jpeg, .webp, and .gif.";
 
 export const profileIconSchema = z.nullable(
-  makeFileBytesSchema(
+  makeFileSchema(
     ["image/png", "image/jpeg", "image/webp", "image/gif"],
     profileIconSchemaMessage,
   ),

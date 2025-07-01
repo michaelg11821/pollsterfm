@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import DesktopMenu from "./desktop-menu/desktop-menu";
@@ -5,12 +7,15 @@ import MobileMenu from "./mobile-menu/mobile-menu";
 
 import { siteName } from "@/config";
 import { api } from "@/lib/convex/_generated/api";
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { fetchQuery } from "convex/nextjs";
+import { useQuery } from "convex/react";
+import NavSkeleton from "./skeleton";
 
-async function Nav() {
-  const token = await convexAuthNextjsToken();
-  const user = await fetchQuery(api.user.currentUser, {}, { token });
+function Nav() {
+  const currentUserProfile = useQuery(api.user.getProfile, {});
+
+  if (currentUserProfile === undefined) {
+    return <NavSkeleton />;
+  }
 
   return (
     <header className="bg-background sticky top-0 z-50 flex h-16 w-full items-center border-b px-5 py-3">
@@ -49,8 +54,14 @@ async function Nav() {
           </div>
           <div className="hidden">search...</div>
         </nav>
-        <DesktopMenu profileIcon={user?.image} username={user?.username} />
-        <MobileMenu profileIcon={user?.image} username={user?.username} />
+        <DesktopMenu
+          profileIcon={currentUserProfile?.image}
+          username={currentUserProfile?.username}
+        />
+        <MobileMenu
+          profileIcon={currentUserProfile?.image}
+          username={currentUserProfile?.username}
+        />
       </div>
     </header>
   );

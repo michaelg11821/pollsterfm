@@ -21,11 +21,11 @@ function ProfileHeaderSkeleton() {
                 <div className="skeleton mt-1 h-5 w-25 animate-pulse rounded-md"></div>
               </div>
               <div className="flex items-end gap-2">
-                <div className="skeleton h-9 w-27 animate-pulse rounded-md"></div>
+                <div className="skeleton h-9 w-33 animate-pulse rounded-md"></div>
                 <div className="skeleton h-9 w-9 animate-pulse rounded-md"></div>
               </div>
             </div>
-            <div className="skeleton mt-4 h-5 w-75 animate-pulse rounded-md"></div>
+            <p className="skeleton mt-4 h-5 w-75 animate-pulse rounded-md"></p>
             <div className="text-muted-foreground mt-4 flex flex-wrap gap-x-2 gap-y-6 text-sm">
               <div className="mr-6 flex items-center">
                 <CalendarIcon className="mr-1 h-5 w-5" />

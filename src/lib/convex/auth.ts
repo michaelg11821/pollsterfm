@@ -6,7 +6,6 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
     Spotify({
       authorization:
         "https://accounts.spotify.com/authorize?scope=user-read-playback-state user-read-currently-playing user-read-playback-position user-top-read user-read-recently-played user-read-email",
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       profile(spotifyProfile, tokens) {
         return {
           id: spotifyProfile.id,
@@ -15,6 +14,9 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           email: spotifyProfile.email,
           image: spotifyProfile.images?.[0]?.url,
           spotifyProfileLink: spotifyProfile.external_urls.spotify,
+          spotifyAccessToken: tokens.access_token,
+          spotifyRefreshToken: tokens.refresh_token,
+          spotifyExpiresAt: tokens.expires_at,
         };
       },
     }),

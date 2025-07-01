@@ -3,12 +3,15 @@
 import { Heart, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useState, type CSSProperties } from "react";
 
+import { api } from "@/lib/convex/_generated/api";
+import { useQuery } from "convex/react";
 import { Button } from "../ui/button";
 
 type ReactionsProps = {
   username: string;
-  name: string | null;
 };
+
+type Reaction = "heart" | "thumbsUp" | "thumbsDown";
 
 type ReactionAnimation = {
   active?: boolean;
@@ -16,18 +19,17 @@ type ReactionAnimation = {
   id?: number;
 };
 
-type Reaction = "heart" | "thumbsUp" | "thumbsDown";
-
 type ReactionAnimations = Record<Reaction, ReactionAnimation[]>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function Reactions({ username, name }: ReactionsProps) {
+function Reactions({ username }: ReactionsProps) {
   const [reactionAnimations, setReactionAnimations] =
     useState<ReactionAnimations>({
       heart: [],
       thumbsUp: [],
       thumbsDown: [],
     });
+
+  const name = useQuery(api.user.getName, { username });
 
   const triggerReaction = (reaction: Reaction) => {
     const randomRotation = Math.floor(Math.random() * 60) - 30;

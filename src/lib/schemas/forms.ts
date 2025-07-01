@@ -23,14 +23,12 @@ export const editProfileSchema = z.object({
         .min(3, { message: "Username must be at least 3 characters long." })
         .max(25, { message: "Username cannot be longer than 25 characters." }),
     ),
-  newAboutMe: z.nullable(
+  newAboutMe: z.optional(
     z
       .string()
       .max(250, { message: "About Me cannot be longer than 250 characters." })
       .trim(),
   ),
-  oldHeaderImg: z.nullable(z.string()),
-  oldProfileIcon: z.nullable(z.string()),
   deleteHeaderImg: z.boolean(),
   deleteProfileIcon: z.boolean(),
 });
