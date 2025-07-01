@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as __tests___utils_test_toast_wrapper from "../__tests__/utils/test-toast-wrapper.js";
 import type * as auth from "../auth.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
@@ -28,6 +29,7 @@ import type * as user from "../user.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "__tests__/utils/test-toast-wrapper": typeof __tests___utils_test_toast_wrapper;
   auth: typeof auth;
   files: typeof files;
   http: typeof http;

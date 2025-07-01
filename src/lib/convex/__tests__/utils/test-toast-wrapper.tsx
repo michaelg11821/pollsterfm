@@ -1,6 +1,6 @@
 import { Toast } from "@base-ui-components/react/toast";
 
-import { toastManager } from "../../toast";
+import { toastManager } from "../../../toast";
 
 import ToastList from "@/app/components/ui/toast-list";
 
