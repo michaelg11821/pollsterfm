@@ -9,10 +9,17 @@ import type {
 } from "../../types/pollster";
 import { DISCOGRAPHY_PAGE_LIMIT } from "./config";
 
-import { ArtistFromSearch as LastfmArtist } from "@/lib/types/lastfm";
-import { Artist as SpotifyArtist } from "@/lib/types/spotify";
+import {
+  getFirstLastfmArtistFromQuery,
+  getLastfmArtistAlbums,
+  getSimilarLastfmArtists,
+} from "@/lib/lastfm/artist";
+import {
+  getFirstSpotifyArtistFromQuery,
+  getSpotifyArtistAlbums,
+  getSpotifyArtistTopAlbums,
+} from "@/lib/spotify/artist";
 import { v } from "convex/values";
-import { api } from "../_generated/api";
 import { action } from "../_generated/server";
 
 export const findFirstByName = action({
@@ -21,14 +28,8 @@ export const findFirstByName = action({
     const sanitized = decodeURIComponent(args.artistName);
 
     try {
-      const spotifyResult: Promise<SpotifyArtist | null> = ctx.runAction(
-        api.spotify.artist.getFirstFromQuery,
-        { artistQuery: sanitized },
-      );
-      const lastfmResult: Promise<LastfmArtist | null> = ctx.runAction(
-        api.lastfm.artist.getFirstFromQuery,
-        { artistQuery: sanitized },
-      );
+      const spotifyResult = getFirstSpotifyArtistFromQuery(sanitized);
+      const lastfmResult = getFirstLastfmArtistFromQuery(sanitized);
 
       const [spotifyArtist, lastfmArtist] = await Promise.all([
         spotifyResult,
@@ -86,10 +87,7 @@ export const getTopAlbums = action({
         const parts = new URL(spotifyUrl).pathname.split("/");
         const spotifyId = parts[parts.length - 1];
 
-        const spotifyTopAlbums = await ctx.runAction(
-          api.spotify.artist.getTopAlbums,
-          { spotifyId },
-        );
+        const spotifyTopAlbums = await getSpotifyArtistTopAlbums(spotifyId);
 
         if (!spotifyTopAlbums) throw new Error("no results from spotify");
 
@@ -107,10 +105,7 @@ export const getTopAlbums = action({
 
         return normalizedTopAlbums;
       } else if (!spotifyUrl && lastfmUrl) {
-        const lastfmTopAlbums = await ctx.runAction(
-          api.lastfm.artist.getAlbums,
-          { artistName, limit: 5 },
-        );
+        const lastfmTopAlbums = await getLastfmArtistAlbums(artistName, 1, 5);
 
         if (!lastfmTopAlbums || !lastfmTopAlbums.album)
           throw new Error("no results from lastfm");
@@ -155,11 +150,11 @@ export const getAlbums = action({
 
     try {
       if ((!spotifyUrl && lastfmUrl) || (lastfmUrl && spotifyUrl)) {
-        const lastfmAlbums = await ctx.runAction(api.lastfm.artist.getAlbums, {
-          page,
+        const lastfmAlbums = await getLastfmArtistAlbums(
           artistName,
-          limit: DISCOGRAPHY_PAGE_LIMIT,
-        });
+          page,
+          DISCOGRAPHY_PAGE_LIMIT,
+        );
 
         if (!lastfmAlbums) throw new Error("no results from lastfm");
 
@@ -186,10 +181,7 @@ export const getAlbums = action({
         const parts = new URL(spotifyUrl).pathname.split("/");
         const spotifyId = parts[parts.length - 1];
 
-        const spotifyAlbums = await ctx.runAction(
-          api.spotify.artist.getAlbums,
-          { page, spotifyId },
-        );
+        const spotifyAlbums = await getSpotifyArtistAlbums(spotifyId, page);
 
         if (!spotifyAlbums) throw new Error("no results from spotify");
 
@@ -221,7 +213,7 @@ export const getAlbums = action({
   },
 });
 
-export const getSimilarArtists = action({
+export const getSimilar = action({
   args: {
     artistName: v.string(),
     lastfmUrl: v.union(v.string(), v.null()),
@@ -232,9 +224,9 @@ export const getSimilarArtists = action({
 
     try {
       if (lastfmUrl) {
-        const lastfmSimilarArtists = await ctx.runAction(
-          api.lastfm.artist.getSimilar,
-          { artistName, limit: limit ?? 4 },
+        const lastfmSimilarArtists = await getSimilarLastfmArtists(
+          artistName,
+          limit ?? 4,
         );
 
         if (!lastfmSimilarArtists) throw new Error("no results from lastfm");

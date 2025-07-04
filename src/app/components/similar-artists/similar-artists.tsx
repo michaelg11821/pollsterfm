@@ -1,9 +1,8 @@
 import Link from "next/link";
 
-import {
-  findFirstArtistByName,
-  getSimilarArtists,
-} from "@/lib/pollster/artist";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import { Badge } from "../ui/badge";
 import { buttonVariants } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -13,11 +12,21 @@ type SimilarArtistsProps = {
 };
 
 async function SimilarArtists({ artistName }: SimilarArtistsProps) {
-  const artistData = await findFirstArtistByName(artistName);
+  const token = await convexAuthNextjsToken();
+
+  const artistData = await fetchAction(
+    api.pollster.artist.findFirstByName,
+    { artistName },
+    { token },
+  );
 
   if (!artistData) return <p>Error. Please refresh the page.</p>;
 
-  const similarArtists = await getSimilarArtists(artistData, 4);
+  const similarArtists = await fetchAction(api.pollster.artist.getSimilar, {
+    limit: 4,
+    artistName,
+    lastfmUrl: artistData.lastfmUrl,
+  });
 
   if (!similarArtists) return <p>Error. Please refresh the page.</p>;
 

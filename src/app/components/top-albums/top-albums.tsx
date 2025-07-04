@@ -1,4 +1,6 @@
-import { findFirstArtistByName, getTopAlbums } from "@/lib/pollster/artist";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import Link from "next/link";
 import Album from "../album/album";
 import { buttonVariants } from "../ui/button";
@@ -8,11 +10,25 @@ type TopAlbumsProps = {
 };
 
 async function TopAlbums({ artistName }: TopAlbumsProps) {
-  const artistData = await findFirstArtistByName(artistName);
+  const token = await convexAuthNextjsToken();
+
+  const artistData = await fetchAction(
+    api.pollster.artist.findFirstByName,
+    { artistName },
+    { token },
+  );
 
   if (!artistData) return null;
 
-  const topAlbumsData = await getTopAlbums(artistData);
+  const topAlbumsData = await fetchAction(
+    api.pollster.artist.getTopAlbums,
+    {
+      artistName,
+      spotifyUrl: artistData.spotifyUrl,
+      lastfmUrl: artistData.lastfmUrl,
+    },
+    { token },
+  );
 
   if (!topAlbumsData)
     return <p>Error getting top albums for {artistData.name}.</p>;

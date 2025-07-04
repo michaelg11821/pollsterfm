@@ -1,9 +1,8 @@
 import type { FirstAlbumResult } from "../../types/internalResponses";
 
-import type { AlbumFromSearch as LastfmAlbum } from "@/lib/types/lastfm";
-import type { SimplifiedAlbum as SpotifyAlbum } from "@/lib/types/spotify";
+import { getFirstLastfmAlbumFromQuery } from "@/lib/lastfm/album";
+import { getFirstSpotifyAlbumFromQuery } from "@/lib/spotify/album";
 import { v } from "convex/values";
-import { api } from "../_generated/api";
 import { action } from "../_generated/server";
 
 export const findFirstByName = action({
@@ -12,19 +11,13 @@ export const findFirstByName = action({
     const sanitized = decodeURIComponent(args.albumName);
 
     try {
-      const spotifyResult: Promise<SpotifyAlbum | null> = ctx.runAction(
-        api.spotify.album.getFirstFromQuery,
-        {
-          artistName: args.artistName,
-          albumQuery: sanitized,
-        },
+      const spotifyResult = getFirstSpotifyAlbumFromQuery(
+        args.artistName,
+        sanitized,
       );
-      const lastfmResult: Promise<LastfmAlbum | null> = ctx.runAction(
-        api.lastfm.album.getFirstFromQuery,
-        {
-          artistName: args.artistName,
-          albumQuery: sanitized,
-        },
+      const lastfmResult = getFirstLastfmAlbumFromQuery(
+        args.artistName,
+        sanitized,
       );
 
       const [spotifyAlbum, lastfmAlbum] = await Promise.all([

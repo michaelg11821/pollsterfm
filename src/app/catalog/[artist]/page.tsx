@@ -1,5 +1,5 @@
-import ArtistHeader from "@/app/components/artist/artist";
-import ArtistHeaderSkeleton from "@/app/components/artist/skeleton";
+import ArtistHeader from "@/app/components/artist-header/artist-header";
+import ArtistHeaderSkeleton from "@/app/components/artist-header/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import SimilarArtists from "@/app/components/similar-artists/similar-artists";
 import SimilarArtistsSkeleton from "@/app/components/similar-artists/skeleton";
@@ -9,7 +9,9 @@ import TopAlbumsSkeleton from "@/app/components/top-albums/skeleton";
 import TopAlbums from "@/app/components/top-albums/top-albums";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 import { siteName } from "@/config";
-import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -20,7 +22,12 @@ type ArtistProps = {
 export async function generateMetadata({ params }: ArtistProps) {
   const { artist } = await params;
 
-  const artistData = await findFirstArtistByName(artist);
+  const token = await convexAuthNextjsToken();
+  const artistData = await fetchAction(
+    api.pollster.artist.findFirstByName,
+    { artistName: artist },
+    { token },
+  );
 
   if (!artistData) redirect("/not-found");
 
