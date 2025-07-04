@@ -1,3 +1,4 @@
+import type { TrackFromSearch } from "@/lib/types/lastfm";
 import { v } from "convex/values";
 import type {
   LastfmTrackInfoResponse,
@@ -35,7 +36,7 @@ export const getFirstFromQuery = action({
   args: {
     artistName: v.string(),
     albumName: v.string(),
-    albumImage: v.string(),
+    albumImage: v.union(v.string(), v.null()),
     trackQuery: v.string(),
   },
   handler: async (_, args) => {
@@ -64,7 +65,7 @@ export const getFirstFromQuery = action({
           genres: await getTags(args.artistName, firstTrack.name),
           url: firstTrack.url,
           albumName: args.albumName,
-        };
+        } as TrackFromSearch;
       } else {
         return null;
       }

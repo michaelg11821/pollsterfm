@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { action } from "../_generated/server";
 
+import { AlbumFromSearch } from "@/lib/types/lastfm";
 import type {
   LastfmAlbumInfoResponse,
   LastfmAlbumSearchResponse,
@@ -59,7 +60,7 @@ export const getFirstFromQuery = action({
           image: firstAlbum.image,
           genres: await getTags(args.artistName, firstAlbum.name),
           url: firstAlbum.url,
-        };
+        } as AlbumFromSearch;
       } else {
         return null;
       }

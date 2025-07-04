@@ -1,10 +1,16 @@
 import type {
+  ArtistAlbumsResponse,
+  FirstArtistResult,
+} from "../../types/internalResponses";
+import type {
   PollsterAlbum,
   SimilarArtist,
   TopAlbum,
 } from "../../types/pollster";
 import { DISCOGRAPHY_PAGE_LIMIT } from "./config";
 
+import { ArtistFromSearch as LastfmArtist } from "@/lib/types/lastfm";
+import { Artist as SpotifyArtist } from "@/lib/types/spotify";
 import { v } from "convex/values";
 import { api } from "../_generated/api";
 import { action } from "../_generated/server";
@@ -15,11 +21,11 @@ export const findFirstByName = action({
     const sanitized = decodeURIComponent(args.artistName);
 
     try {
-      const spotifyResult = await ctx.runAction(
+      const spotifyResult: Promise<SpotifyArtist | null> = ctx.runAction(
         api.spotify.artist.getFirstFromQuery,
         { artistQuery: sanitized },
       );
-      const lastfmResult = await ctx.runAction(
+      const lastfmResult: Promise<LastfmArtist | null> = ctx.runAction(
         api.lastfm.artist.getFirstFromQuery,
         { artistQuery: sanitized },
       );
@@ -36,7 +42,7 @@ export const findFirstByName = action({
           genres: spotifyArtist.genres,
           spotifyUrl: spotifyArtist.external_urls.spotify,
           lastfmUrl: lastfmArtist.url,
-        };
+        } as FirstArtistResult;
       } else if (spotifyArtist && !lastfmArtist) {
         return {
           name: spotifyArtist.name,
@@ -44,7 +50,7 @@ export const findFirstByName = action({
           genres: spotifyArtist.genres,
           spotifyUrl: spotifyArtist.external_urls.spotify,
           lastfmUrl: null,
-        };
+        } as FirstArtistResult;
       } else if (!spotifyArtist && lastfmArtist) {
         return {
           name: lastfmArtist.name,
@@ -54,7 +60,7 @@ export const findFirstByName = action({
             : null,
           spotifyUrl: null,
           lastfmUrl: lastfmArtist.url,
-        };
+        } as FirstArtistResult;
       } else {
         throw new Error("no artist found");
       }
@@ -69,8 +75,8 @@ export const findFirstByName = action({
 export const getTopAlbums = action({
   args: {
     artistName: v.string(),
-    spotifyUrl: v.optional(v.string()),
-    lastfmUrl: v.optional(v.string()),
+    spotifyUrl: v.union(v.string(), v.null()),
+    lastfmUrl: v.union(v.string(), v.null()),
   },
   handler: async (ctx, args) => {
     const { artistName, spotifyUrl, lastfmUrl } = args;
@@ -140,8 +146,8 @@ export const getTopAlbums = action({
 export const getAlbums = action({
   args: {
     artistName: v.string(),
-    spotifyUrl: v.optional(v.string()),
-    lastfmUrl: v.optional(v.string()),
+    spotifyUrl: v.union(v.string(), v.null()),
+    lastfmUrl: v.union(v.string(), v.null()),
     page: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -171,11 +177,11 @@ export const getAlbums = action({
           })
           .filter((album) => album.name !== "(null)");
 
-        const totalPages = Number(lastfmAlbums["@attr"].totalPages);
+        const totalPages: number = Number(lastfmAlbums["@attr"].totalPages);
 
         // and eventually get pollster ratings in sep query
 
-        return { albums: normalizedAlbums, totalPages };
+        return { albums: normalizedAlbums, totalPages } as ArtistAlbumsResponse;
       } else if (spotifyUrl && !lastfmUrl) {
         const parts = new URL(spotifyUrl).pathname.split("/");
         const spotifyId = parts[parts.length - 1];
@@ -203,7 +209,7 @@ export const getAlbums = action({
 
         // and eventually get pollster ratings in sep query
 
-        return { albums: normalizedAlbums, totalPages };
+        return { albums: normalizedAlbums, totalPages } as ArtistAlbumsResponse;
       } else {
         return null;
       }
@@ -218,7 +224,7 @@ export const getAlbums = action({
 export const getSimilarArtists = action({
   args: {
     artistName: v.string(),
-    lastfmUrl: v.optional(v.string()),
+    lastfmUrl: v.union(v.string(), v.null()),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {

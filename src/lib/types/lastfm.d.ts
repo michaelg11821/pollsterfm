@@ -8,6 +8,13 @@ export type Tag = {
   url: string;
 };
 
+export type ArtistFromSearch = {
+  name: string;
+  url: string;
+  image: null;
+  genres: Tag[] | null;
+};
+
 export type Image = {
   /**
    * An image URL.
@@ -21,6 +28,14 @@ export type Album = {
   artist: string;
   url: string;
   image: Image[];
+};
+
+export type AlbumFromSearch = {
+  name: string;
+  artist: string;
+  image: Image[];
+  genres: Tag[] | null;
+  url: string;
 };
 
 export type Track = {
@@ -39,4 +54,15 @@ export type Track = {
   album: {
     title: string;
   };
+};
+
+export type TrackFromSearch = {
+  name: string;
+  artist: {
+    name: string;
+  };
+  image: string | null;
+  genres: Tag[] | null;
+  url: string;
+  albumName: string;
 };
