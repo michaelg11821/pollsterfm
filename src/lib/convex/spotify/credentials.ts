@@ -1,13 +1,11 @@
-"use server";
-
-import type { SpotifyClientCredentialsResponse } from "../types/spotifyResponses";
+import type { SpotifyClientCredentialsResponse } from "../../types/spotifyResponses";
 
 /**
  * Returns client credentials from Spotify.
  *
  * @returns A valid access token for the client.
  */
-export async function getClientCredentials(): Promise<string | null> {
+export async function getClientCredentials() {
   const clientId = process.env.AUTH_SPOTIFY_ID!;
   const clientSecret = process.env.AUTH_SPOTIFY_SECRET!;
 

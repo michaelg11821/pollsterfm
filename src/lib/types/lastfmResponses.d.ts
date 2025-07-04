@@ -14,12 +14,6 @@ export type LastfmArtistTagsResponse = {
   };
 };
 
-export type LastfmArtistTopAlbumsResponse = {
-  topalbums: {
-    album: Album[];
-  };
-};
-
 export type LastfmArtistAlbumsResponse = {
   topalbums: {
     album: Album[];

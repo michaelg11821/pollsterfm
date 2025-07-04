@@ -13,10 +13,19 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as __tests___utils_test_toast_wrapper from "../__tests__/utils/test-toast-wrapper.js";
 import type * as auth from "../auth.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
+import type * as lastfm_album from "../lastfm/album.js";
+import type * as lastfm_artist from "../lastfm/artist.js";
+import type * as lastfm_suffix from "../lastfm/suffix.js";
+import type * as lastfm_track from "../lastfm/track.js";
+import type * as pollster_artist from "../pollster/artist.js";
+import type * as pollster_config from "../pollster/config.js";
+import type * as spotify_album from "../spotify/album.js";
+import type * as spotify_artist from "../spotify/artist.js";
+import type * as spotify_credentials from "../spotify/credentials.js";
+import type * as spotify_track from "../spotify/track.js";
 import type * as spotify_user from "../spotify/user.js";
 import type * as user from "../user.js";
 
@@ -29,10 +38,19 @@ import type * as user from "../user.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "__tests__/utils/test-toast-wrapper": typeof __tests___utils_test_toast_wrapper;
   auth: typeof auth;
   files: typeof files;
   http: typeof http;
+  "lastfm/album": typeof lastfm_album;
+  "lastfm/artist": typeof lastfm_artist;
+  "lastfm/suffix": typeof lastfm_suffix;
+  "lastfm/track": typeof lastfm_track;
+  "pollster/artist": typeof pollster_artist;
+  "pollster/config": typeof pollster_config;
+  "spotify/album": typeof spotify_album;
+  "spotify/artist": typeof spotify_artist;
+  "spotify/credentials": typeof spotify_credentials;
+  "spotify/track": typeof spotify_track;
   "spotify/user": typeof spotify_user;
   user: typeof user;
 }>;
