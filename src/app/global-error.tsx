@@ -1,11 +1,7 @@
 "use client";
 
-import type { Metadata } from "next";
 import { Lexend } from "next/font/google";
 import { siteName } from "../config";
-
-import Footer from "./components/footer/footer";
-import NavSkeleton from "./components/nav/skeleton";
 
 import { toastManager } from "@/lib/toast";
 import { Toast } from "@base-ui-components/react";
@@ -18,11 +14,6 @@ const lexend = Lexend({
   subsets: ["latin"],
   display: "swap",
 });
-
-export const metadata: Metadata = {
-  title: `Home | ${siteName}`,
-  description: "A poll-based music social platform",
-};
 
 export default function GlobalError({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -39,6 +30,7 @@ export default function GlobalError({
       className={`${lexend.variable} antialiased`}
       suppressHydrationWarning
     >
+      <title>{`Error | ${siteName}`}</title>
       <body className="min-h-svh">
         <ThemeProvider
           attribute="class"
@@ -47,7 +39,6 @@ export default function GlobalError({
           disableTransitionOnChange
         >
           <Toast.Provider toastManager={toastManager}>
-            <NavSkeleton />
             <main className="centered-main">
               <h2 className="mb-5 text-center text-3xl font-bold">Error ⚠️</h2>
               <p className="max-w-100 text-center text-xl font-light">
@@ -55,7 +46,6 @@ export default function GlobalError({
                 persists.
               </p>
             </main>
-            <Footer />
             <Toast.Viewport className="absolute top-auto right-8 bottom-8 left-auto mt-0 mr-auto mb-0 ml-auto w-full max-w-75">
               <ToastList />
             </Toast.Viewport>
