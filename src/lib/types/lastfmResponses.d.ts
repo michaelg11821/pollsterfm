@@ -1,9 +1,12 @@
 import type { Album, Artist, Image, Tag, Track } from "./lastfm";
 
-export type LastfmArtistSearchResponse = {
-  results: {
-    artistmatches: {
-      artist: Artist[];
+export type LastfmArtistCorrectionResponse = {
+  corrections: {
+    correction: {
+      artist: {
+        name: string;
+        url: string;
+      };
     };
   };
 };

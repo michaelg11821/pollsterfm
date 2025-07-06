@@ -1,6 +1,6 @@
 import type {
   LastfmArtistAlbumsResponse,
-  LastfmArtistSearchResponse,
+  LastfmArtistCorrectionResponse,
   LastfmArtistTagsResponse,
   LastfmSimilarArtistsResponse,
 } from "../types/lastfmResponses";
@@ -45,28 +45,30 @@ export async function getLastfmArtistTags(artistName: string) {
  */
 export async function getFirstLastfmArtistFromQuery(artistQuery: string) {
   try {
+    // try autocorrect in query parameters
+
     const res = await fetch(
-      `http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=${artistQuery}&limit=1${suffix}`,
+      `http://ws.audioscrobbler.com/2.0/?method=artist.getcorrection&artist=${artistQuery}${suffix}`,
     );
 
     if (!res.ok) throw new Error("failed to get first artist from query");
 
-    const searchResults: LastfmArtistSearchResponse = await res.json();
+    const correctionResult: LastfmArtistCorrectionResponse = await res.json();
 
-    const firstArtist = searchResults.results.artistmatches.artist[0];
+    const artist = correctionResult.corrections.correction.artist;
 
-    if (!firstArtist) {
+    if (!artist) {
       throw new Error("no valid result");
     }
 
-    const match = isSimilar(artistQuery, firstArtist.name);
+    const match = isSimilar(artistQuery, artist.name);
 
     if (match) {
       return {
-        name: firstArtist.name,
+        name: artist.name,
         image: null,
-        genres: await getLastfmArtistTags(firstArtist.name),
-        url: firstArtist.url,
+        genres: await getLastfmArtistTags(artist.name),
+        url: artist.url,
       };
     } else {
       return null;

@@ -13,7 +13,7 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
   const token = await convexAuthNextjsToken();
 
   const artistData = await fetchAction(
-    api.pollster.artist.findFirstByName,
+    api.pollster.artist.getCachedArtist,
     { artistName },
     { token },
   );
@@ -23,7 +23,7 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
   const topAlbumsData = await fetchAction(
     api.pollster.artist.getTopAlbums,
     {
-      artistName,
+      artistName: artistData.name,
       spotifyUrl: artistData.spotifyUrl,
       lastfmUrl: artistData.lastfmUrl,
     },
@@ -32,6 +32,8 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
 
   if (!topAlbumsData)
     return <p>Error getting top albums for {artistData.name}.</p>;
+
+  const imgIndex = !artistData.spotifyUrl ? 3 : 0;
 
   return (
     <div>
@@ -47,7 +49,12 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
 
       <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
         {topAlbumsData.map((album, index) => (
-          <Album key={index} artistName={artistData.name} albumData={album} />
+          <Album
+            key={index}
+            artistName={artistData.name}
+            albumData={album}
+            imgIndex={imgIndex}
+          />
         ))}
       </div>
     </div>

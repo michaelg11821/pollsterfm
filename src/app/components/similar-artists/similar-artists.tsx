@@ -15,7 +15,7 @@ async function SimilarArtists({ artistName }: SimilarArtistsProps) {
   const token = await convexAuthNextjsToken();
 
   const artistData = await fetchAction(
-    api.pollster.artist.findFirstByName,
+    api.pollster.artist.getCachedArtist,
     { artistName },
     { token },
   );
@@ -24,7 +24,7 @@ async function SimilarArtists({ artistName }: SimilarArtistsProps) {
 
   const similarArtists = await fetchAction(api.pollster.artist.getSimilar, {
     limit: 4,
-    artistName,
+    artistName: artistData.name,
     lastfmUrl: artistData.lastfmUrl,
   });
 

@@ -11,7 +11,7 @@ type ArtistHeaderProps = {
 async function ArtistHeader({ artistName }: ArtistHeaderProps) {
   const token = await convexAuthNextjsToken();
   const artistData = await fetchAction(
-    api.pollster.artist.findFirstByName,
+    api.pollster.artist.getCachedArtist,
     { artistName },
     { token },
   );

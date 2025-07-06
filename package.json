@@ -15,6 +15,7 @@
   "dependencies": {
     "@auth/core": "0.37.0",
     "@base-ui-components/react": "1.0.0-alpha.8",
+    "@convex-dev/action-cache": "^0.2.10",
     "@convex-dev/auth": "^0.0.87",
     "@marsidev/react-turnstile": "^1.1.0",
     "@prisma/client": "^6.9.0",

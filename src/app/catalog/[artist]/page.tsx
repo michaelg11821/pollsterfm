@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: ArtistProps) {
 
   const token = await convexAuthNextjsToken();
   const artistData = await fetchAction(
-    api.pollster.artist.findFirstByName,
+    api.pollster.artist.getCachedArtist,
     { artistName: artist },
     { token },
   );

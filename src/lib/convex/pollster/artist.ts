@@ -19,12 +19,36 @@ import {
   getSpotifyArtistAlbums,
   getSpotifyArtistTopAlbums,
 } from "@/lib/spotify/artist";
+import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
-import { action } from "../_generated/server";
+import { components, internal } from "../_generated/api";
+import { action, internalAction } from "../_generated/server";
 
-export const findFirstByName = action({
+const artistCache = new ActionCache(components.actionCache, {
+  action: internal.pollster.artist.findFirstByName,
+  name: "artistCache",
+  ttl: 1000 * 60 * 60 * 24 * 7,
+});
+
+export const getCachedArtist = action({
   args: { artistName: v.string() },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<FirstArtistResult | null> => {
+    const result = await artistCache.fetch(ctx, {
+      artistName: args.artistName,
+    });
+
+    // remove misspelled entries like "elliot smit"
+    if (result && result.name !== args.artistName) {
+      await artistCache.remove(ctx, { artistName: args.artistName });
+    }
+
+    return result;
+  },
+});
+
+export const findFirstByName = internalAction({
+  args: { artistName: v.string() },
+  handler: async (_, args): Promise<FirstArtistResult | null> => {
     const sanitized = decodeURIComponent(args.artistName);
 
     try {
@@ -43,7 +67,7 @@ export const findFirstByName = action({
           genres: spotifyArtist.genres,
           spotifyUrl: spotifyArtist.external_urls.spotify,
           lastfmUrl: lastfmArtist.url,
-        } as FirstArtistResult;
+        };
       } else if (spotifyArtist && !lastfmArtist) {
         return {
           name: spotifyArtist.name,
@@ -51,7 +75,7 @@ export const findFirstByName = action({
           genres: spotifyArtist.genres,
           spotifyUrl: spotifyArtist.external_urls.spotify,
           lastfmUrl: null,
-        } as FirstArtistResult;
+        };
       } else if (!spotifyArtist && lastfmArtist) {
         return {
           name: lastfmArtist.name,
@@ -61,7 +85,7 @@ export const findFirstByName = action({
             : null,
           spotifyUrl: null,
           lastfmUrl: lastfmArtist.url,
-        } as FirstArtistResult;
+        };
       } else {
         throw new Error("no artist found");
       }
@@ -79,7 +103,7 @@ export const getTopAlbums = action({
     spotifyUrl: v.union(v.string(), v.null()),
     lastfmUrl: v.union(v.string(), v.null()),
   },
-  handler: async (ctx, args) => {
+  handler: async (_, args) => {
     const { artistName, spotifyUrl, lastfmUrl } = args;
 
     try {
