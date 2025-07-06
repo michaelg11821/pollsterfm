@@ -5,8 +5,9 @@ import AlbumTracksSkeleton from "@/app/components/album-tracks/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 import { siteName } from "@/config";
-import { findFirstAlbumByName } from "@/lib/pollster/album";
-import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import { redirect } from "next/navigation";
 // import Link from "next/link";
 import { Suspense } from "react";
@@ -18,11 +19,21 @@ type AlbumPageProps = {
 export async function generateMetadata({ params }: AlbumPageProps) {
   const { artist, album } = await params;
 
-  const artistData = await findFirstArtistByName(artist);
+  const token = await convexAuthNextjsToken();
+
+  const artistData = await fetchAction(
+    api.pollster.artist.getCachedArtist,
+    { artistName: artist },
+    { token },
+  );
 
   if (!artistData) redirect("/not-found");
 
-  const albumData = await findFirstAlbumByName(artistData, album);
+  const albumData = await fetchAction(
+    api.pollster.album.getCachedAlbum,
+    { artistName: artistData.name, albumName: album },
+    { token },
+  );
 
   if (!albumData) redirect("/not-found");
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { getSpotifyAlbumTracks } from "@/lib/spotify/album";
+import { api } from "@/lib/convex/_generated/api";
 import { toastManager } from "@/lib/toast";
 import type { SpotifyAlbumTracksResponse } from "@/lib/types/spotifyResponses";
 import { msToDuration } from "@/lib/utils";
+import { useAction } from "convex/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../ui/button";
@@ -26,8 +27,7 @@ function SpotifyAlbumTracks({
 
   const loadingRef = useRef<boolean>(false);
 
-  const parts = new URL(spotifyUrl).pathname.split("/");
-  const spotifyId = parts[parts.length - 1];
+  const getSpotifyAlbumTracks = useAction(api.spotify.album.getTracks);
 
   const getTracks = useCallback(
     async (nextUrl?: string) => {
@@ -38,8 +38,8 @@ function SpotifyAlbumTracks({
         setLoading(true);
 
         const response = nextUrl
-          ? await getSpotifyAlbumTracks(spotifyId, nextUrl)
-          : await getSpotifyAlbumTracks(spotifyId);
+          ? await getSpotifyAlbumTracks({ spotifyUrl, nextUrl })
+          : await getSpotifyAlbumTracks({ spotifyUrl });
 
         if (!response || !response.items) {
           throw new Error(
@@ -67,7 +67,7 @@ function SpotifyAlbumTracks({
         setLoading(false);
       }
     },
-    [spotifyId, albumName],
+    [getSpotifyAlbumTracks, spotifyUrl, albumName],
   );
 
   useEffect(() => {

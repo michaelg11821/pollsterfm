@@ -1,10 +1,11 @@
 "use client";
 
-import { getLastfmAlbumTracks } from "@/lib/lastfm/album";
-import { ALBUM_PAGE_TRACK_LIMIT } from "@/lib/pollster/config";
+import { api } from "@/lib/convex/_generated/api";
+import { ALBUM_PAGE_TRACK_LIMIT } from "@/lib/convex/pollster/config";
 import { toastManager } from "@/lib/toast";
 import type { LastfmAlbumInfoResponse } from "@/lib/types/lastfmResponses";
 import { secondsToDuration } from "@/lib/utils";
+import { useAction } from "convex/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../ui/button";
@@ -24,6 +25,8 @@ function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
 
   const loadingRef = useRef<boolean>(false);
 
+  const getLastfmAlbumTracks = useAction(api.lastfm.album.getTracks);
+
   const getTracks = useCallback(async () => {
     if (loadingRef.current) return;
 
@@ -31,7 +34,7 @@ function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
       loadingRef.current = true;
       setLoading(true);
 
-      const response = await getLastfmAlbumTracks(artistName, albumName);
+      const response = await getLastfmAlbumTracks({ artistName, albumName });
 
       if (!response || !response.track) {
         throw new Error(
@@ -57,7 +60,7 @@ function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
       loadingRef.current = false;
       setLoading(false);
     }
-  }, [artistName, albumName]);
+  }, [artistName, albumName, getLastfmAlbumTracks]);
 
   useEffect(() => {
     getTracks();

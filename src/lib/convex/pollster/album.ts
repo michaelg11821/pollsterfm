@@ -2,12 +2,40 @@ import type { FirstAlbumResult } from "../../types/internalResponses";
 
 import { getFirstLastfmAlbumFromQuery } from "@/lib/lastfm/album";
 import { getFirstSpotifyAlbumFromQuery } from "@/lib/spotify/album";
+import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
-import { action } from "../_generated/server";
+import { components, internal } from "../_generated/api";
+import { action, internalAction } from "../_generated/server";
 
-export const findFirstByName = action({
+const albumCache = new ActionCache(components.actionCache, {
+  action: internal.pollster.album.findFirstByName,
+  name: "albumCache",
+  ttl: 1000 * 60 * 60 * 24 * 7,
+});
+
+export const getCachedAlbum = action({
   args: { artistName: v.string(), albumName: v.string() },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<FirstAlbumResult | null> => {
+    const result = await albumCache.fetch(ctx, {
+      artistName: args.artistName,
+      albumName: args.albumName,
+    });
+
+    // remove misspelled entries like "the great anihilator"
+    if (result && result.name !== args.albumName) {
+      await albumCache.remove(ctx, {
+        artistName: args.artistName,
+        albumName: args.albumName,
+      });
+    }
+
+    return result;
+  },
+});
+
+export const findFirstByName = internalAction({
+  args: { artistName: v.string(), albumName: v.string() },
+  handler: async (_, args) => {
     const sanitized = decodeURIComponent(args.albumName);
 
     try {

@@ -1,5 +1,6 @@
-import { findFirstAlbumByName } from "@/lib/pollster/album";
-import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import LastfmAlbumTracks from "./lastfm";
 import SpotifyAlbumTracks from "./spotify";
 
@@ -9,11 +10,21 @@ type AlbumTracksProps = {
 };
 
 async function AlbumTracks({ artistName, albumName }: AlbumTracksProps) {
-  const artistData = await findFirstArtistByName(artistName);
+  const token = await convexAuthNextjsToken();
+
+  const artistData = await fetchAction(
+    api.pollster.artist.getCachedArtist,
+    { artistName },
+    { token },
+  );
 
   if (!artistData) return null;
 
-  const albumData = await findFirstAlbumByName(artistData, albumName);
+  const albumData = await fetchAction(
+    api.pollster.album.getCachedAlbum,
+    { artistName: artistData.name, albumName },
+    { token },
+  );
 
   if (!albumData) return null;
 

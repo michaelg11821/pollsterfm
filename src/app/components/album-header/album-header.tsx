@@ -1,5 +1,6 @@
-import { findFirstAlbumByName } from "@/lib/pollster/album";
-import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import { redirect } from "next/navigation";
 import ClientAlbumHeader from "./client";
 
@@ -9,13 +10,23 @@ type AlbumHeaderProps = {
 };
 
 async function AlbumHeader({ artistName, albumName }: AlbumHeaderProps) {
-  const artistData = await findFirstArtistByName(artistName);
+  const token = await convexAuthNextjsToken();
 
-  if (!artistData) return redirect("/not-found");
+  const artistData = await fetchAction(
+    api.pollster.artist.getCachedArtist,
+    { artistName },
+    { token },
+  );
 
-  const albumData = await findFirstAlbumByName(artistData, albumName);
+  if (!artistData) redirect("/not-found");
 
-  if (!albumData) return redirect("/not-found");
+  const albumData = await fetchAction(
+    api.pollster.album.getCachedAlbum,
+    { artistName: artistData.name, albumName },
+    { token },
+  );
+
+  if (!albumData) redirect("/not-found");
 
   return <ClientAlbumHeader albumData={albumData} />;
 }
