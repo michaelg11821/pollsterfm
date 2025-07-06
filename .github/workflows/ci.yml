@@ -30,15 +30,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Apply database migrations
-        run: pnpm migrate:prod
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
       - name: Run linter
         run: pnpm lint
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
 
       - name: Run tests
         run: pnpm test
