@@ -1,6 +1,8 @@
 import Genres from "@/app/components/genres/genres";
 import GenresSkeleton from "@/app/components/genres/skeleton";
-import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -11,7 +13,12 @@ type ArtistGenresProps = {
 export async function generateMetadata({ params }: ArtistGenresProps) {
   const { artist } = await params;
 
-  const artistData = await findFirstArtistByName(artist);
+  const token = await convexAuthNextjsToken();
+  const artistData = await fetchAction(
+    api.pollster.artist.getCachedArtist,
+    { artistName: artist },
+    { token },
+  );
 
   if (!artistData) redirect("/not-found");
 

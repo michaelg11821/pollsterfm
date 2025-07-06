@@ -21,7 +21,7 @@ function ClientDiscography({ artistName }: ClientDiscographyProps) {
     );
   }, [artistName, searchParams]);
 
-  return <></>;
+  return null;
 }
 
 export default ClientDiscography;

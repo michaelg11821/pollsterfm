@@ -30,7 +30,9 @@ function ClientGenres({ itemData, category }: ClientGenresProps) {
     );
   }, [itemData.name]);
 
-  const genres = itemData.genres?.map((genre, i) => (
+  if (!itemData.genres) return null;
+
+  const genres = itemData.genres.map((genre, i) => (
     <div
       key={i}
       className="bg-accent hover:bg-accent-foreground/10 flex items-center justify-between rounded-sm border p-3 transition-[background-color]"
@@ -66,7 +68,7 @@ function ClientGenres({ itemData, category }: ClientGenresProps) {
           <p className="text-muted-foreground m-0 text-lg">All Genres</p>
         </div>
       </div>
-      {genres && genres.length > 0 ? (
+      {genres.length > 0 ? (
         <div className="grid gap-6">
           <Card className="py-4">
             <CardContent>

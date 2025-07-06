@@ -1,7 +1,9 @@
 import Discography from "@/app/components/discography/discography";
 import DiscographySkeleton from "@/app/components/discography/skeleton";
 import { siteName } from "@/config";
-import { findFirstArtistByName } from "@/lib/pollster/artist";
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -13,7 +15,12 @@ type DiscographyPageProps = {
 export async function generateMetadata({ params }: DiscographyPageProps) {
   const { artist } = await params;
 
-  const artistData = await findFirstArtistByName(artist);
+  const token = await convexAuthNextjsToken();
+  const artistData = await fetchAction(
+    api.pollster.artist.getCachedArtist,
+    { artistName: artist },
+    { token },
+  );
 
   if (!artistData) redirect("/not-found");
 

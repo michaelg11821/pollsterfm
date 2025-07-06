@@ -1,5 +1,6 @@
-import { findFirstArtistByName, getAlbums } from "@/lib/pollster/artist";
-
+import { api } from "@/lib/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchAction } from "convex/nextjs";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,13 +23,28 @@ type DiscographyProps = {
 };
 
 async function Discography({ artistName, page = "1" }: DiscographyProps) {
-  const artistData = await findFirstArtistByName(artistName);
+  const token = await convexAuthNextjsToken();
+
+  const artistData = await fetchAction(
+    api.pollster.artist.getCachedArtist,
+    { artistName },
+    { token },
+  );
 
   if (!artistData) redirect("/not-found");
 
   const currentPage = Number(page);
 
-  const albumData = await getAlbums(artistData, currentPage);
+  const albumData = await fetchAction(
+    api.pollster.artist.getAlbums,
+    {
+      page: currentPage,
+      artistName: artistData.name,
+      spotifyUrl: artistData.spotifyUrl,
+      lastfmUrl: artistData.lastfmUrl,
+    },
+    { token },
+  );
 
   if (!albumData) return redirect("/not-found");
 
@@ -105,75 +121,71 @@ async function Discography({ artistName, page = "1" }: DiscographyProps) {
         </div>
       </div>
 
-      {albumData ? (
-        <div className="mt-0">
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {albumData.albums.map((album, i) => (
-              <Album
-                key={i}
-                artistName={artistData.name}
-                albumData={album}
-                imgIndex={2}
-              />
-            ))}
-          </div>
+      <div className="mt-0">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {albumData.albums.map((album, i) => (
+            <Album
+              key={i}
+              artistName={artistData.name}
+              albumData={album}
+              imgIndex={2}
+            />
+          ))}
+        </div>
 
-          <div className="mt-8 flex justify-center">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href={
-                      currentPage > 1
-                        ? `/catalog/${artistData.name}/discography?page=${currentPage - 1}`
-                        : "#"
-                    }
-                    className={
-                      currentPage > 1 ? "" : "pointer-events-none opacity-50"
-                    }
-                  />
-                </PaginationItem>
+        <div className="mt-8 flex justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href={
+                    currentPage > 1
+                      ? `/catalog/${artistData.name}/discography?page=${currentPage - 1}`
+                      : "#"
+                  }
+                  className={
+                    currentPage > 1 ? "" : "pointer-events-none opacity-50"
+                  }
+                />
+              </PaginationItem>
 
-                {visiblePages &&
-                  visiblePages.map((page, i) => {
-                    if (page === "ellipsis") {
-                      return (
-                        <PaginationItem key={`ellipsis-${i}`}>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      );
-                    }
-
+              {visiblePages &&
+                visiblePages.map((page, i) => {
+                  if (page === "ellipsis") {
                     return (
-                      <PaginationItem key={`page-${page}`}>
-                        <PaginationLink
-                          href={`/catalog/${artistData.name}/discography?page=${page as number}`}
-                          isActive={currentPage === page}
-                        >
-                          {page}
-                        </PaginationLink>
+                      <PaginationItem key={`ellipsis-${i}`}>
+                        <PaginationEllipsis />
                       </PaginationItem>
                     );
-                  })}
+                  }
 
-                <PaginationItem>
-                  <PaginationNext
-                    href={`/catalog/${artistData.name}/discography?page=${currentPage + 1}`}
-                    className={
-                      currentPage === albumData.totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-          <ClientDiscography artistName={artistData.name} />
+                  return (
+                    <PaginationItem key={`page-${page}`}>
+                      <PaginationLink
+                        href={`/catalog/${artistData.name}/discography?page=${page as number}`}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+
+              <PaginationItem>
+                <PaginationNext
+                  href={`/catalog/${artistData.name}/discography?page=${currentPage + 1}`}
+                  className={
+                    currentPage === albumData.totalPages
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
-      ) : (
-        <p>Error getting discography.</p>
-      )}
+        <ClientDiscography artistName={artistData.name} />
+      </div>
     </>
   );
 }
