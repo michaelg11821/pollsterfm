@@ -1,28 +1,28 @@
-import { api } from "@/lib/convex/_generated/api";
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { fetchAction } from "convex/nextjs";
-import ClientGenres from "./client";
-import { noGenresMsg } from "./config";
+import AlbumGenres from "./album/album";
+import ArtistGenres from "./artist/artist";
+import TrackGenres from "./track/track";
 
 type GenresProps = {
-  category: "artist" | "album" | "track";
-  itemName: string;
+  artistName: string;
+  albumName?: string;
+  trackName?: string;
 };
 
-async function Genres({ category, itemName }: GenresProps) {
-  const token = await convexAuthNextjsToken();
-
-  switch (category) {
-    case "artist":
-      const artistData = await fetchAction(
-        api.pollster.artist.getCachedArtist,
-        { artistName: itemName },
-        { token },
-      );
-
-      if (!artistData || !artistData.genres) return <p>{noGenresMsg}</p>;
-
-      return <ClientGenres itemData={artistData} category="artist" />;
+async function Genres({ artistName, albumName, trackName }: GenresProps) {
+  if (artistName && !albumName && !trackName) {
+    return <ArtistGenres artistName={artistName} />;
+  } else if (artistName && albumName && !trackName) {
+    return <AlbumGenres artistName={artistName} albumName={albumName} />;
+  } else if (artistName && albumName && trackName) {
+    return (
+      <TrackGenres
+        artistName={artistName}
+        albumName={albumName}
+        trackName={trackName}
+      />
+    );
+  } else {
+    return null;
   }
 }
 

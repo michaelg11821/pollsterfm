@@ -2,17 +2,54 @@ import type { FirstTrackResult } from "../../types/internalResponses";
 
 import { getFirstLastfmTrackFromQuery } from "@/lib/lastfm/track";
 import { getFirstSpotifyTrackFromQuery } from "@/lib/spotify/track";
+import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
-import { action } from "../_generated/server";
+import { components, internal } from "../_generated/api";
+import { action, internalAction } from "../_generated/server";
 
-export const findFirstByName = action({
+const trackCache = new ActionCache(components.actionCache, {
+  action: internal.pollster.track.findFirstByName,
+  name: "trackCache",
+  ttl: 1000 * 60 * 60 * 24 * 7,
+});
+
+export const getCachedTrack = action({
   args: {
     artistName: v.string(),
     albumName: v.string(),
     albumImage: v.union(v.string(), v.null()),
     trackName: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<FirstTrackResult | null> => {
+    const result = await trackCache.fetch(ctx, {
+      artistName: args.artistName,
+      albumName: args.albumName,
+      albumImage: args.albumImage,
+      trackName: args.trackName,
+    });
+
+    // remove misspelled entries like "beter be quiet now"
+    if (result && result.name !== args.trackName) {
+      await trackCache.remove(ctx, {
+        artistName: args.artistName,
+        albumName: args.albumName,
+        albumImage: args.albumImage,
+        trackName: args.trackName,
+      });
+    }
+
+    return result;
+  },
+});
+
+export const findFirstByName = internalAction({
+  args: {
+    artistName: v.string(),
+    albumName: v.string(),
+    albumImage: v.union(v.string(), v.null()),
+    trackName: v.string(),
+  },
+  handler: async (_, args): Promise<FirstTrackResult | null> => {
     const sanitized = decodeURIComponent(args.trackName);
 
     try {
@@ -44,7 +81,7 @@ export const findFirstByName = action({
           spotifyUrl: spotifyTrack.external_urls.spotify,
           lastfmUrl: lastfmTrack.url,
           albumName: spotifyTrack.album.name,
-        } as FirstTrackResult;
+        };
       } else if (spotifyTrack && !lastfmTrack) {
         return {
           name: spotifyTrack.name,
@@ -54,7 +91,7 @@ export const findFirstByName = action({
           spotifyUrl: spotifyTrack.external_urls.spotify,
           lastfmUrl: null,
           albumName: spotifyTrack.album.name,
-        } as FirstTrackResult;
+        };
       } else if (!spotifyTrack && lastfmTrack) {
         return {
           name: lastfmTrack.name,
@@ -66,7 +103,7 @@ export const findFirstByName = action({
           spotifyUrl: null,
           lastfmUrl: lastfmTrack.url,
           albumName: lastfmTrack.albumName,
-        } as FirstTrackResult;
+        };
       } else {
         throw new Error("no album found");
       }

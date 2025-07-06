@@ -1,38 +1,30 @@
 "use client";
 
-import type { Tag } from "@/lib/types/lastfm";
-
 import { useEffect } from "react";
-import { noGenresMsg } from "./config";
+import { noGenresMsg } from "../config";
 
+import type { AlbumData } from "@/lib/types/internalResponses";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent } from "../../ui/card";
 
-type ArtistData = {
-  name: string;
-  image: string | null;
-  genres: string[] | Tag[] | null;
+type ClientAlbumGenresProps = {
+  albumData: AlbumData;
 };
 
-type ClientGenresProps = {
-  itemData: ArtistData; // | AlbumData and so on...
-  category: "artist" | "album" | "track";
-};
-
-function ClientGenres({ itemData, category }: ClientGenresProps) {
+function ClientAlbumGenres({ albumData }: ClientAlbumGenresProps) {
   useEffect(() => {
     window.history.replaceState(
       null,
       "",
-      `/catalog/${encodeURIComponent(itemData.name)}/genres`,
+      `/catalog/${encodeURIComponent(albumData.artists[0])}/discography/${encodeURIComponent(albumData.name)}/genres`,
     );
-  }, [itemData.name]);
+  }, [albumData.artists, albumData.name]);
 
-  if (!itemData.genres) return null;
+  if (!albumData.genres) return null;
 
-  const genres = itemData.genres.map((genre, i) => (
+  const genres = albumData.genres.map((genre, i) => (
     <div
       key={i}
       className="bg-accent hover:bg-accent-foreground/10 flex items-center justify-between rounded-sm border p-3 transition-[background-color]"
@@ -44,18 +36,18 @@ function ClientGenres({ itemData, category }: ClientGenresProps) {
   return (
     <>
       <Link
-        href={`/catalog/${encodeURIComponent(itemData.name)}`}
+        href={`/catalog/${encodeURIComponent(albumData.artists[0])}/discography/${encodeURIComponent(albumData.name)}/`}
         className="text-primary hover:text-ring/50 mb-6 inline-flex items-center text-sm no-underline transition-[color]"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to {category}
+        Back to album
       </Link>
       <div className="mb-8 flex items-center gap-6">
         <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl shadow-md/20 dark:shadow-none">
-          {itemData.image && (
+          {albumData.image && (
             <Image
-              src={itemData.image}
-              alt={itemData.name}
+              src={albumData.image}
+              alt={albumData.name}
               width={224}
               height={224}
               className="h-full w-full object-cover"
@@ -64,7 +56,7 @@ function ClientGenres({ itemData, category }: ClientGenresProps) {
           )}
         </div>
         <div>
-          <h1 className="m-0 text-3xl font-bold">{itemData.name}</h1>
+          <h1 className="m-0 text-3xl font-bold">{albumData.name}</h1>
           <p className="text-muted-foreground m-0 text-lg">All Genres</p>
         </div>
       </div>
@@ -85,4 +77,4 @@ function ClientGenres({ itemData, category }: ClientGenresProps) {
   );
 }
 
-export default ClientGenres;
+export default ClientAlbumGenres;

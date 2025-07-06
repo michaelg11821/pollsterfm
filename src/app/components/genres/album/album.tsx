@@ -2,19 +2,14 @@ import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
 import { redirect } from "next/navigation";
-import ClientTrackHeader from "./client";
+import ClientAlbumGenres from "./client";
 
-type TrackHeaderProps = {
+type AlbumGenresProps = {
   artistName: string;
   albumName: string;
-  trackName: string;
 };
 
-async function TrackHeader({
-  artistName,
-  albumName,
-  trackName,
-}: TrackHeaderProps) {
+async function AlbumGenres({ artistName, albumName }: AlbumGenresProps) {
   const token = await convexAuthNextjsToken();
 
   const artistData = await fetchAction(
@@ -23,7 +18,7 @@ async function TrackHeader({
     { token },
   );
 
-  if (!artistData) redirect("/not-found");
+  if (!artistData) return redirect("/not-found");
 
   const albumData = await fetchAction(
     api.pollster.album.getCachedAlbum,
@@ -33,20 +28,7 @@ async function TrackHeader({
 
   if (!albumData) redirect("/not-found");
 
-  const trackData = await fetchAction(
-    api.pollster.track.getCachedTrack,
-    {
-      artistName: artistData.name,
-      albumName: albumData.name,
-      albumImage: albumData.image,
-      trackName,
-    },
-    { token },
-  );
-
-  if (!trackData) redirect("/not-found");
-
-  return <ClientTrackHeader trackData={trackData} />;
+  return <ClientAlbumGenres albumData={albumData} />;
 }
 
-export default TrackHeader;
+export default AlbumGenres;

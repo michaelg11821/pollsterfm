@@ -6,14 +6,15 @@ import { fetchAction } from "convex/nextjs";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
-type ArtistGenresPageProps = {
-  params: Promise<{ artist: string }>;
+type AlbumGenresPageProps = {
+  params: Promise<{ artist: string; album: string }>;
 };
 
-export async function generateMetadata({ params }: ArtistGenresPageProps) {
-  const { artist } = await params;
+export async function generateMetadata({ params }: AlbumGenresPageProps) {
+  const { artist, album } = await params;
 
   const token = await convexAuthNextjsToken();
+
   const artistData = await fetchAction(
     api.pollster.artist.getCachedArtist,
     { artistName: artist },
@@ -22,22 +23,30 @@ export async function generateMetadata({ params }: ArtistGenresPageProps) {
 
   if (!artistData) redirect("/not-found");
 
+  const albumData = await fetchAction(
+    api.pollster.album.getCachedAlbum,
+    { artistName: artistData.name, albumName: album },
+    { token },
+  );
+
+  if (!albumData) redirect("/not-found");
+
   return {
-    title: `Genres for ${artistData.name} | Pollster.fm`,
-    description: `Find more about ${artistData.name} on Pollster.fm.`,
+    title: `Genres for ${albumData.name} — ${artistData.name} | Pollster.fm`,
+    description: `Find more about ${albumData.name} on Pollster.fm.`,
   };
 }
 
-async function ArtistGenresPage({ params }: ArtistGenresPageProps) {
-  const { artist } = await params;
+async function AlbumGenresPage({ params }: AlbumGenresPageProps) {
+  const { artist, album } = await params;
 
   return (
     <div className="content-wrapper px-5 py-6">
       <Suspense fallback={<GenresSkeleton />}>
-        <Genres artistName={artist} />
+        <Genres artistName={artist} albumName={album} />
       </Suspense>
     </div>
   );
 }
 
-export default ArtistGenresPage;
+export default AlbumGenresPage;

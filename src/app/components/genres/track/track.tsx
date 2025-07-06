@@ -2,19 +2,19 @@ import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
 import { redirect } from "next/navigation";
-import ClientTrackHeader from "./client";
+import ClientTrackGenres from "./client";
 
-type TrackHeaderProps = {
+type TrackGenresProps = {
   artistName: string;
   albumName: string;
   trackName: string;
 };
 
-async function TrackHeader({
+async function TrackGenres({
   artistName,
   albumName,
   trackName,
-}: TrackHeaderProps) {
+}: TrackGenresProps) {
   const token = await convexAuthNextjsToken();
 
   const artistData = await fetchAction(
@@ -46,7 +46,7 @@ async function TrackHeader({
 
   if (!trackData) redirect("/not-found");
 
-  return <ClientTrackHeader trackData={trackData} />;
+  return <ClientTrackGenres trackData={trackData} />;
 }
 
-export default TrackHeader;
+export default TrackGenres;
