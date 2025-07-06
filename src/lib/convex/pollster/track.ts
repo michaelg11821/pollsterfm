@@ -29,7 +29,7 @@ export const getCachedTrack = action({
     });
 
     // remove misspelled entries like "beter be quiet now"
-    if (result && result.name !== args.trackName) {
+    if (result && result.name !== decodeURIComponent(args.trackName)) {
       await trackCache.remove(ctx, {
         artistName: args.artistName,
         albumName: args.albumName,
@@ -58,11 +58,12 @@ export const findFirstByName = internalAction({
         args.albumName,
         sanitized,
       );
+
       const lastfmResult = getFirstLastfmTrackFromQuery(
         args.artistName,
         args.albumName,
         args.albumImage,
-        sanitized,
+        args.trackName,
       );
 
       const [spotifyTrack, lastfmTrack] = await Promise.all([
@@ -95,7 +96,7 @@ export const findFirstByName = internalAction({
       } else if (!spotifyTrack && lastfmTrack) {
         return {
           name: lastfmTrack.name,
-          artists: [lastfmTrack.artist.name],
+          artists: [lastfmTrack.artist],
           image: args.albumImage,
           genres: lastfmTrack.genres
             ? lastfmTrack.genres.map(({ name }) => name)

@@ -22,7 +22,7 @@ export const getCachedAlbum = action({
     });
 
     // remove misspelled entries like "the great anihilator"
-    if (result && result.name !== args.albumName) {
+    if (result && result.name !== decodeURIComponent(args.albumName)) {
       await albumCache.remove(ctx, {
         artistName: args.artistName,
         albumName: args.albumName,

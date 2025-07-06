@@ -38,7 +38,7 @@ export const getCachedArtist = action({
     });
 
     // remove misspelled entries like "elliot smit"
-    if (result && result.name !== args.artistName) {
+    if (result && result.name !== decodeURIComponent(args.artistName)) {
       await artistCache.remove(ctx, { artistName: args.artistName });
     }
 

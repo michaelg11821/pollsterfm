@@ -55,10 +55,17 @@ export type LastfmAlbumInfoResponse = {
   };
 };
 
-export type LastfmTrackSearchResponse = {
-  results: {
-    trackmatches: {
-      track: Track[];
+export type LastfmTrackCorrectionResponse = {
+  corrections: {
+    correction: {
+      track: {
+        name: string;
+        url: string;
+        artist: {
+          name: string;
+          url: string;
+        };
+      };
     };
   };
 };

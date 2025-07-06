@@ -1,6 +1,6 @@
 import type {
+  LastfmTrackCorrectionResponse,
   LastfmTrackInfoResponse,
-  LastfmTrackSearchResponse,
 } from "../types/lastfmResponses";
 import { isSimilar } from "../utils";
 import { suffix } from "./suffix";
@@ -56,35 +56,35 @@ export async function getFirstLastfmTrackFromQuery(
 ) {
   try {
     const res = await fetch(
-      `http://ws.audioscrobbler.com/2.0/?method=track.search&track=${trackQuery}&artist=${artistName}&limit=1${suffix}`,
+      `http://ws.audioscrobbler.com/2.0/?method=track.getcorrection&artist=${artistName}&track=${trackQuery}${suffix}`,
     );
 
     if (!res.ok) throw new Error("failed to get first track from query");
 
-    const searchResults: LastfmTrackSearchResponse = await res.json();
+    const correctionResult: LastfmTrackCorrectionResponse = await res.json();
 
-    const firstTrack = searchResults.results.trackmatches.track[0];
+    const track = correctionResult.corrections.correction.track;
 
-    if (!firstTrack) {
+    if (!track) {
       throw new Error("no valid result");
     }
 
-    const match = isSimilar(trackQuery, firstTrack.name);
+    const match = isSimilar(decodeURIComponent(trackQuery), track.name);
 
     if (match) {
       return {
-        name: firstTrack.name,
-        artist: firstTrack.artist,
+        name: track.name,
+        artist: track.artist.name,
         image: albumImage,
-        genres: await getLastfmTrackTags(artistName, firstTrack.name),
-        url: firstTrack.url,
+        genres: await getLastfmTrackTags(artistName, track.name),
+        url: track.url,
         albumName: albumName,
       };
     } else {
       return null;
     }
   } catch (err: unknown) {
-    console.error("error getting first album from query:", err);
+    console.error("error getting first track from query:", err);
 
     return null;
   }
