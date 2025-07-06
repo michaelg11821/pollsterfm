@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "usable-schnauzer-5.convex.cloud",
+      }
+      {
+        protocol: "https",
         hostname: "lastfm.freetls.fastly.net",
       },
     ],
