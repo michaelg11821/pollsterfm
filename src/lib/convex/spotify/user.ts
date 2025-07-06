@@ -28,7 +28,12 @@ export const setSpotifyTokens = internalMutation({
 
     if (!user) return null;
 
-    await ctx.db.patch(user._id, args);
+    const expirationTimestamp = Date.now() + args.spotifyExpiresAt * 1000;
+
+    await ctx.db.patch(user._id, {
+      ...args,
+      spotifyExpiresAt: expirationTimestamp,
+    });
   },
 });
 
@@ -104,7 +109,7 @@ async function getAccessToken(ctx: ActionCtx, username: string) {
 
   if (!tokens) return null;
 
-  if (tokens.spotifyExpiresAt * 1000 < Date.now()) {
+  if (tokens.spotifyExpiresAt < Date.now()) {
     const newTokens = await ctx.runAction(
       internal.spotify.user.refreshSpotifyTokens,
       { username: username, spotifyRefreshToken: tokens.spotifyRefreshToken },
