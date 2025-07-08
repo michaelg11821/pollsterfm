@@ -8,11 +8,11 @@ import Image from "next/image";
 
 import { profilePath } from "./config";
 
-import { verifyTurnstile } from "../../../lib/actions";
-
 import { useAuthActions } from "@convex-dev/auth/react";
 
+import { api } from "@/lib/convex/_generated/api";
 import { toastManager } from "@/lib/toast";
+import { useAction } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import SpotifySvg from "../../../../public/spotify.svg";
@@ -30,6 +30,8 @@ function ProviderLogins() {
 
   const { signIn } = useAuthActions();
 
+  const verifyTurnstile = useAction(api.misc.verifyTurnstile);
+
   const handleSignIn = async () => {
     if (!turnstileToken) {
       return toastManager.add({
@@ -41,7 +43,7 @@ function ProviderLogins() {
     try {
       setLoading(true);
 
-      const result = await verifyTurnstile(turnstileToken);
+      const result = await verifyTurnstile({ token: turnstileToken });
 
       if (result.success) {
         return void signIn("spotify", {
