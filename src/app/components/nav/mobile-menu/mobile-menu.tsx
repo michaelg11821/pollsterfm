@@ -36,9 +36,9 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
         </button>
       </div>
       {mobileMenuOpen && (
-        <div className="absolute top-0 z-50 mt-16 -ml-5 w-full md:hidden">
+        <div className="absolute top-0 z-99 mt-16 -ml-5 w-full md:hidden">
           <div
-            className="bg-background/90 z-50 flex h-screen w-full flex-col"
+            className="bg-background/90 relative z-99 flex h-screen w-full flex-col"
             onClick={() => setMobileMenuOpen(false)}
           >
             <ul className="flex list-none flex-col gap-2.5 pt-5">

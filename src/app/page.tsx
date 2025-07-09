@@ -1,10 +1,19 @@
-import { ArrowRight, ChevronRight, Search, Users } from "lucide-react";
+import { ArrowRight, ChevronRight, Users } from "lucide-react";
 import Link from "next/link";
+import HomepageSearch from "./components/homepage-search/homepage-search";
 import { Badge } from "./components/ui/badge";
 import { Button, buttonVariants } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 
-function Home() {
+type HomeProps = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+async function Home({ searchParams }: HomeProps) {
+  const { query } = await searchParams;
+
+  const searchQuery = query && typeof query !== "string" ? query[0] : query;
+
   return (
     <main>
       <section className="relative overflow-x-clip pt-24 pb-20">
@@ -41,23 +50,7 @@ function Home() {
             </div>
           </div>
 
-          <div className="hidden md:relative md:mx-auto md:mb-20 md:block md:max-w-168">
-            <div className="bg-foreground/10 hover:border-muted-foreground/40 border-muted-foreground/20 focus-within:ring-foreground/60 flex items-center rounded-full border-2 p-2 pl-6 transition-[border-color] focus-within:ring-2">
-              <Search className="mr-3 h-5 w-5" />
-              <input
-                type="text"
-                placeholder="Search for music, affinities, or people..."
-                className="placeholder:text-muted-foreground flex-1 border-none bg-transparent outline-none"
-              />
-              <Button
-                variant="default"
-                size="lg"
-                className="bg-primary h-12 cursor-pointer rounded-full px-6"
-              >
-                Search
-              </Button>
-            </div>
-          </div>
+          <HomepageSearch initialQuery={searchQuery} />
         </div>
       </section>
 

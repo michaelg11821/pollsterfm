@@ -8,10 +8,17 @@ import MobileMenu from "./mobile-menu/mobile-menu";
 import { siteName } from "@/config";
 import { api } from "@/lib/convex/_generated/api";
 import { useQuery } from "convex/react";
+import { usePathname, useSearchParams } from "next/navigation";
+import DesktopSearch from "./desktop-search/desktop-search";
+import MobileSearch from "./mobile-search/mobile-search";
 import NavSkeleton from "./skeleton";
 
 function Nav() {
   const currentUserProfile = useQuery(api.user.getProfile, {});
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const searchQuery = searchParams.get("query");
 
   if (currentUserProfile === undefined) {
     return <NavSkeleton />;
@@ -52,7 +59,10 @@ function Nav() {
               </li>
             </ul>
           </div>
-          <div className="hidden">search...</div>
+          {pathname !== "/" && <DesktopSearch initialQuery={searchQuery} />}
+          <div className="md:hidden">
+            <MobileSearch initialQuery={searchQuery} />
+          </div>
         </nav>
         <DesktopMenu
           profileIcon={currentUserProfile?.image}
