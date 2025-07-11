@@ -22,7 +22,7 @@ async function RecentlyPlayed({ username, limit }: RecentlyPlayedProps) {
   );
 
   if (!recentTracks || !recentTracks.items)
-    return <p>Error getting recently played tracks.</p>;
+    return <p>Could not retrieve recently played tracks.</p>;
 
   return (
     <div className="flex flex-col gap-3">
