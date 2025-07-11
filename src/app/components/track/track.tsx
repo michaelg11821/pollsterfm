@@ -20,7 +20,7 @@ function Track({ album, trackTitle, playedAt }: TrackProps) {
       className="hover:bg-foreground/10 flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-[background-color]"
       href={`/catalog/${encodeURIComponent(album.artists[0].name)}/discography/${encodeURIComponent(album.name)}/${encodeURIComponent(trackTitle)}`}
     >
-      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-sm">
+      <div className="relative z-0 h-10 w-10 shrink-0 overflow-hidden rounded-sm">
         <Image src={album.images[0].url} alt="" fill sizes="100%" priority />
       </div>
       <div className="flex min-w-0 flex-1 flex-col text-xs select-none">

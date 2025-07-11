@@ -174,3 +174,15 @@ body:has(div[role="dialog"][data-open]) > header {
   isolation: isolate;
   z-index: 0;
 }
+
+body:has(div[role="dialog"][data-open]) .profile-header-image-mask,
+body:has(div[role="dialog"][data-open]) .profile-avatar-image,
+body:has(div[role="dialog"][data-open]) .profile-info {
+  isolation: isolate;
+  z-index: -1;
+}
+
+body:has(div[role="dialog"][data-open]) .profile-header-image {
+  isolation: isolate;
+  z-index: -2;
+}
