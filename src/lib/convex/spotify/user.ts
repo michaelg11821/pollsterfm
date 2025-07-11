@@ -37,6 +37,26 @@ export const setSpotifyTokens = internalMutation({
   },
 });
 
+export const clearSpotifyTokens = internalMutation({
+  args: {
+    username: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (!user) return null;
+
+    await ctx.db.patch(user._id, {
+      spotifyAccessToken: undefined,
+      spotifyRefreshToken: undefined,
+      spotifyExpiresAt: undefined,
+    });
+  },
+});
+
 export const refreshSpotifyTokens = internalAction({
   args: {
     username: v.string(),
@@ -57,8 +77,6 @@ export const refreshSpotifyTokens = internalAction({
       });
 
       const newTokens: SpotifyAccessTokenResponse = await res.json();
-
-      console.log(res.ok, newTokens);
 
       if (!res.ok || !newTokens) throw new Error("failed to get tokens");
 
@@ -111,18 +129,21 @@ async function getAccessToken(ctx: ActionCtx, username: string) {
 
   if (!tokens) return null;
 
-  if (tokens.spotifyExpiresAt < Date.now()) {
-    const newTokens = await ctx.runAction(
-      internal.spotify.user.refreshSpotifyTokens,
-      { username: username, spotifyRefreshToken: tokens.spotifyRefreshToken },
-    );
-
-    if (!newTokens) return null;
-
-    return newTokens.spotifyAccessToken;
+  if (tokens.spotifyExpiresAt > Date.now()) {
+    return tokens.spotifyAccessToken;
   }
 
-  return tokens.spotifyAccessToken;
+  const newTokens = await ctx.runAction(
+    internal.spotify.user.refreshSpotifyTokens,
+    { username, spotifyRefreshToken: tokens.spotifyRefreshToken },
+  );
+
+  // user NEEDS to login again due to spotify security
+  if (!newTokens) {
+    return null;
+  }
+
+  return newTokens.spotifyAccessToken;
 }
 
 export const getCurrentlyPlayingTrack = action({

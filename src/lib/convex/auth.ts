@@ -28,6 +28,12 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         : null;
 
       if (existingUser) {
+        await ctx.db.patch(existingUser._id, {
+          spotifyAccessToken: args.profile.spotifyAccessToken,
+          spotifyRefreshToken: args.profile.spotifyRefreshToken,
+          spotifyExpiresAt: args.profile.spotifyExpiresAt,
+        });
+
         return existingUser._id;
       } else {
         return await ctx.db.insert("users", {
