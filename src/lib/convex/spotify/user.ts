@@ -58,6 +58,8 @@ export const refreshSpotifyTokens = internalAction({
 
       const newTokens: SpotifyAccessTokenResponse = await res.json();
 
+      console.log(res.ok, newTokens);
+
       if (!res.ok || !newTokens) throw new Error("failed to get tokens");
 
       const { refresh_token, expires_in, access_token } = newTokens;
@@ -203,7 +205,7 @@ export const getRecentlyPlayedTracks = action({
 
       return trackInfo;
     } catch (err: unknown) {
-      console.error("error getting currently recently played tracks:", err);
+      console.error("error getting recently played tracks:", err);
 
       return null;
     }
