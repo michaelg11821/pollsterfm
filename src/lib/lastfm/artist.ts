@@ -1,6 +1,7 @@
 import type {
   LastfmArtistAlbumsResponse,
   LastfmArtistCorrectionResponse,
+  LastfmArtistSearchResponse,
   LastfmArtistTagsResponse,
   LastfmSimilarArtistsResponse,
 } from "../types/lastfmResponses";
@@ -138,6 +139,34 @@ export async function getSimilarLastfmArtists(
     return relatedArtists;
   } catch (err: unknown) {
     console.error("error getting similar artists:", err);
+
+    return null;
+  }
+}
+
+/**
+ * Returns the artists found from the Last.fm API with the given query.
+ *
+ * @param artistQuery The name of an artist on Last.fm.
+ * @returns The artists found with the given query.
+ */
+export async function lastfmArtistSearch(artistQuery: string) {
+  try {
+    const res = await fetch(
+      `http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=${artistQuery}&limit=50${suffix}`,
+    );
+
+    if (!res.ok) throw new Error("failed to get artists from query");
+
+    const searchResults: LastfmArtistSearchResponse = await res.json();
+
+    if (!searchResults) {
+      throw new Error("no valid result");
+    }
+
+    return searchResults.results.artistmatches.artist;
+  } catch (err: unknown) {
+    console.error("error getting artists from query:", err);
 
     return null;
   }

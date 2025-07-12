@@ -1,6 +1,10 @@
 import type { FirstAlbumResult } from "../../types/internalResponses";
+import type { Album as LastfmAlbum } from "../../types/lastfm";
 
-import { getFirstLastfmAlbumFromQuery } from "@/lib/lastfm/album";
+import {
+  getFirstLastfmAlbumFromQuery,
+  lastfmAlbumSearch,
+} from "@/lib/lastfm/album";
 import { getFirstSpotifyAlbumFromQuery } from "@/lib/spotify/album";
 import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
@@ -87,6 +91,25 @@ export const findFirstByName = internalAction({
       } else {
         throw new Error("no album found");
       }
+    } catch (err: unknown) {
+      console.error(`error searching for ${sanitized}:`, err);
+
+      return null;
+    }
+  },
+});
+
+export const search = action({
+  args: { query: v.string() },
+  handler: async (_, args): Promise<LastfmAlbum[] | null> => {
+    const sanitized = decodeURIComponent(args.query);
+
+    try {
+      const lastfmResults = await lastfmAlbumSearch(sanitized);
+
+      if (!lastfmResults) throw new Error("no albums found");
+
+      return lastfmResults;
     } catch (err: unknown) {
       console.error(`error searching for ${sanitized}:`, err);
 

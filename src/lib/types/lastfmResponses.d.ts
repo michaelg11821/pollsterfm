@@ -85,3 +85,11 @@ export type LastfmTrackInfoResponse = {
     name: string;
   };
 };
+
+export type LastfmArtistSearchResponse = {
+  results: {
+    artistmatches: {
+      artist: Artist[];
+    };
+  };
+};

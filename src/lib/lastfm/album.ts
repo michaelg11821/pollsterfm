@@ -116,3 +116,31 @@ export async function getLastfmAlbumTracks(
     return null;
   }
 }
+
+/**
+ * Returns the albums found from the Last.fm API with the given query.
+ *
+ * @param albumQuery The name of an album on Last.fm.
+ * @returns The albums found with the given query.
+ */
+export async function lastfmAlbumSearch(albumQuery: string) {
+  try {
+    const res = await fetch(
+      `http://ws.audioscrobbler.com/2.0/?method=album.search&album=${albumQuery}&limit=50${suffix}`,
+    );
+
+    if (!res.ok) throw new Error("failed to get albums from query");
+
+    const searchResults: LastfmAlbumSearchResponse = await res.json();
+
+    if (!searchResults) {
+      throw new Error("no valid result");
+    }
+
+    return searchResults.results.albummatches.album;
+  } catch (err: unknown) {
+    console.error("error getting albums from query:", err);
+
+    return null;
+  }
+}

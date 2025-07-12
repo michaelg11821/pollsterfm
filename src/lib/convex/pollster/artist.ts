@@ -18,7 +18,9 @@ import {
   getFirstSpotifyArtistFromQuery,
   getSpotifyArtistAlbums,
   getSpotifyArtistTopAlbums,
+  spotifyArtistSearch,
 } from "@/lib/spotify/artist";
+import type { Artist as SpotifyArtist } from "@/lib/types/spotify";
 import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
@@ -271,6 +273,25 @@ export const getSimilar = action({
       }
     } catch (err: unknown) {
       console.error(`error getting similar artists for ${name}:`, err);
+
+      return null;
+    }
+  },
+});
+
+export const search = action({
+  args: { query: v.string() },
+  handler: async (_, args): Promise<SpotifyArtist[] | null> => {
+    const sanitized = decodeURIComponent(args.query);
+
+    try {
+      const spotifyResults = await spotifyArtistSearch(sanitized);
+
+      if (!spotifyResults) throw new Error("no artists found");
+
+      return spotifyResults;
+    } catch (err: unknown) {
+      console.error(`error searching for ${sanitized}:`, err);
 
       return null;
     }

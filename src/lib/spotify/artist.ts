@@ -122,3 +122,38 @@ export async function getSpotifyArtistAlbums(
     return null;
   }
 }
+
+/**
+ * Returns the artists found from the Spotify API with the given query.
+ *
+ * @param artistQuery The name of an artist.
+ * @returns The artists found with the given query.
+ */
+export async function spotifyArtistSearch(artistQuery: string) {
+  try {
+    const credentials = await getClientCredentials();
+
+    if (!credentials) throw new Error("could not get credentials");
+
+    const res = await fetch(
+      `https://api.spotify.com/v1/search?q=${artistQuery.toLowerCase()}&type=artist&limit=50`,
+      { headers: { Authorization: `Bearer ${credentials}` } },
+    );
+
+    if (!res.ok) throw new Error("failed to get first artist from query");
+
+    const results: SpotifyArtistSearchResponse = await res.json();
+
+    const artists = results.artists.items;
+
+    if (!artists) {
+      throw new Error("no valid result");
+    }
+
+    return artists;
+  } catch (err: unknown) {
+    console.error("error getting first artist from query:", err);
+
+    return null;
+  }
+}
