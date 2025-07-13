@@ -3,19 +3,24 @@ import Link from "next/link";
 import type { TopAlbum } from "@/lib/types/pollster";
 import { Star } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 type AlbumProps = {
   artistName: string;
   albumData: TopAlbum; // add other types (ratings)
+  className?: string;
   imgIndex?: number;
 };
 
-function Album({ artistName, albumData, imgIndex = 0 }: AlbumProps) {
+function Album({ artistName, albumData, className, imgIndex = 0 }: AlbumProps) {
   return (
     <Link
       href={`/catalog/${encodeURIComponent(artistName)}/discography/${encodeURIComponent(albumData.name)}`}
-      className="bg-card hover:bg-accent block rounded-xl border p-4 no-underline shadow-md transition-all hover:transform-[scale(1.02)] dark:shadow-none"
+      className={cn(
+        "bg-card hover:bg-accent block rounded-xl border p-4 no-underline shadow-md transition-all hover:transform-[scale(1.02)] dark:shadow-none",
+        className,
+      )}
     >
       <div className="relative mb-3 aspect-square w-full rounded-sm">
         {albumData.images[imgIndex].url !== "" && (

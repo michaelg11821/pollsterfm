@@ -1,7 +1,7 @@
 "use client";
 
-import { Artist } from "@/lib/types/spotify";
-import { ChevronLeft, ChevronRight, User } from "lucide-react";
+import type { Artist } from "@/lib/types/spotify";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
@@ -30,10 +30,7 @@ function ClientArtistResults({ artists }: ClientArtistResultsProps) {
   return (
     <section>
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="flex items-center text-2xl font-bold">
-          <User className="mr-3 h-6 w-6" />
-          Artists
-        </h2>
+        <h2 className="flex items-center text-2xl font-bold">Artists</h2>
         <div className="flex items-center gap-2">
           <Button
             size="sm"
@@ -56,7 +53,7 @@ function ClientArtistResults({ artists }: ClientArtistResultsProps) {
 
       <div
         ref={artistsScrollRef}
-        className="flex gap-6 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="flex gap-6 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {artists.map((artist) => (
           <Link

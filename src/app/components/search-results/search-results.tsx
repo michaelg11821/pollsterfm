@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import AlbumResults from "./albums/albums";
+import AlbumResultsSkeleton from "./albums/skeleton";
 import ArtistResults from "./artists/artists";
 import ArtistResultsSkeleton from "./artists/skeleton";
 
@@ -9,8 +11,12 @@ type SearchResultsProps = {
 async function SearchResults({ query }: SearchResultsProps) {
   return (
     <div className="space-y-12">
+      <h2 className="text-2xl">Results for {`"${query}"`}</h2>
       <Suspense fallback={<ArtistResultsSkeleton />}>
         <ArtistResults query={query} />
+      </Suspense>
+      <Suspense fallback={<AlbumResultsSkeleton />}>
+        <AlbumResults query={query} />
       </Suspense>
       {/*
                   Albums

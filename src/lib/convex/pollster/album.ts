@@ -109,7 +109,9 @@ export const search = action({
 
       if (!lastfmResults) throw new Error("no albums found");
 
-      return lastfmResults;
+      return lastfmResults
+        .filter((album) => album.name !== "(null)")
+        .map((album) => structuredClone(album));
     } catch (err: unknown) {
       console.error(`error searching for ${sanitized}:`, err);
 

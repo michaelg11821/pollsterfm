@@ -1,6 +1,6 @@
-import { Card } from "../../ui/card";
+import AlbumSkeleton from "../../album/skeleton";
 
-function ArtistResultsSkeleton() {
+function AlbumResultsSkeleton() {
   return (
     <section>
       <div className="mb-6 flex items-center justify-between">
@@ -17,17 +17,11 @@ function ArtistResultsSkeleton() {
         {Array(25)
           .fill(null)
           .map((_, i) => (
-            <Card
-              key={i}
-              className="flex max-w-80 min-w-50 items-center gap-3 p-4"
-            >
-              <div className="skeleton relative h-20 w-20 animate-pulse overflow-hidden rounded-full"></div>
-              <div className="skeleton h-5 w-40 animate-pulse rounded-lg"></div>
-            </Card>
+            <AlbumSkeleton key={`album-skeleton-${i}`} />
           ))}
       </div>
     </section>
   );
 }
 
-export default ArtistResultsSkeleton;
+export default AlbumResultsSkeleton;
