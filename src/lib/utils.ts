@@ -4,6 +4,12 @@ import { enUS } from "date-fns/locale";
 import { distance } from "fastest-levenshtein";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * Merges Tailwind classes into one className.
+ *
+ * @param inputs Tailwind classes.
+ * @returns The inputs merged into one className.
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
