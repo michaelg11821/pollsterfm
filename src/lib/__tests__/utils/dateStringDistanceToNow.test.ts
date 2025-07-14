@@ -28,10 +28,10 @@ it("returns '5 minutes ago' for a date 5 minutes ago", () => {
 });
 
 it("returns '2 hours ago' for a date 2 hours ago", () => {
-  const fiveMinAgo = new Date(
+  const twoHrAgo = new Date(
     FIXED_NOW.getTime() - 2 * 60 * 60 * 1000,
   ).toISOString();
-  const result = dateStringDistanceToNow(fiveMinAgo);
+  const result = dateStringDistanceToNow(twoHrAgo);
 
   expect(result).toEqual("2 hours ago");
 });
