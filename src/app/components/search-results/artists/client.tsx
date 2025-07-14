@@ -51,33 +51,35 @@ function ClientArtistResults({ artists }: ClientArtistResultsProps) {
         </div>
       </div>
 
-      <div
-        ref={artistsScrollRef}
-        className="flex gap-6 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none]"
-      >
-        {artists.map((artist) => (
-          <Link
-            key={artist.id}
-            href={`/catalog/${encodeURIComponent(artist.name)}`}
-          >
-            <Card className="hover:bg-foreground/10 flex max-w-80 min-w-50 cursor-pointer items-center gap-3 p-4 transition-[background-color]">
-              <div className="bg-muted relative h-20 w-20 overflow-hidden rounded-full">
-                {artist.images[0] && (
-                  <Image
-                    src={artist.images[0].url}
-                    alt={artist.name}
-                    width={80}
-                    height={80}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-              </div>
-              <h3 className="mb-1 max-w-50 truncate text-lg font-semibold">
-                {artist.name}
-              </h3>
-            </Card>
-          </Link>
-        ))}
+      <div className="scroll-gradient relative">
+        <div
+          ref={artistsScrollRef}
+          className="flex gap-6 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
+          {artists.map((artist) => (
+            <Link
+              key={artist.id}
+              href={`/catalog/${encodeURIComponent(artist.name)}`}
+            >
+              <Card className="hover:bg-foreground/10 flex max-w-80 min-w-50 cursor-pointer items-center gap-3 p-4 transition-[background-color]">
+                <div className="bg-muted relative h-20 w-20 overflow-hidden rounded-full">
+                  {artist.images[0] && (
+                    <Image
+                      src={artist.images[0].url}
+                      alt={artist.name}
+                      width={80}
+                      height={80}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
+                <h3 className="mb-1 max-w-50 truncate text-lg font-semibold">
+                  {artist.name}
+                </h3>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );

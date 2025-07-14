@@ -51,3 +51,38 @@ export async function getFirstSpotifyTrackFromQuery(
     return null;
   }
 }
+
+/**
+ * Returns the tracks found from the Spotify API with the given query.
+ *
+ * @param trackQuery The name of a track.
+ * @returns The tracks found with the given query.
+ */
+export async function spotifyTrackSearch(trackQuery: string) {
+  try {
+    const credentials = await getClientCredentials();
+
+    if (!credentials) throw new Error("could not get credentials");
+
+    const res = await fetch(
+      `https://api.spotify.com/v1/search?q=${trackQuery.toLowerCase()}&type=track&limit=50`,
+      { headers: { Authorization: `Bearer ${credentials}` } },
+    );
+
+    if (!res.ok) throw new Error("failed to get tracks from query");
+
+    const results: SpotifyTrackSearchResponse = await res.json();
+
+    const tracks = results.tracks.items;
+
+    if (!tracks) {
+      throw new Error("no valid result");
+    }
+
+    return tracks;
+  } catch (err: unknown) {
+    console.error("error getting tracks from query:", err);
+
+    return null;
+  }
+}

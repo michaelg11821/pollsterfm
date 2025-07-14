@@ -27,6 +27,14 @@ export type LastfmArtistAlbumsResponse = {
   };
 };
 
+export type LastfmArtistSearchResponse = {
+  results: {
+    artistmatches: {
+      artist: Artist[];
+    };
+  };
+};
+
 export type LastfmAlbumSearchResponse = {
   results: {
     albummatches: {
@@ -86,10 +94,10 @@ export type LastfmTrackInfoResponse = {
   };
 };
 
-export type LastfmArtistSearchResponse = {
+export type LastfmTrackSearchResponse = {
   results: {
-    artistmatches: {
-      artist: Artist[];
+    trackmatches: {
+      track: Track[];
     };
   };
 };

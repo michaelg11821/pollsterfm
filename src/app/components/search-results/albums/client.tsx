@@ -49,25 +49,27 @@ function ClientAlbumResults({ albums }: ClientAlbumResultsProps) {
         </div>
       </div>
 
-      <div
-        ref={albumsScrollRef}
-        className="flex gap-6 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none]"
-      >
-        {albums.map((album) => (
-          <Album
-            key={album.url}
-            className="max-w-50 min-w-50"
-            artistName={album.artist}
-            albumData={{
-              name: album.name,
-              images: album.image.map((img) => {
-                return { url: img["#text"] };
-              }),
-              releaseDate: null,
-            }}
-            imgIndex={2}
-          />
-        ))}
+      <div className="scroll-gradient relative">
+        <div
+          ref={albumsScrollRef}
+          className="flex gap-6 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
+          {albums.map((album) => (
+            <Album
+              key={album.url}
+              className="max-w-50 min-w-50"
+              artistName={album.artist}
+              albumData={{
+                name: album.name,
+                images: album.image.map((img) => {
+                  return { url: img["#text"] };
+                }),
+                releaseDate: null,
+              }}
+              imgIndex={2}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

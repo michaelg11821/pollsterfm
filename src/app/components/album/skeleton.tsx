@@ -2,7 +2,7 @@ import { Star } from "lucide-react";
 
 function AlbumSkeleton() {
   return (
-    <div className="bg-card hover:bg-accent block rounded-xl border p-4 no-underline transition-all hover:transform-[scale(1.02)]">
+    <div className="bg-card block rounded-xl border p-4 no-underline">
       <div className="relative mb-3 aspect-square w-full rounded-sm">
         <div className="skeleton h-full w-full animate-pulse rounded-sm"></div>
       </div>

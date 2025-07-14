@@ -1,7 +1,11 @@
 import type { FirstTrackResult } from "../../types/internalResponses";
 
 import { getFirstLastfmTrackFromQuery } from "@/lib/lastfm/track";
-import { getFirstSpotifyTrackFromQuery } from "@/lib/spotify/track";
+import {
+  getFirstSpotifyTrackFromQuery,
+  spotifyTrackSearch,
+} from "@/lib/spotify/track";
+import type { Track as SpotifyTrack } from "@/lib/types/spotify";
 import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
@@ -108,6 +112,25 @@ export const findFirstByName = internalAction({
       } else {
         throw new Error("no album found");
       }
+    } catch (err: unknown) {
+      console.error(`error searching for ${sanitized}:`, err);
+
+      return null;
+    }
+  },
+});
+
+export const search = action({
+  args: { query: v.string() },
+  handler: async (_, args): Promise<SpotifyTrack[] | null> => {
+    const sanitized = decodeURIComponent(args.query);
+
+    try {
+      const lastfmResults = await spotifyTrackSearch(sanitized);
+
+      if (!lastfmResults) throw new Error("no tracks found");
+
+      return lastfmResults;
     } catch (err: unknown) {
       console.error(`error searching for ${sanitized}:`, err);
 

@@ -1,6 +1,7 @@
 import type {
   LastfmTrackCorrectionResponse,
   LastfmTrackInfoResponse,
+  LastfmTrackSearchResponse,
 } from "../types/lastfmResponses";
 import { isSimilar } from "../utils";
 import { suffix } from "./suffix";
@@ -85,6 +86,34 @@ export async function getFirstLastfmTrackFromQuery(
     }
   } catch (err: unknown) {
     console.error("error getting first track from query:", err);
+
+    return null;
+  }
+}
+
+/**
+ * Returns the tracks found from the Last.fm API with the given query.
+ *
+ * @param trackQuery The name of an track on Last.fm.
+ * @returns The tracks found with the given query.
+ */
+export async function lastfmTrackSearch(trackQuery: string) {
+  try {
+    const res = await fetch(
+      `http://ws.audioscrobbler.com/2.0/?method=track.search&track=${trackQuery}&limit=50${suffix}`,
+    );
+
+    if (!res.ok) throw new Error("failed to get tracks from query");
+
+    const searchResults: LastfmTrackSearchResponse = await res.json();
+
+    if (!searchResults) {
+      throw new Error("no valid result");
+    }
+
+    return searchResults.results.trackmatches.track;
+  } catch (err: unknown) {
+    console.error("error getting tracks from query:", err);
 
     return null;
   }

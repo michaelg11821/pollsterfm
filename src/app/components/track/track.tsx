@@ -1,4 +1,4 @@
-import { dateStringDistanceToNow } from "@/lib/utils";
+import { dateStringDistanceToNow, msToDuration } from "@/lib/utils";
 
 import type { Album } from "@/lib/types/spotify";
 
@@ -11,10 +11,11 @@ type TrackProps = {
   /**
    * A string in the ISO 8601 format.
    */
-  playedAt: string;
+  playedAt?: string;
+  duration?: number;
 };
 
-function Track({ album, trackTitle, playedAt }: TrackProps) {
+function Track({ album, trackTitle, playedAt, duration }: TrackProps) {
   return (
     <Link
       className="hover:bg-foreground/10 flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-[background-color]"
@@ -56,7 +57,11 @@ function Track({ album, trackTitle, playedAt }: TrackProps) {
         </p>
       </div>
       <div className="text-muted-foreground/50 text-xs">
-        {dateStringDistanceToNow(playedAt)}
+        {playedAt
+          ? dateStringDistanceToNow(playedAt)
+          : duration
+            ? msToDuration(duration)
+            : null}
       </div>
     </Link>
   );
