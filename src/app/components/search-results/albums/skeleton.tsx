@@ -12,7 +12,7 @@ function AlbumResultsSkeleton() {
       </div>
 
       <div className="scroll-gradient relative">
-        <div className="flex gap-6 overflow-x-hidden pb-2">
+        <div className="flex gap-6 overflow-x-hidden py-2">
           {Array(25)
             .fill(null)
             .map((_, i) => (
