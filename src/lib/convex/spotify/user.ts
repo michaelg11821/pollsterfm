@@ -59,7 +59,7 @@ export const refreshSpotifyTokens = internalAction({
 
       const newTokens: SpotifyAccessTokenResponse = await res.json();
 
-      if (!res.ok) throw new Error("failed to get tokens");
+      if (!res.ok) throw new Error("failed to get new tokens");
 
       const { refresh_token, expires_in, access_token } = newTokens;
 
@@ -76,7 +76,7 @@ export const refreshSpotifyTokens = internalAction({
         spotifyExpiresAt: Date.now() + expires_in * 1000,
       };
     } catch (err: unknown) {
-      console.error("error validating spotify tokens", err);
+      console.error("error refreshing spotify tokens", err);
 
       return null;
     }

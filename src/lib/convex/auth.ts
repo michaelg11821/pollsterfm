@@ -28,25 +28,19 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         : null;
 
       if (existingUser) {
-        await ctx.db.patch(existingUser._id, {
-          spotifyAccessToken: args.profile.spotifyAccessToken,
-          spotifyRefreshToken: args.profile.spotifyRefreshToken,
-          spotifyExpiresAt: args.profile.spotifyExpiresAt,
-        });
-
         return existingUser._id;
-      } else {
-        return await ctx.db.insert("users", {
-          name: args.profile.name,
-          username: args.profile.username,
-          email: args.profile.email,
-          image: args.profile.image,
-          spotifyProfileLink: args.profile.spotifyProfileLink,
-          spotifyAccessToken: args.profile.spotifyAccessToken,
-          spotifyRefreshToken: args.profile.spotifyRefreshToken,
-          spotifyExpiresAt: args.profile.spotifyExpiresAt,
-        });
       }
+
+      return await ctx.db.insert("users", {
+        name: args.profile.name,
+        username: args.profile.username,
+        email: args.profile.email,
+        image: args.profile.image,
+        spotifyProfileLink: args.profile.spotifyProfileLink,
+        spotifyAccessToken: args.profile.spotifyAccessToken,
+        spotifyRefreshToken: args.profile.spotifyRefreshToken,
+        spotifyExpiresAt: args.profile.spotifyExpiresAt,
+      });
     },
   },
 });
