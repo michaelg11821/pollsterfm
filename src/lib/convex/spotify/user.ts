@@ -28,31 +28,12 @@ export const setSpotifyTokens = internalMutation({
 
     if (!user) return null;
 
-    const expirationTimestamp = Date.now() + args.spotifyExpiresAt * 1000;
+    const expirationTimestamp = args.spotifyExpiresAt * 1000;
 
     await ctx.db.patch(user._id, {
-      ...args,
-      spotifyExpiresAt: expirationTimestamp,
-    });
-  },
-});
-
-export const clearSpotifyTokens = internalMutation({
-  args: {
-    username: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("username", (q) => q.eq("username", args.username))
-      .unique();
-
-    if (!user) return null;
-
-    await ctx.db.patch(user._id, {
-      spotifyAccessToken: undefined,
-      spotifyRefreshToken: undefined,
-      spotifyExpiresAt: undefined,
+      spotifyAccessToken: args.spotifyAccessToken,
+      spotifyRefreshToken: args.spotifyRefreshToken,
+      spotifyExpiresAt: expirationTimestamp, // in milliseconds
     });
   },
 });
@@ -86,13 +67,13 @@ export const refreshSpotifyTokens = internalAction({
         username: args.username,
         spotifyAccessToken: access_token,
         spotifyRefreshToken: refresh_token,
-        spotifyExpiresAt: expires_in,
+        spotifyExpiresAt: Date.now() + expires_in * 1000,
       });
 
       return {
         spotifyAccessToken: access_token,
         spotifyRefreshToken: refresh_token,
-        spotifyExpiresAt: expires_in,
+        spotifyExpiresAt: Date.now() + expires_in * 1000,
       };
     } catch (err: unknown) {
       console.error("error validating spotify tokens", err);
