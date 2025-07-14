@@ -69,9 +69,6 @@ importers:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
-      '@edge-runtime/vm':
-        specifier: ^5.0.0
-        version: 5.0.0
       '@eslint/eslintrc':
         specifier: ^3
         version: 3.3.1
@@ -102,9 +99,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.4.1
         version: 4.4.1(vite@6.3.5(@types/node@20.17.46)(jiti@2.4.2)(lightningcss@1.29.2))
-      convex-test:
-        specifier: ^0.0.37
-        version: 0.0.37(convex@1.25.0(react@19.1.0))
       dotenv-cli:
         specifier: ^8.0.0
         version: 8.0.0
@@ -1767,11 +1761,6 @@ packages:
         optional: true
       zod:
         optional: true
-
-  convex-test@0.0.37:
-    resolution: {integrity: sha512-gC2ReAGgPAlCCWKNHAjJnEr/IMi1oo5ux9g5cLL68m401Ne1xXc43TfVAD+m/FiGDztmsHtfPr61EWn51mCRjw==}
-    peerDependencies:
-      convex: ^1.16.4
 
   convex@1.25.0:
     resolution: {integrity: sha512-oMeO4Em1sSvUL5wRuFfR2qA98RN2lSyiFGMhnpuyobO3KsYBemVoACgd0OR5tuk1Vo8Qh2rg9O7mXkgFELZGug==}
@@ -3746,11 +3735,13 @@ snapshots:
 
   '@csstools/css-tokenizer@3.0.3': {}
 
-  '@edge-runtime/primitives@6.0.0': {}
+  '@edge-runtime/primitives@6.0.0':
+    optional: true
 
   '@edge-runtime/vm@5.0.0':
     dependencies:
       '@edge-runtime/primitives': 6.0.0
+    optional: true
 
   '@emnapi/core@0.45.0':
     dependencies:
@@ -5070,10 +5061,6 @@ snapshots:
       react: 19.1.0
       typescript: 5.8.3
       zod: 3.25.67
-
-  convex-test@0.0.37(convex@1.25.0(react@19.1.0)):
-    dependencies:
-      convex: 1.25.0(react@19.1.0)
 
   convex@1.25.0(react@19.1.0):
     dependencies:

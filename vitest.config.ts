@@ -21,11 +21,10 @@ export default defineConfig({
       },
       {
         test: {
-          include: ["src/lib/convex/__tests__/**/*.test.ts"],
-          name: "edge-runtime",
-          environment: "edge-runtime",
-          server: { deps: { inline: ["convex-test"] } },
-          setupFiles: ["./vitest-convex.setup.ts"],
+          include: ["src/lib/__tests__/**/*.test.ts"],
+          name: "node",
+          environment: "node",
+          setupFiles: ["./vitest-node.setup.ts"],
           globals: true,
           clearMocks: true,
         },

@@ -4,7 +4,7 @@ import { api } from "@/lib/convex/_generated/api";
 import { ALBUM_PAGE_TRACK_LIMIT } from "@/lib/convex/pollster/config";
 import { toastManager } from "@/lib/toast";
 import type { LastfmAlbumInfoResponse } from "@/lib/types/lastfmResponses";
-import { secondsToDuration } from "@/lib/utils";
+import { msToDuration } from "@/lib/utils";
 import { useAction } from "convex/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -78,7 +78,7 @@ function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
         </div>
         <div className="min-w-0 flex-1">{track.name}</div>
         <div className="text-muted-foreground/50 text-sm">
-          {secondsToDuration(track.duration)}
+          {msToDuration(track.duration * 1000)}
         </div>
       </Link>
     ));

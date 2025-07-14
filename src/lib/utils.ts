@@ -20,7 +20,8 @@ export function dateStringDistanceToNow(dateString: string): string {
   const parsedDate = new Date(parsed);
   const now = new Date();
 
-  const oneDayInMs = 24 * 60 * 60 * 1000;
+  const oneMinInMs = 60 * 1000;
+  const oneDayInMs = 24 * 60 * oneMinInMs;
   const timeDiffInMs = now.getTime() - parsedDate.getTime();
 
   if (timeDiffInMs >= oneDayInMs) {
@@ -34,10 +35,13 @@ export function dateStringDistanceToNow(dateString: string): string {
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
+        timeZone: "UTC",
       })
       .toLowerCase();
 
     return `${day} ${month} ${time}`;
+  } else if (timeDiffInMs < oneMinInMs) {
+    return "less than a minute ago";
   } else {
     return formatDistanceToNowStrict(parsedDate, {
       addSuffix: true,
@@ -75,28 +79,6 @@ export function isSimilar(
   const normCandidate = normalizeString(candidate);
 
   return distance(normQuery, normCandidate) <= threshold;
-}
-
-/**
- * Converts a number of seconds into a duration.
- *
- * Example: 117 seconds -> 1:57.
- *
- * @param secondsVal A number of seconds.
- * @returns A duration.
- */
-export function secondsToDuration(secondsVal: number) {
-  const hrs = Math.floor(secondsVal / 3600);
-  const mins = Math.floor((secondsVal % 3600) / 60);
-  const secs = Math.floor(secondsVal % 60);
-
-  const paddedSecs = secs.toString().padStart(2, "0");
-  const paddedMins =
-    hrs > 0 ? mins.toString().padStart(2, "0") : mins.toString();
-
-  return hrs > 0
-    ? `${hrs}:${paddedMins}:${paddedSecs}`
-    : `${mins}:${paddedSecs}`;
 }
 
 /**
