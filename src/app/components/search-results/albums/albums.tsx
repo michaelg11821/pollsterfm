@@ -9,7 +9,15 @@ type AlbumResultsProps = {
 async function AlbumResults({ query }: AlbumResultsProps) {
   const albums = await fetchAction(api.pollster.album.search, { query });
 
-  if (!albums) return <p>No results found.</p>;
+  if (!albums)
+    return (
+      <section>
+        <div className="mb-6">
+          <h2 className="flex items-center text-2xl font-bold">Albums</h2>
+        </div>
+        <p>No results found.</p>
+      </section>
+    );
 
   return <ClientAlbumResults albums={albums} />;
 }

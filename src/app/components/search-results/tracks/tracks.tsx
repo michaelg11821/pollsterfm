@@ -9,7 +9,15 @@ type TrackResultsProps = {
 async function TrackResults({ query }: TrackResultsProps) {
   const tracks = await fetchAction(api.pollster.track.search, { query });
 
-  if (!tracks) return <p>No results found.</p>;
+  if (!tracks)
+    return (
+      <section>
+        <div className="mb-6">
+          <h2 className="flex items-center text-2xl font-bold">Tracks</h2>
+        </div>
+        <p>No results found.</p>
+      </section>
+    );
 
   return <ClientTrackResults tracks={tracks} />;
 }
