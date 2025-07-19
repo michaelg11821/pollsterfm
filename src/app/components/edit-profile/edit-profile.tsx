@@ -26,9 +26,9 @@ import {
 
 import { Camera, ImageIcon, SquarePen, Trash2 } from "lucide-react";
 
-import { headerImageSchema, profileIconSchema } from "@/lib/schemas/user";
 import { toastManager } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { headerImageSchema, profileIconSchema } from "@/lib/zod/user";
 
 import type { EditProfileFormData } from "@/lib/types/formData";
 
@@ -36,7 +36,7 @@ import { siteName } from "@/config";
 import { api } from "@/lib/convex/_generated/api";
 import { Id } from "@/lib/convex/_generated/dataModel";
 import { UpdateProfileArgs } from "@/lib/convex/user";
-import { editProfileSchema } from "@/lib/schemas/forms";
+import { editProfileSchema } from "@/lib/zod/forms";
 import { useMutation, useQuery } from "convex/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -150,7 +150,7 @@ function EditProfile({
         }
       }
 
-      result.error.errors.forEach(({ message }) =>
+      result.error.issues.forEach(({ message }) =>
         toastManager.add({
           title: "Error",
           description: message,
