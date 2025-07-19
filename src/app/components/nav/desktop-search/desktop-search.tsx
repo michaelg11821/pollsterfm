@@ -31,6 +31,7 @@ function DesktopSearch({ initialQuery }: DesktopSearchProps) {
             defaultValue={searchQuery ?? ""}
             className="placeholder:text-muted-foreground flex-1 border-none bg-transparent text-sm outline-none"
             onChange={(e) => setSearchQuery(e.target.value)}
+            name="searchQuery"
           />
           <Link
             href={`/search?query=${encodeURIComponent(searchQuery ?? "")}`}
