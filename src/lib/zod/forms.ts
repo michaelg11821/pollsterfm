@@ -1,3 +1,4 @@
+import { siteName } from "@/config";
 import { z } from "zod";
 import { selfHostnameRegex } from "../constants/siteInfo";
 import { oneDayMs, oneMonthMs } from "../constants/time";
@@ -57,8 +58,14 @@ export const createPollSchema = z.object({
   choices: z
     .array(
       z.object({
-        image: z.url({ hostname: getImageHostnamesRegex() }),
-        pollsterUrl: z.url({ hostname: selfHostnameRegex }),
+        image: z.url({
+          hostname: getImageHostnamesRegex(),
+          error: "Image is from an untrusted source.",
+        }),
+        pollsterUrl: z.url({
+          hostname: selfHostnameRegex,
+          error: `URL is not a valid ${siteName} url.`,
+        }),
         affinities: z
           .array(Affinity, { error: "At least 1 affinity is required." })
           .max(3, "A choice cannot have more than 3 affinities."),
