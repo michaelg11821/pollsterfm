@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { noGenresMsg } from "../config";
 
 import type { TrackData } from "@/lib/types/internalResponses";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "../../ui/card";
@@ -39,7 +39,7 @@ function ClientTrackGenres({ trackData }: ClientTrackGenresProps) {
         href={`/catalog/${encodeURIComponent(trackData.artists[0])}/discography/${encodeURIComponent(trackData.albumName)}/${encodeURIComponent(trackData.name)}`}
         className="text-primary hover:text-ring/50 mb-6 inline-flex items-center text-sm no-underline transition-[color]"
       >
-        <ArrowLeft className="mr-2 h-4 w-4" />
+        <ChevronLeft className="mr-2 h-4 w-4" />
         Back to track
       </Link>
       <div className="mb-8 flex items-center gap-6">

@@ -1,10 +1,10 @@
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 export default function DiscographySkeleton() {
   return (
     <>
       <div className="text-primary hover:text-ring/50 mb-6 inline-flex items-center text-sm no-underline transition-[color]">
-        <ArrowLeft className="mr-2 h-4 w-4" />
+        <ChevronLeft className="mr-2 h-4 w-4" />
         <div className="skeleton h-5 w-32 animate-pulse rounded-lg"></div>
       </div>
 

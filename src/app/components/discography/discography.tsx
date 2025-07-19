@@ -1,7 +1,7 @@
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -98,7 +98,7 @@ async function Discography({ artistName, page = "1" }: DiscographyProps) {
         href={`/catalog/${encodeURIComponent(artistData.name)}`}
         className="text-primary hover:text-ring/50 mb-6 inline-flex items-center text-sm no-underline transition-[color]"
       >
-        <ArrowLeft className="mr-2 h-4 w-4" />
+        <ChevronLeft className="mr-2 h-4 w-4" />
         Back to artist
       </Link>
 
