@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
-import { ArrowLeft, Clock, TrendingUp, Users } from "lucide-react";
+import { ChevronLeft, Clock, TrendingUp, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -151,7 +151,7 @@ async function PollPage({ params }: PollPageProps) {
         href="/polls"
         className="text-primary hover:text-ring/50 mb-6 inline-flex items-center text-sm no-underline transition-[color]"
       >
-        <ArrowLeft className="mr-2 h-4 w-4" />
+        <ChevronLeft className="mr-2 h-4 w-4" />
         Back to polls
       </Link>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
