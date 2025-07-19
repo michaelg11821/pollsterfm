@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 import Link from "next/link";
 
@@ -37,7 +37,7 @@ async function History({ params }: HistoryProps) {
               href={`/user/${username}`}
               className={buttonVariants({ variant: "ghost", size: "icon" })}
             >
-              <ArrowLeft />
+              <ChevronLeft />
               <span className="visually-hidden">Back</span>
             </Link>
             <div>
