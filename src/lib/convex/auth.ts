@@ -16,7 +16,9 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           spotifyProfileLink: spotifyProfile.external_urls.spotify,
           spotifyAccessToken: tokens.access_token,
           spotifyRefreshToken: tokens.refresh_token,
-          spotifyExpiresAt: tokens.expires_at,
+          spotifyExpiresAt: tokens.expires_at
+            ? tokens.expires_at * 1000
+            : undefined, // convert to ms
         };
       },
     }),

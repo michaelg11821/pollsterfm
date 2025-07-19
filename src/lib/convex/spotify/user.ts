@@ -28,12 +28,10 @@ export const setSpotifyTokens = internalMutation({
 
     if (!user) return null;
 
-    const expirationTimestamp = args.spotifyExpiresAt * 1000;
-
     await ctx.db.patch(user._id, {
       spotifyAccessToken: args.spotifyAccessToken,
       spotifyRefreshToken: args.spotifyRefreshToken,
-      spotifyExpiresAt: expirationTimestamp, // in milliseconds
+      spotifyExpiresAt: args.spotifyExpiresAt, // in milliseconds
     });
   },
 });

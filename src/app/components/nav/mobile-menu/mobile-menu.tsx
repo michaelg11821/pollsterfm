@@ -64,10 +64,10 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
                   </li>
                   <li>
                     <Link
-                      href=""
+                      href="/settings"
                       className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                     >
-                      Account Settings
+                      Settings
                     </Link>
                   </li>
                   <ul className="list-none border-t py-2">
@@ -83,10 +83,10 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
                   </ul>
                 </>
               ) : (
-                <li>
+                <li className="py-2">
                   <Link
                     href="sign-in"
-                    className="hover:bg-accent -mb-5 flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
+                    className="hover:bg-accent -mt-5 flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                   >
                     Sign In
                   </Link>
