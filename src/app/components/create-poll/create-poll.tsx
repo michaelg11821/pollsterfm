@@ -40,6 +40,7 @@ const createEmptyChoice = () => ({
 });
 
 function CreatePoll() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchSource, setSearchSource] = useState<Platform>("spotify");
 
   const form = useForm<z.infer<typeof createPollSchema>>({
