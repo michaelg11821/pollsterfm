@@ -7,7 +7,7 @@ import { toastManager } from "../lib/toast";
 import Nav from "./components/nav/nav";
 import { ThemeProvider } from "./components/theme-provider";
 
-import { ConvexClientProvider } from "./components/ConvexClientProvider";
+import { ConvexClientProvider } from "./components/convex-client-provider";
 import Footer from "./components/footer/footer";
 import ToastList from "./components/ui/toast-list";
 import "./globals.css";
