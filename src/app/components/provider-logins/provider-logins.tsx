@@ -72,7 +72,7 @@ function ProviderLogins() {
       <Button
         variant="outline"
         size="lg"
-        className="min-w-62 cursor-pointer gap-2.5 py-5.5 disabled:cursor-not-allowed"
+        className="min-w-62 cursor-pointer gap-2.5 py-5.5"
         type="button"
         onClick={handleSignIn}
         disabled={!turnstileToken || loading}
