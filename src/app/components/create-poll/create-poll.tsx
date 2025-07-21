@@ -126,7 +126,7 @@ function CreatePoll() {
           setSearchResults([]);
           setActiveSearchOption(null);
         }
-      }, 300);
+      }, 600);
 
       return () => clearTimeout(timeoutId);
     },
