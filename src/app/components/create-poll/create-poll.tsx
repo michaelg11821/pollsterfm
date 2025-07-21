@@ -1,10 +1,30 @@
 "use client";
 
 import { oneDayMs, oneMonthMs, oneWeekMs } from "@/lib/constants/time";
+import { api } from "@/lib/convex/_generated/api";
+import { toastManager } from "@/lib/toast";
+import type { Album } from "@/lib/types/lastfm";
+import type { Artist, Track } from "@/lib/types/spotify";
 import { createPollSchema } from "@/lib/zod/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAction } from "convex/react";
+import {
+  Clock,
+  Disc,
+  Music2,
+  Plus,
+  Search,
+  Trash2,
+  User,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import { useCallback, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card } from "../ui/card";
 import {
   Form,
   FormControl,
@@ -13,15 +33,6 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-
-import { Platform } from "@/config";
-import { PollType } from "@/lib/zod/pollster";
-import { Clock, Disc, Music, Music2, Plus, Trash2, User } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -32,16 +43,25 @@ import {
 } from "../ui/select";
 import { Tabs, TabsIndicator, TabsList, TabsTrigger } from "../ui/tabs";
 import { Textarea } from "../ui/textarea";
+import AlbumResults from "./album-results/album-results";
+import ArtistResults from "./artist-results/artist-results";
+import TrackResults from "./track-results/track-results";
 
 const createEmptyChoice = () => ({
   image: "",
-  pollsterUrl: "",
+  artist: "",
+  album: null,
+  track: null,
   affinities: [] as string[],
 });
 
 function CreatePoll() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [searchSource, setSearchSource] = useState<Platform>("spotify");
+  const [searchResults, setSearchResults] = useState<
+    Artist[] | Album[] | Track[]
+  >([]);
+  const [activeSearchOption, setActiveSearchOption] = useState<number | null>(
+    null,
+  );
 
   const form = useForm<z.infer<typeof createPollSchema>>({
     resolver: zodResolver(createPollSchema),
@@ -52,19 +72,88 @@ function CreatePoll() {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update, replace } = useFieldArray({
     control: form.control,
     name: "choices",
   });
 
+  const artistSearch = useAction(api.pollster.artist.search);
+  const albumSearch = useAction(api.pollster.album.search);
+  const trackSearch = useAction(api.pollster.track.search);
+
   const pollType = form.watch("pollType");
 
   const handlePollTypeChange = (val: string) => {
-    form.setValue("pollType", val as z.infer<typeof PollType>);
+    form.setValue("pollType", val);
 
-    // setPollOptions(pollOptions.map((option) => ({ ...option, title: "", image: "", searchQuery: "" })))
-    // setSearchResults([])
-    // setActiveSearchOption(null)
+    replace(fields.map(() => createEmptyChoice()));
+
+    setSearchResults([]);
+    setActiveSearchOption(null);
+  };
+
+  const debouncedMusicSearch = useCallback(
+    (query: string, optionIndex: number) => {
+      const timeoutId = setTimeout(async () => {
+        if (query.length > 2) {
+          let results: Artist[] | Album[] | Track[] | null = null;
+
+          switch (pollType) {
+            case "artist":
+              results = await artistSearch({ query });
+
+              break;
+            case "album":
+              results = await albumSearch({ query });
+
+              break;
+            case "track":
+              results = await trackSearch({ query });
+
+              break;
+          }
+
+          if (!results) {
+            return toastManager.add({
+              title: "Error",
+              description: "Search failed. Please retry.",
+            });
+          }
+
+          setSearchResults(results);
+          setActiveSearchOption(optionIndex);
+        } else {
+          setSearchResults([]);
+          setActiveSearchOption(null);
+        }
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    },
+    [albumSearch, artistSearch, pollType, trackSearch],
+  );
+
+  const clearSearch = () => {
+    setSearchResults([]);
+    setActiveSearchOption(null);
+  };
+
+  const createChoiceInputValue = (
+    artist: string,
+    album: string | null,
+    track: string | null,
+  ) => {
+    if (artist === "") return undefined;
+
+    let value = "";
+
+    if (track || album) {
+      value += `${track || album} - `;
+    }
+
+    value += artist;
+
+    return value;
   };
 
   function onSubmit(values: z.infer<typeof createPollSchema>) {
@@ -157,31 +246,19 @@ function CreatePoll() {
           <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <h3 className="text-xl font-semibold">Choices</h3>
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground text-sm font-medium whitespace-nowrap">
-                  Search via:
-                </span>
-                <Tabs defaultValue="spotify" onValueChange={setSearchSource}>
-                  <TabsList className="border">
-                    <TabsTrigger value="spotify">Spotify</TabsTrigger>
-                    <TabsTrigger value="lastfm">Last.fm</TabsTrigger>
-                    <TabsIndicator />
-                  </TabsList>
-                </Tabs>
-              </div>
               <Tabs value={pollType} onValueChange={handlePollTypeChange}>
-                <TabsList className="border border-white/10 bg-white/5">
+                <TabsList className="border">
                   <TabsTrigger value="artist">
-                    <User className="mr-0 h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">Artists</span>
+                    <User className="mr-1 h-4 w-4" />
+                    <span className="inline">Artists</span>
                   </TabsTrigger>
                   <TabsTrigger value="album">
-                    <Disc className="mr-0 h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">Albums</span>
+                    <Disc className="mr-1 h-4 w-4" />
+                    <span className="inline">Albums</span>
                   </TabsTrigger>
                   <TabsTrigger value="track">
-                    <Music2 className="mr-0 h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">Tracks</span>
+                    <Music2 className="mr-1 h-4 w-4" />
+                    <span className="inline">Tracks</span>
                   </TabsTrigger>
                   <TabsIndicator />
                 </TabsList>
@@ -198,132 +275,159 @@ function CreatePoll() {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="rounded-lg border border-white/10 bg-white/5 p-4 sm:p-6"
+                className="bg-muted rounded-lg border p-4 sm:p-6"
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <h3 className="font-medium text-gray-300">
-                    Option {index + 1}
-                  </h3>
-                  {fields.length > 2 && (
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 text-gray-400 hover:bg-white/10 hover:text-white"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
+                  <h3 className="font-medium">Choice {index + 1}</h3>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className={`hover:text-accent-foreground hover:bg-foreground/10 h-8 w-8 cursor-pointer ${fields.length <= 2 ? "invisible" : ""}`}
+                    onClick={() => remove(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-
                 <div className="relative">
                   <div className="mb-4 flex flex-col gap-4 sm:flex-row">
                     <div className="mx-auto h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-white/5 sm:mx-0 sm:h-12 sm:w-12">
                       {field.image ? (
                         <Image
                           src={field.image}
-                          alt={field.pollsterUrl}
+                          alt=""
                           width={64}
                           height={64}
                           className="h-full w-full object-cover"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
-                          <Music className="h-6 w-6 text-gray-500" />
+                          {pollType === "artist" ? (
+                            <User className="text-muted-foreground h-6 w-6" />
+                          ) : pollType === "album" ? (
+                            <Disc className="text-muted-foreground h-6 w-6" />
+                          ) : (
+                            <Music2 className="text-muted-foreground h-6 w-6" />
+                          )}
                         </div>
                       )}
                     </div>
-                    {/* <div className="flex-1 min-w-0">
-                            <Input
-                              placeholder={`Search ${searchSource} for ${pollType === "track" ? "a" : "an"} ${pollType}...`}
-                              value={option.title || option.searchQuery}
-                              onChange={(e) => {
-                                if (option.title) {
-                                  // If there's already a selected title, allow editing it
-                                  setPollOptions(
-                                    pollOptions.map((o) => (o.id === option.id ? { ...o, title: e.target.value } : o)),
-                                  )
-                                } else {
-                                  // If no title selected, this is a search
-                                  handleSearch(e.target.value, option.id)
-                                }
-                              }}
-                              onFocus={() => {
-                                if (!option.title) {
-                                  setActiveSearchOption(option.id)
-                                }
-                              }}
-                              className="bg-white/5 border-white/20 text-white placeholder:text-gray-500 focus:border-rose-400"
-                            />
-                            {option.title && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="mt-2 h-6 text-xs text-gray-400 hover:text-white p-1"
-                                onClick={() => {
-                                  setPollOptions(
-                                    pollOptions.map((o) =>
-                                      o.id === option.id ? { ...o, title: "", image: "", searchQuery: "" } : o,
-                                    ),
-                                  )
-                                  clearSearch()
-                                }}
-                              >
-                                <X className="h-3 w-3 mr-1" />
-                                Clear selection
-                              </Button>
-                            )}
-                          </div> */}
+                    <div className="bg-foreground/10 hover:border-muted-foreground/40 border-muted-foreground/20 focus-within:ring-foreground/60 flex flex-1 items-center rounded-md border-1 py-1.5 pl-3 transition-[border-color] focus-within:ring-1 sm:py-0">
+                      <Search className="mr-2 h-4 w-4" />
+                      <input
+                        type="text"
+                        value={createChoiceInputValue(
+                          field.artist,
+                          field.album,
+                          field.track,
+                        )}
+                        placeholder={`Search for ${pollType === "track" ? "a" : "an"} ${pollType}...`}
+                        className="placeholder:text-muted-foreground flex-1 border-none bg-transparent text-sm outline-none"
+                        onChange={(e) => {
+                          if (field.artist !== "") return;
+
+                          debouncedMusicSearch(e.target.value, index);
+                        }}
+                        onFocus={() => {
+                          if (field.artist !== "") return;
+
+                          setActiveSearchOption(index);
+                        }}
+                        onBlur={() => {
+                          if (searchResults.length > 0) return;
+
+                          setActiveSearchOption(null);
+                        }}
+                        name={`option-${index}-query`}
+                      />
+                      {field.artist && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="focus-visible:ring-foreground/60 h-6 w-6 cursor-pointer hover:bg-transparent"
+                          onClick={() => {
+                            update(index, {
+                              ...field,
+                              artist: "",
+                              album: null,
+                              track: null,
+                              image: "",
+                            });
+
+                            clearSearch();
+                          }}
+                        >
+                          <X className="mr-2 h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                  {/* 
-                        {searchResults.length > 0 && activeSearchOption === option.id && (
-                          <div className="absolute z-10 w-full bg-gray-900/95 backdrop-blur-md border border-white/20 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                            {searchResults.map((result) => (
-                              <div
-                                key={result.id}
-                                className="p-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 border-b border-white/10 last:border-b-0"
-                                onClick={() => selectSearchResult(result, option.id)}
-                              >
-                                <div className="h-10 w-10 bg-white/5 rounded-md overflow-hidden flex-shrink-0">
-                                  <Image
-                                    src={result.image || "/placeholder.svg"}
-                                    alt={result.title}
-                                    width={40}
-                                    height={40}
-                                    className="h-full w-full object-cover"
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-white text-sm truncate">{result.title}</p>
-                                  <p className="text-xs text-gray-400 truncate">
-                                    {pollType === "track" && `${result.artist} • ${result.album}`}
-                                    {pollType === "album" && result.artist}
-                                    {pollType === "artist" && (result.followers || result.playcount)}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                                  <Badge
-                                    variant="outline"
-                                    className="bg-rose-500/10 text-rose-300 border-rose-500/30 text-xs"
-                                  >
-                                    {result.source}
-                                  </Badge>
-                                  {result.playcount && (
-                                    <span className="text-xs text-gray-500">{result.playcount}</span>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )} */}
+                  {searchResults.length > 0 && activeSearchOption === index && (
+                    <div className="bg-popover text-popover-foreground absolute z-10 -mt-2 max-h-60 w-full overflow-y-auto rounded-md border shadow-md backdrop-blur-md">
+                      {pollType === "artist" ? (
+                        <ArtistResults
+                          results={searchResults as Artist[]}
+                          selectResult={(artist: string, image: string) => {
+                            update(index, {
+                              artist,
+                              album: null,
+                              track: null,
+                              image,
+                              affinities: [] as string[],
+                            });
+
+                            clearSearch();
+                          }}
+                        />
+                      ) : pollType === "album" ? (
+                        <AlbumResults
+                          results={searchResults as Album[]}
+                          selectResult={(
+                            artist: string,
+                            album: string,
+                            image: string,
+                          ) => {
+                            update(index, {
+                              artist,
+                              album,
+                              track: null,
+                              image,
+                              affinities: [] as string[],
+                            });
+
+                            clearSearch();
+                          }}
+                        />
+                      ) : (
+                        <TrackResults
+                          results={searchResults as Track[]}
+                          selectResult={(
+                            artist: string,
+                            album: string,
+                            track: string,
+                            image: string,
+                          ) => {
+                            update(index, {
+                              artist,
+                              album,
+                              track,
+                              image,
+                              affinities: [] as string[],
+                            });
+
+                            clearSearch();
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
 
                   {/* Option-specific affinities */}
                   <div className="mt-4">
                     <div className="mb-3 flex items-center justify-between">
-                      <span className="text-sm text-gray-300">
+                      <span className="text-muted-foreground text-sm">
                         Affinities for this option
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-muted-foreground/50 text-xs">
                         {field.affinities.length}/3
                       </span>
                     </div>
@@ -377,7 +481,7 @@ function CreatePoll() {
                 onClick={() => append(createEmptyChoice())}
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Add Option
+                Add Choice
               </Button>
             )}
           </div>

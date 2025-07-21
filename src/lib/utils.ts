@@ -125,3 +125,12 @@ export function getImageHostnamesRegex(): RegExp {
 
   return hostnamesRegex;
 }
+
+/**
+ * Capitalizes a string.
+ *
+ * @returns A string with the first letter capitalized.
+ */
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

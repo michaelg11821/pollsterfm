@@ -1,14 +1,14 @@
 "use client";
 
 import { Tabs as TabsPrimitive } from "@base-ui-components/react";
-import * as React from "react";
+import type { ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
 function Tabs({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+}: ComponentProps<typeof TabsPrimitive.Root>) {
   return (
     <TabsPrimitive.Root
       className={cn("flex flex-col gap-2", className)}
@@ -21,7 +21,7 @@ function TabsList({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+}: ComponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
       className={cn(
@@ -38,7 +38,7 @@ function TabsList({
 function TabsTrigger({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Tab>) {
+}: ComponentProps<typeof TabsPrimitive.Tab>) {
   return (
     <TabsPrimitive.Tab
       className={cn(
@@ -53,7 +53,7 @@ function TabsTrigger({
 function TabsIndicator({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Indicator>) {
+}: ComponentProps<typeof TabsPrimitive.Indicator>) {
   return (
     <TabsPrimitive.Indicator
       className={cn(
@@ -68,7 +68,7 @@ function TabsIndicator({
 function TabsContent({
   className,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Panel>) {
+}: ComponentProps<typeof TabsPrimitive.Panel>) {
   return (
     <TabsPrimitive.Panel
       className={cn("flex-1 outline-none", className)}
