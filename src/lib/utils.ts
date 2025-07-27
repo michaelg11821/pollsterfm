@@ -4,6 +4,7 @@ import { enUS } from "date-fns/locale";
 import { distance } from "fastest-levenshtein";
 import { twMerge } from "tailwind-merge";
 import nextConfig from "../../next.config";
+import { oneDayMs, oneMonthMs, oneWeekMs } from "./constants/time";
 
 /**
  * Merges Tailwind classes into one className.
@@ -133,4 +134,41 @@ export function getImageHostnamesRegex(): RegExp {
  */
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * @param createdAt A millisecond value.
+ * @returns A formatted date string.
+ */
+export function getDateFromCreatedAt(createdAt: number) {
+  const createdAtDate = new Date(createdAt);
+  const joinMonth = createdAtDate.getMonth() as Month;
+
+  const dateString = `${enUS.localize.month(
+    joinMonth,
+  )} ${createdAtDate.getFullYear()}`;
+
+  return dateString;
+}
+
+/**
+ * @param duration A millisecond value.
+ * @returns The duration in string form.
+ */
+export function durationToString(duration: number) {
+  let str = "";
+
+  switch (duration) {
+    case oneDayMs:
+      str = "1 day";
+      break;
+    case oneWeekMs:
+      str = "1 week";
+      break;
+    case oneMonthMs:
+      str = "1 month";
+      break;
+  }
+
+  return str;
 }

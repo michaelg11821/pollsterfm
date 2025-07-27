@@ -35,7 +35,7 @@ function Nav() {
             <ul className="hidden list-none md:flex md:gap-6">
               <li>
                 <Link
-                  href=""
+                  href="/polls"
                   className="text-muted-foreground hover:text-foreground text-center transition-[color]"
                 >
                   Polls

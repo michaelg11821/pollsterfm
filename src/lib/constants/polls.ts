@@ -1,1 +1,1 @@
-export const pollTypes: readonly string[] = ["artist", "album", "track"];
+export const pollTypes = ["artist", "album", "track"] as const;

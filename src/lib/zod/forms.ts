@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { oneDayMs, oneMonthMs } from "../constants/time";
 import { getImageHostnamesRegex } from "../utils";
 import { Affinity, PollType } from "./pollster";
 import { headerImageSchema, profileIconSchema } from "./user";
@@ -36,38 +35,89 @@ export const editProfileSchema = z.object({
   deleteProfileIcon: z.boolean(),
 });
 
-export const createPollSchema = z.object({
+const baseChoice = z.object({
+  image: z.url().or(z.literal("")),
+  artist: z.string(),
+  album: z.string().nullable(),
+  track: z.string().nullable(),
+  affinities: z
+    .array(Affinity)
+    .min(1, { error: "At least 1 affinity is required." })
+    .max(3, { error: "A choice cannot have more than 3 affinities." }),
+});
+
+const artistChoice = baseChoice.extend({
+  artist: z.string().min(1, { error: "Please select an artist." }),
+  album: z.null(),
+  track: z.null(),
+  image: z
+    .url({
+      hostname: getImageHostnamesRegex(),
+      error: "Image is from an untrusted source.",
+    })
+    .or(z.literal("")),
+});
+
+const albumChoice = baseChoice.extend({
+  artist: z.string().min(1, { error: "Please select an artist." }),
+  album: z.string({ error: "Please select an album." }),
+  track: z.null(),
+  image: z
+    .url({
+      hostname: getImageHostnamesRegex(),
+      error: "Image is from an untrusted source.",
+    })
+    .or(z.literal("")),
+});
+
+const trackChoice = baseChoice.extend({
+  artist: z.string().min(1, { error: "Please select an artist." }),
+  album: z.string({ error: "Please select an album." }),
+  track: z.string({ error: "Please select a track." }),
+  image: z
+    .url({
+      hostname: getImageHostnamesRegex(),
+      error: "Image is from an untrusted source.",
+    })
+    .or(z.literal("")),
+});
+
+const pollSchema = z.object({
   question: z
     .string({ error: "A question is required." })
-    .min(5, {
-      message: "Question must be at least 5 characters long.",
+    .min(5, { error: "Question must be at least 5 characters long." })
+    .max(50, { error: "Question cannot be longer than 50 characters." }),
+  description: z
+    .string()
+    .max(250, {
+      error: "Description cannot be longer than 250 characters.",
     })
-    .max(50, { message: "Question cannot be longer than 50 characters." }),
-  description: z.optional(
-    z.string().max(250, {
-      message: "Description cannot be longer than 250 characters.",
-    }),
-  ),
-  duration: z
-    .number({ error: "A duration is required." })
-    .min(oneDayMs, { message: "Duration cannot be shorter than a day." })
-    .max(oneMonthMs, { message: "Duration cannot be longer than 1 month." }),
+    .optional(),
+  duration: z.string({ error: "A duration is required." }),
   pollType: PollType,
-  choices: z
-    .array(
-      z.object({
-        image: z.url({
-          hostname: getImageHostnamesRegex(),
-          error: "Image is from an untrusted source.",
-        }),
-        artist: z.string(),
-        album: z.nullable(z.string()),
-        track: z.nullable(z.string()),
-        affinities: z
-          .array(Affinity, { error: "At least 1 affinity is required." })
-          .max(3, "A choice cannot have more than 3 affinities."),
-      }),
-      { error: "Choices are required." },
-    )
-    .min(2, "Polls must have at least 2 choices."),
+  choices: z.array(z.any()),
 });
+
+export const createPollSchema = z.discriminatedUnion("pollType", [
+  pollSchema.extend({
+    pollType: z.literal("artist"),
+    choices: z
+      .array(artistChoice)
+      .min(2, { error: "Polls must have at least 2 choices." })
+      .max(5, { error: "Polls cannot have more than 5 choices." }),
+  }),
+  pollSchema.extend({
+    pollType: z.literal("album"),
+    choices: z
+      .array(albumChoice)
+      .min(2, { error: "Polls must have at least 2 choices." })
+      .max(5, { error: "Polls cannot have more than 5 choices." }),
+  }),
+  pollSchema.extend({
+    pollType: z.literal("track"),
+    choices: z
+      .array(trackChoice)
+      .min(2, { error: "Polls must have at least 2 choices." })
+      .max(5, { error: "Polls cannot have more than 5 choices." }),
+  }),
+]);

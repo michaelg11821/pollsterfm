@@ -1,4 +1,4 @@
-export const affinities: readonly string[] = [
+export const affinities = [
   "lawful",
   "evil",
   "balanced",
@@ -16,4 +16,4 @@ export const affinities: readonly string[] = [
   "dynamic",
   "haunting",
   "poetic",
-];
+] as const;

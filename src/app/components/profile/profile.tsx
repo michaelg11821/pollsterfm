@@ -1,14 +1,11 @@
 "use client";
 
-import { enUS } from "date-fns/locale";
-
-import type { Month } from "date-fns";
-
 import Image from "next/image";
 
 import EditProfile from "../edit-profile/edit-profile";
 
 import { api } from "@/lib/convex/_generated/api";
+import { getDateFromCreatedAt } from "@/lib/utils";
 import { useQuery } from "convex/react";
 import { Calendar, Ellipsis } from "lucide-react";
 import Link from "next/link";
@@ -32,11 +29,8 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
   }
 
   const createdAtDate = new Date(profile.createdAt);
-  const joinMonth = createdAtDate.getMonth() as Month;
 
-  const joinDate = `${enUS.localize.month(
-    joinMonth,
-  )} ${createdAtDate.getFullYear()}`;
+  const joinDate = getDateFromCreatedAt(profile.createdAt);
 
   return (
     <>
