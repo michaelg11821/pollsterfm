@@ -14,7 +14,7 @@ async function PollPage({ params }: PollPageProps) {
   if (!poll) return redirect("/not-found");
 
   return (
-    <main className="content-wrapper px-5 py-8 xl:p-0">
+    <main className="content-wrapper px-5 py-6 xl:px-0">
       <Link
         href="/polls"
         className="text-primary hover:text-ring/50 mb-6 inline-flex items-center text-sm no-underline transition-[color]"
