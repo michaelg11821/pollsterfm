@@ -66,7 +66,10 @@ async function Home({ searchParams }: HomeProps) {
                 the conversation.
               </p>
             </div>
-            <Link href="#" className={buttonVariants({ variant: "secondary" })}>
+            <Link
+              href="/polls"
+              className={buttonVariants({ variant: "secondary" })}
+            >
               View All Polls <ChevronRight className="h-5 w-5" />
             </Link>
           </div>
