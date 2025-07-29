@@ -41,6 +41,7 @@ function Polls() {
 
       {/* Polls Grid */}
       <div className="grid gap-6">
+        {/* component called PollPreview */}
         {polls.map((poll, index) => (
           <Link key={index} href={`/polls/${poll._id}`}>
             <Card className="group cursor-pointer border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all duration-200 hover:bg-white/10">
@@ -94,8 +95,10 @@ function Polls() {
 
               {/* Affinities */}
               <div className="flex items-center gap-2">
-                <span className="text-sm text-white/60">Affinities:</span>
-                <div className="flex gap-2">
+                <span className="self-start text-sm text-white/60">
+                  Affinities:
+                </span>
+                <div className="flex flex-wrap gap-2">
                   {poll.choices.map((choice) =>
                     choice.affinities.map((affinity) => (
                       <Badge
