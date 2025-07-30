@@ -78,10 +78,7 @@ async function FeaturedIn({ category, itemName }: FeaturedInProps) {
                 <CardTitle className="overflow-hidden text-ellipsis whitespace-nowrap">
                   {poll.title}
                 </CardTitle>
-                <Badge
-                  className="bg-primary/20 text-primary mt-1"
-                  variant="default"
-                >
+                <Badge className="mt-1" variant="default">
                   {poll.position}
                 </Badge>
               </CardHeader>

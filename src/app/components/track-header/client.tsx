@@ -43,9 +43,7 @@ function ClientTrackHeader({ trackData }: ClientTrackHeaderProps) {
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <div className="mb-2 flex items-center justify-center gap-2 md:justify-start">
-                <Badge className="bg-primary/20 text-primary" variant="default">
-                  Track
-                </Badge>
+                <Badge variant="default">Track</Badge>
               </div>
               <h1 className="text-3xl font-bold md:text-4xl">
                 {trackData.name}

@@ -44,9 +44,7 @@ async function NowPlaying({ username }: NowPlayingProps) {
       </div>
       <div className="mt-3 flex-1 text-center sm:mt-0 sm:text-left">
         <div className="mb-1 flex flex-wrap justify-center gap-2 sm:justify-start">
-          <Badge className="bg-primary/20 text-primary" variant="default">
-            Now Playing
-          </Badge>
+          <Badge variant="default">Now Playing</Badge>
         </div>
         <Link
           href={`/catalog/${encodeURIComponent(mainArtist)}/discography/${encodeURIComponent(albumName)}/${encodeURIComponent(trackName)}`}

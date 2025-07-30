@@ -42,9 +42,7 @@ function ClientArtistHeader({ artistData }: ClientArtistHeaderProps) {
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div className="flex flex-col items-center md:block">
               <div className="mb-2 flex items-center gap-2">
-                <Badge className="bg-primary/20 text-primary" variant="default">
-                  Artist
-                </Badge>
+                <Badge variant="default">Artist</Badge>
               </div>
               <h1 className="text-4xl font-bold md:text-5xl">
                 {artistData.name}

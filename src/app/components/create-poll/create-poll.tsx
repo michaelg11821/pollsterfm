@@ -352,10 +352,7 @@ function CreatePoll() {
                   <TabsIndicator />
                 </TabsList>
               </Tabs>
-              <Badge
-                variant="outline"
-                className="border-rose-500/30 bg-rose-500/10 text-rose-300"
-              >
+              <Badge variant="default" className="border-primary/30">
                 {fields.length}/5 choices
               </Badge>
             </div>

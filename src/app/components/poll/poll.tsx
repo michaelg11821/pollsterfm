@@ -13,11 +13,7 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
-import {
-  capitalize,
-  durationToString,
-  getDateFromCreatedAt,
-} from "@/lib/utils";
+import { durationToString, getDateFromCreatedAt } from "@/lib/utils";
 import { Clock, TrendingUp, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -66,20 +62,15 @@ function Poll({ id }: PollProps) {
       <div className="space-y-6 lg:col-span-2">
         <div>
           <div className="mb-3 flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className="border-rose-500/30 bg-rose-500/10 text-rose-300"
-            >
-              {capitalize(pollData.pollType)}
-            </Badge>
+            <Badge variant="default">{pollData.pollType}</Badge>
             <span className="text-foreground/60 flex items-center gap-1 text-sm">
               <Clock className="h-3 w-3" />
               Ends in {durationString}
             </span>
           </div>
-          <h1 className="mb-3 text-3xl font-bold lg:text-4xl">
+          <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
             {pollData.question}
-          </h1>
+          </h2>
           <p className="text-muted-foreground mb-4 text-lg">
             {pollData.description}
           </p>
@@ -103,14 +94,11 @@ function Poll({ id }: PollProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span className="text-white">Cast Your Vote</span>
-              <Badge
-                variant="outline"
-                className="flex items-center gap-1 border-rose-500/30 bg-rose-500/10 text-rose-300"
-              >
+              <span className="text-lg">Cast Your Vote</span>
+              <Badge variant="default" className="flex items-center gap-1">
                 <Users className="h-3 w-3" />0 votes
                 {/* {pollData.totalVotes.toLocaleString()} votes */}
-                <div className="ml-1 h-1 w-1 animate-pulse rounded-full bg-rose-400" />
+                <div className="bg-primary/90 ml-1 h-1 w-1 animate-pulse rounded-full" />
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -149,11 +137,7 @@ function Poll({ id }: PollProps) {
                       </h3>
                       <div className="flex flex-wrap gap-1">
                         {choice.affinities.map((affinity, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="border-rose-500/30 bg-rose-500/10 text-xs text-rose-300"
-                          >
+                          <Badge key={index} variant="secondary">
                             {affinity}
                           </Badge>
                         ))}
@@ -217,8 +201,8 @@ function Poll({ id }: PollProps) {
                 <span>Live Activity</span>
               </div>
               <Badge
-                variant="outline"
-                className="border-green-500/30 bg-green-500/10 text-xs text-green-300"
+                variant="default"
+                className="border-transparent bg-green-500/10 text-green-300"
               >
                 0 viewing
                 {/* {pollData.liveStats.currentViewers} viewing */}

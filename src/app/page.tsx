@@ -116,10 +116,7 @@ async function Home({ searchParams }: HomeProps) {
                   <CardTitle className="flex items-center gap-2.5">
                     {poll.title}
                     {poll.hot && (
-                      <Badge
-                        className="bg-primary/20 text-primary"
-                        variant="default"
-                      >
+                      <Badge variant="default">
                         <span className="bg-primary h-2 w-2 rounded-full"></span>
                         HOT
                       </Badge>
@@ -127,11 +124,7 @@ async function Home({ searchParams }: HomeProps) {
                   </CardTitle>
                   <div className="my-1 flex flex-wrap gap-2">
                     {poll.affinities.map((affinity, j) => (
-                      <Badge
-                        key={j}
-                        className="bg-muted-foreground/20 text-foreground rounded-full text-xs font-light"
-                        variant="secondary"
-                      >
+                      <Badge key={j} variant="secondary">
                         {affinity}
                       </Badge>
                     ))}

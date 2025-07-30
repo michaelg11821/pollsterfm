@@ -78,9 +78,7 @@ async function TopListeners({ category, itemName }: TopListenersProps) {
                 <div>
                   <p>@{user.username}</p>
                   <div className="mt-1 flex items-center gap-2">
-                    <Badge className="bg-primary/20 text-primary">
-                      {user.match}% match
-                    </Badge>
+                    <Badge variant="default">{user.match}% match</Badge>
                     <span className="text-muted-foreground text-xs">
                       {user.plays} plays
                     </span>

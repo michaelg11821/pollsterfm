@@ -55,7 +55,7 @@ async function SimilarArtists({ artistName }: SimilarArtistsProps) {
               </div>
               <div>
                 <p className="m-0">{artist.name}</p>
-                <Badge className="bg-primary/20 text-primary" variant="default">
+                <Badge variant="default">
                   {/*  TEMPORARY */}
                   66% match
                 </Badge>
