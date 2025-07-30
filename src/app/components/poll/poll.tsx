@@ -1,9 +1,5 @@
 "use client";
 
-import { api } from "@/lib/convex/_generated/api";
-import { Id } from "@/lib/convex/_generated/dataModel";
-import { useQuery } from "convex/react";
-
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -13,11 +9,17 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
+import { api } from "@/lib/convex/_generated/api";
+import type { Id } from "@/lib/convex/_generated/dataModel";
+import { toastManager } from "@/lib/toast";
+import type { Affinity } from "@/lib/types/pollster";
 import { durationToString, getDateFromCreatedAt } from "@/lib/utils";
-import { Clock, TrendingUp, Users } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { Clock, ExternalLink, TrendingUp, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import PollAuthorImage from "./author-image/author-image";
 import PollSkeleton from "./skeleton";
 
@@ -26,11 +28,25 @@ type PollProps = {
 };
 
 function Poll({ id }: PollProps) {
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+
   const router = useRouter();
 
   const pollData = useQuery(api.pollster.poll.getById, { id });
+  const currentUser = useQuery(api.user.currentUser);
+  const addVote = useMutation(api.user.addVote);
 
-  if (pollData === undefined) {
+  const getSelectedChoiceData = useCallback(() => {
+    if (selectedOption === null || pollData === null || pollData === undefined)
+      return null;
+
+    const { artist, album, track, affinities } =
+      pollData.choices[selectedOption];
+
+    return { artist, album, track, affinities };
+  }, [selectedOption, pollData]);
+
+  if (pollData === undefined || currentUser === undefined) {
     return <PollSkeleton />;
   }
 
@@ -42,16 +58,59 @@ function Poll({ id }: PollProps) {
 
   const durationString = durationToString(pollData.duration);
 
-  // const handleVote = (optionId: number) => {
-  //   setSelectedOption(optionId)
-  // }
+  const hasVoted =
+    currentUser && currentUser.choices
+      ? currentUser.choices.some((choice) => choice.pollId === id)
+      : false;
 
-  // const submitVote = () => {
-  //   if (selectedOption !== null) {
-  //     setHasVoted(true)
-  //     //
-  //   }
-  // }
+  const handleVote = (optionIndex: number) => {
+    if (currentUser === null) {
+      return toastManager.add({
+        title: "Error",
+        description: "You must be logged in to vote.",
+      });
+    }
+
+    setSelectedOption(optionIndex);
+  };
+
+  const submitVote = async (
+    artist: string,
+    album: string | null,
+    track: string | null,
+    affinities: Affinity[],
+  ) => {
+    if (currentUser === null) {
+      return toastManager.add({
+        title: "Error",
+        description: "You must be logged in to vote.",
+      });
+    }
+
+    if (selectedOption === null) return;
+
+    const vote = await addVote({
+      artist,
+      album,
+      track,
+      affinities,
+      pollId: id,
+    });
+
+    if (vote === null) {
+      return toastManager.add({
+        title: "Success",
+        description: "Successfully submitted vote.",
+      });
+    } else {
+      return toastManager.add({
+        title: "Error",
+        description: "Failed to submit vote. Please try again.",
+      });
+    }
+  };
+
+  const selectedChoiceData = getSelectedChoiceData();
 
   // const calculatePercentage = (votes: number) => {
   //   return Math.round((votes / poll.totalVotes) * 100);
@@ -107,14 +166,13 @@ function Poll({ id }: PollProps) {
               <div
                 key={index}
                 className={`relative overflow-hidden rounded-lg border transition-all duration-300 ${
-                  //   hasVoted
-                  //     ? "bg-white/5 border-white/10"
-                  //     : selectedOption === option.id
-                  //       ? "bg-rose-500/10 border-rose-500/50 ring-1 ring-rose-500/30"
-                  //       : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 cursor-pointer"
-                  "up"
+                  hasVoted
+                    ? "bg-card border"
+                    : selectedOption === index
+                      ? "border-primary/50 bg-primary/20 ring-ring/30 ring-1"
+                      : "cursor-pointer border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
                 }`}
-                // onClick={() => !hasVoted && handleVote(option.id)}
+                onClick={() => !hasVoted && handleVote(index)}
               >
                 <div className="p-4">
                   <div className="mb-3 flex items-center gap-4">
@@ -128,13 +186,41 @@ function Poll({ id }: PollProps) {
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="mb-2 font-semibold text-white">
-                        {pollData.pollType === "artist"
-                          ? choice.artist
-                          : pollData.pollType === "album"
-                            ? `${choice.album} — ${choice.artist}`
-                            : `${choice.track} — ${choice.artist}`}
-                      </h3>
+                      <div className="mb-2 space-y-1">
+                        {choice.track && (
+                          <Link
+                            href={`/catalog/${encodeURIComponent(choice.artist)}/discography/${encodeURIComponent(choice.album!)}/${encodeURIComponent(choice.track)}`}
+                            className="block w-fit font-semibold"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {choice.track}
+                            <ExternalLink className="ml-1 inline h-3 w-3 opacity-60" />
+                          </Link>
+                        )}
+
+                        {choice.artist && (
+                          <Link
+                            href={`/catalog/${encodeURIComponent(choice.artist)}`}
+                            className="text-muted-foreground block w-fit text-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {(choice.album || choice.track) && "by "}
+                            {choice.artist}
+                            <ExternalLink className="ml-1 inline h-3 w-3 opacity-60" />
+                          </Link>
+                        )}
+
+                        {choice.album && (
+                          <Link
+                            href={`/catalog/${encodeURIComponent(choice.artist)}/discography/${encodeURIComponent(choice.album)}`}
+                            className="text-muted-foreground block w-fit text-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {choice.track && "from"} {choice.album}
+                            <ExternalLink className="ml-1 inline h-3 w-3 opacity-60" />
+                          </Link>
+                        )}
+                      </div>
                       <div className="flex flex-wrap gap-1">
                         {choice.affinities.map((affinity, index) => (
                           <Badge key={index} variant="secondary">
@@ -158,15 +244,23 @@ function Poll({ id }: PollProps) {
               </div>
             ))}
 
-            {/* {!hasVoted && (
-                  <Button
-                    className="w-full bg-rose-500 hover:bg-rose-600 text-white"
-                    disabled={selectedOption === null}
-                    onClick={submitVote}
-                  >
-                    Submit Vote
-                  </Button>
-                )} */}
+            {!hasVoted && selectedChoiceData && (
+              <Button
+                className="w-full cursor-pointer"
+                variant="default"
+                disabled={selectedOption === null || currentUser === null}
+                onClick={() =>
+                  submitVote(
+                    selectedChoiceData.artist,
+                    selectedChoiceData.album,
+                    selectedChoiceData.track,
+                    selectedChoiceData.affinities as Affinity[],
+                  )
+                }
+              >
+                Submit Vote
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
