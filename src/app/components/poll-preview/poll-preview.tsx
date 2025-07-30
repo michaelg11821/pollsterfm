@@ -6,24 +6,31 @@ import type { Affinity, Poll } from "@/lib/types/pollster";
 import { formatDistanceToNow } from "date-fns";
 import { Calendar, ChevronRight, User } from "lucide-react";
 import Link from "next/link";
+import { useMemo } from "react";
 
 type PollPreviewProps = {
   poll: Poll;
 };
 
 function PollPreview({ poll }: PollPreviewProps) {
+  const uniqueAffinities = useMemo(() => {
+    return Array.from(
+      new Set(
+        poll.choices.flatMap((choice) => choice.affinities as Affinity[]),
+      ),
+    );
+  }, [poll]);
+
   return (
     <Link href={`/polls/${poll._id}`}>
-      <Card className="cursor-pointer border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all duration-200 hover:bg-white/10">
+      <Card className="hover:bg-accent cursor-pointer p-6 transition-[background-color]">
         <div className="mb-4 flex items-start justify-between">
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-3">
-              <h2 className="text-xl font-semibold text-white transition-colors group-hover:text-rose-300">
-                {poll.question}
-              </h2>
+              <h2 className="text-xl font-semibold">{poll.question}</h2>
               <Badge variant="default">{poll.pollType}</Badge>
             </div>
-            <div className="flex items-center gap-4 text-sm text-white/60">
+            <div className="text-muted-foreground flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <User className="h-4 w-4" />
                 <span>@{poll.author}</span>
@@ -40,7 +47,7 @@ function PollPreview({ poll }: PollPreviewProps) {
                         </div> */}
             </div>
           </div>
-          <ChevronRight className="h-5 w-5 text-white/40 transition-colors group-hover:text-rose-400" />
+          <ChevronRight className="text-muted-foreground h-5 w-5 transition-colors" />
         </div>
 
         {/* Poll Preview Info */}
@@ -65,19 +72,11 @@ function PollPreview({ poll }: PollPreviewProps) {
             Affinities:
           </span>
           <div className="flex flex-wrap gap-2">
-            {poll.choices.map((choice) => {
-              const affinities = new Set<Affinity>();
-
-              for (const affinity of choice.affinities) {
-                affinities.add(affinity as Affinity);
-              }
-
-              return Array.from(affinities).map((affinity) => (
-                <Badge key={affinity} variant="secondary">
-                  {affinity}
-                </Badge>
-              ));
-            })}
+            {uniqueAffinities.map((affinity) => (
+              <Badge key={affinity} variant="secondary">
+                {affinity}
+              </Badge>
+            ))}
           </div>
         </div>
       </Card>
