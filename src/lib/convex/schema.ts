@@ -19,6 +19,17 @@ const schema = defineSchema({
     spotifyAccessToken: v.optional(v.string()),
     spotifyRefreshToken: v.optional(v.string()),
     spotifyExpiresAt: v.optional(v.number()),
+    choices: v.optional(
+      v.array(
+        v.object({
+          artist: v.string(),
+          album: v.union(v.string(), v.null()),
+          track: v.union(v.string(), v.null()),
+          pollId: v.id("polls"),
+          affinities: v.array(v.string()),
+        }),
+      ),
+    ),
   })
     .index("email", ["email"])
     .index("username", ["username"]),
