@@ -123,3 +123,42 @@ export const getName = query({
     return user.name;
   },
 });
+
+export const addVote = mutation({
+  args: {
+    artist: v.string(),
+    album: v.union(v.string(), v.null()),
+    track: v.union(v.string(), v.null()),
+    pollId: v.id("polls"),
+    affinities: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (userId === null) {
+      throw new Error("user not logged in");
+    }
+
+    const user = await ctx.db.get(userId);
+
+    if (user === null) {
+      throw new Error("user not found");
+    }
+
+    const newChoice = {
+      artist: args.artist,
+      album: args.album,
+      track: args.track,
+      pollId: args.pollId,
+      affinities: args.affinities,
+    };
+
+    const newChoices = user.choices
+      ? [...user.choices, newChoice]
+      : [newChoice];
+
+    await ctx.db.patch(userId, { choices: newChoices });
+
+    return null;
+  },
+});
