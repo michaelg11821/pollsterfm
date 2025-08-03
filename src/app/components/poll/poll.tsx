@@ -11,15 +11,16 @@ import {
 import { Separator } from "@/app/components/ui/separator";
 import { api } from "@/lib/convex/_generated/api";
 import type { Id } from "@/lib/convex/_generated/dataModel";
+import { useCountdown } from "@/lib/hooks/useCountdown";
 import { toastManager } from "@/lib/toast";
 import type { Affinity } from "@/lib/types/pollster";
-import { durationToString, getDateFromCreatedAt } from "@/lib/utils";
+import { formatTimeRemaining, getDateFromCreatedAt } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
-import { Clock, ExternalLink, TrendingUp, Users } from "lucide-react";
-import Image from "next/image";
+import { Clock, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Choice from "../choice/choice";
 import PollAuthorImage from "./author-image/author-image";
 import PollSkeleton from "./skeleton";
 
@@ -35,6 +36,32 @@ function Poll({ id }: PollProps) {
   const pollData = useQuery(api.pollster.poll.getById, { id });
   const currentUser = useQuery(api.user.currentUser);
   const addVote = useMutation(api.user.addVote);
+
+  const viewPoll = useMutation(api.pollster.poll.view);
+  const unviewPoll = useMutation(api.pollster.poll.unview);
+
+  const endTime = pollData ? pollData._creationTime + pollData.duration : 0;
+  const { timeLeft, isExpired } = useCountdown(endTime);
+
+  useEffect(() => {
+    async function view() {
+      await viewPoll({ id });
+    }
+
+    view();
+
+    const handleBeforeUnload = () => {
+      unviewPoll({ id }).catch(console.error);
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+
+      unviewPoll({ id }).catch(console.error);
+    };
+  }, [id, unviewPoll, viewPoll]);
 
   const getSelectedChoiceData = useCallback(() => {
     if (selectedOption === null || pollData === null || pollData === undefined)
@@ -55,13 +82,6 @@ function Poll({ id }: PollProps) {
 
     return null;
   }
-
-  const durationString = durationToString(pollData.duration);
-
-  const hasVoted =
-    currentUser && currentUser.choices
-      ? currentUser.choices.some((choice) => choice.pollId === id)
-      : false;
 
   const handleVote = (optionIndex: number) => {
     if (currentUser === null) {
@@ -95,6 +115,7 @@ function Poll({ id }: PollProps) {
       track,
       affinities,
       pollId: id,
+      choiceIndex: selectedOption,
     });
 
     if (vote === null) {
@@ -110,11 +131,25 @@ function Poll({ id }: PollProps) {
     }
   };
 
+  const calculatePercentage = (votes: number) => {
+    return Math.round((votes / pollData.totalVotes) * 100);
+  };
+
   const selectedChoiceData = getSelectedChoiceData();
 
-  // const calculatePercentage = (votes: number) => {
-  //   return Math.round((votes / poll.totalVotes) * 100);
-  // };
+  const peakVotingTime = pollData.liveStats
+    ? new Date(pollData.liveStats.peakVotingTime).toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : null;
+
+  const timeRemainingString = formatTimeRemaining(timeLeft);
+
+  const hasVoted =
+    currentUser && currentUser.choices
+      ? currentUser.choices.some((choice) => choice.pollId === id)
+      : false;
 
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -124,7 +159,7 @@ function Poll({ id }: PollProps) {
             <Badge variant="default">{pollData.pollType}</Badge>
             <span className="text-foreground/60 flex items-center gap-1 text-sm">
               <Clock className="h-3 w-3" />
-              Ends in {durationString}
+              {isExpired ? "Poll ended" : `Ends in ${timeRemainingString}`}
             </span>
           </div>
           <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
@@ -156,113 +191,44 @@ function Poll({ id }: PollProps) {
               <span className="text-lg">Cast Your Vote</span>
               <Badge variant="default" className="flex items-center gap-1">
                 <Users className="h-3 w-3" />
-                {pollData.totalVotes.toLocaleString()} votes
+                {pollData.totalVotes.toLocaleString()} vote
+                {(pollData.totalVotes <= 0 || pollData.totalVotes > 1) && "s"}
                 <div className="bg-primary/90 ml-1 h-1 w-1 animate-pulse rounded-full" />
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {pollData.choices.map((choice, index) => (
-              <div
+              <Choice
                 key={index}
-                className={`relative overflow-hidden rounded-lg border transition-all duration-300 ${
-                  hasVoted
-                    ? "bg-card border"
-                    : selectedOption === index
-                      ? "border-primary/50 bg-primary/20 ring-ring/30 ring-1"
-                      : "cursor-pointer border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
-                }`}
-                onClick={() => !hasVoted && handleVote(index)}
-              >
-                <div className="p-4">
-                  <div className="mb-3 flex items-center gap-4">
-                    <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-black/20">
-                      <Image
-                        src={choice.image}
-                        alt=""
-                        width={64}
-                        height={64}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-2 space-y-1">
-                        {choice.track && (
-                          <Link
-                            href={`/catalog/${encodeURIComponent(choice.artist)}/discography/${encodeURIComponent(choice.album!)}/${encodeURIComponent(choice.track)}`}
-                            className="block w-fit font-semibold"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {choice.track}
-                            <ExternalLink className="ml-1 inline h-3 w-3 opacity-60" />
-                          </Link>
-                        )}
-
-                        {choice.artist && (
-                          <Link
-                            href={`/catalog/${encodeURIComponent(choice.artist)}`}
-                            className={
-                              choice.album || choice.track
-                                ? "text-muted-foreground block w-fit text-sm"
-                                : "block w-fit font-semibold"
-                            }
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {(choice.album || choice.track) && "by "}
-                            {choice.artist}
-                            <ExternalLink className="ml-1 inline h-3 w-3 opacity-60" />
-                          </Link>
-                        )}
-
-                        {choice.album && (
-                          <Link
-                            href={`/catalog/${encodeURIComponent(choice.artist)}/discography/${encodeURIComponent(choice.album)}`}
-                            className="text-muted-foreground block w-fit text-sm"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {choice.track && "from"} {choice.album}
-                            <ExternalLink className="ml-1 inline h-3 w-3 opacity-60" />
-                          </Link>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        {choice.affinities.map((affinity, index) => (
-                          <Badge key={index} variant="secondary">
-                            {affinity}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    {/* {hasVoted && (
-                          <div className="text-right shrink-0">
-                            <span className="text-2xl font-bold text-rose-300">
-                              {calculatePercentage(option.votes)}%
-                            </span>
-                            <p className="text-xs text-white/50">{option.votes.toLocaleString()} votes</p>
-                          </div>
-                        )} */}
-                  </div>
-
-                  {/* {hasVoted && <Progress value={calculatePercentage(option.votes)} className="h-2 bg-white/10" />} */}
-                </div>
-              </div>
+                choice={choice}
+                hasVoted={hasVoted}
+                selectedOption={selectedOption}
+                index={index}
+                handleVote={handleVote}
+                calculatePercentage={calculatePercentage}
+              />
             ))}
 
-            {!hasVoted && selectedChoiceData && (
+            {!hasVoted && (
               <Button
-                className="w-full cursor-pointer"
+                className="w-full cursor-pointer transition-opacity select-none"
                 variant="default"
-                disabled={selectedOption === null || currentUser === null}
-                onClick={() =>
+                disabled={
+                  selectedOption === null || currentUser === null || isExpired
+                }
+                onClick={() => {
+                  if (!selectedChoiceData) return;
+
                   submitVote(
                     selectedChoiceData.artist,
                     selectedChoiceData.album,
                     selectedChoiceData.track,
                     selectedChoiceData.affinities as Affinity[],
-                  )
-                }
+                  );
+                }}
               >
-                Submit Vote
+                {isExpired ? "Poll Ended" : "Submit Vote"}
               </Button>
             )}
           </CardContent>
@@ -279,14 +245,20 @@ function Poll({ id }: PollProps) {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="mb-1 text-xs text-white/50">Total Votes</p>
+                <p className="text-muted-foreground mb-1 text-xs">
+                  Total Votes
+                </p>
                 <p className="text-xl font-bold">
                   {pollData.totalVotes.toLocaleString()}
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-xs text-white/50">Time Left</p>
-                <p className="text-xl font-bold">{durationString}</p>
+                <p className="text-muted-foreground mb-1 text-xs">Time Left</p>
+                <p
+                  className={`text-xl font-bold ${isExpired ? "text-red-400" : ""}`}
+                >
+                  {isExpired ? "Expired" : timeRemainingString}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -302,8 +274,7 @@ function Poll({ id }: PollProps) {
                 variant="default"
                 className="border-transparent bg-green-500/10 text-green-300"
               >
-                0 viewing
-                {/* {pollData.liveStats.currentViewers} viewing */}
+                {pollData.liveStats?.currentViewers.length ?? 0} viewing
               </Badge>
             </CardTitle>
           </CardHeader>
@@ -311,19 +282,21 @@ function Poll({ id }: PollProps) {
             <div className="mb-4 grid grid-cols-2 gap-3">
               <div className="bg-accent/80 rounded-lg p-2 text-center">
                 <p className="text-lg font-bold">
-                  {/* {pollData.liveStats.votesInLastHour} */}
+                  {pollData.liveStats?.votesInLastHour ?? 0}
                 </p>
                 <p className="text-muted-foreground text-xs">votes/hour</p>
               </div>
+
               <div className="bg-accent/80 rounded-lg p-2 text-center">
-                <p className="text-lg font-bold">
-                  {/* {pollData.liveStats.peakVotingTime} */}
-                </p>
+                {pollData.liveStats && (
+                  <p className="text-lg font-bold">{peakVotingTime}</p>
+                )}
+
                 <p className="text-muted-foreground text-xs">peak time</p>
               </div>
             </div>
 
-            <Separator className="bg-white/10" />
+            <Separator className="text-muted-foreground/10" />
 
             <div className="space-y-2">
               <h4 className="text-muted-foreground mb-2 text-sm font-medium">

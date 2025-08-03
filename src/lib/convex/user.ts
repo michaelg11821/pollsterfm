@@ -131,6 +131,7 @@ export const addVote = mutation({
     track: v.union(v.string(), v.null()),
     pollId: v.id("polls"),
     affinities: v.array(v.string()),
+    choiceIndex: v.number(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -173,8 +174,12 @@ export const addVote = mutation({
       throw new Error("poll not found");
     }
 
+    const pollChoicesCopy = [...poll.choices];
+    pollChoicesCopy[args.choiceIndex].totalVotes += 1;
+
     await ctx.db.patch(args.pollId, {
       totalVotes: poll.totalVotes + 1,
+      choices: pollChoicesCopy,
     });
 
     return null;

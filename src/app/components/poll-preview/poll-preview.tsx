@@ -3,6 +3,7 @@
 import { Badge } from "@/app/components/ui/badge";
 import { Card } from "@/app/components/ui/card";
 import type { Affinity, Poll } from "@/lib/types/pollster";
+import { getChoiceItemName, getTopChoice } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { Calendar, ChevronRight, TrendingUp, User } from "lucide-react";
 import Link from "next/link";
@@ -43,28 +44,40 @@ function PollPreview({ poll }: PollPreviewProps) {
               </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className="h-4 w-4" />
-                <span>{poll.totalVotes.toLocaleString()} votes</span>
+                <span>
+                  {poll.totalVotes.toLocaleString()} vote
+                  {(poll.totalVotes <= 0 || poll.totalVotes > 1) && "s"}
+                </span>
               </div>
             </div>
           </div>
           <ChevronRight className="text-muted-foreground h-5 w-5 transition-colors" />
         </div>
 
-        {/* Poll Preview Info */}
-        {/* <div className="mb-4">
-                    <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-sm text-white/60 mb-1">{poll.optionCount} options available</div>
-                          <div className="text-white font-medium">Currently leading: {poll.topOption}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-rose-400">{poll.totalVotes.toLocaleString()}</div>
-                          <div className="text-sm text-white/60">total votes</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div> */}
+        <div className="mb-4">
+          <div className="bg-accent/50 rounded-lg border p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-muted-foreground mb-1 text-sm">
+                  {poll.choices.length} choices available
+                </div>
+                <div className="font-medium">
+                  Currently leading:{" "}
+                  {getChoiceItemName(getTopChoice(poll.choices))}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold">
+                  {poll.totalVotes.toLocaleString()}
+                </div>
+                <div className="text-muted-foreground text-sm">
+                  vote {(poll.totalVotes <= 0 || poll.totalVotes > 1) && "s"}{" "}
+                  total
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Affinities */}
         <div className="flex items-center gap-2">

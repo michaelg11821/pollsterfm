@@ -5,6 +5,7 @@ import { distance } from "fastest-levenshtein";
 import { twMerge } from "tailwind-merge";
 import nextConfig from "../../next.config";
 import { oneDayMs, oneMonthMs, oneWeekMs } from "./constants/time";
+import type { Choice } from "./types/pollster";
 
 /**
  * Merges Tailwind classes into one className.
@@ -171,4 +172,64 @@ export function durationToString(duration: number) {
   }
 
   return str;
+}
+
+/**
+ * Formats a time duration (in ms) as a countdown string.
+ *
+ * For example, if `ms` is the time remaining until an event, this function will return a string
+ * like "6d 4h 12m" (for 6 days, 4 hours, and 12 minutes remaining), "2h 5m 10s", or "45s" depending on the value.
+ * If the duration is zero or negative, returns "Expired".
+ *
+ * @param ms - The time duration in milliseconds.
+ * @returns A formatted string representing the remaining time.
+ */
+export function formatTimeRemaining(ms: number): string {
+  if (ms <= 0) return "Expired";
+
+  const totalSeconds = Math.floor(ms / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (days > 0) {
+    return `${days}d ${hours}h ${minutes}m`;
+  } else if (hours > 0) {
+    return `${hours}h ${minutes}m ${seconds}s`;
+  } else if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  } else {
+    return `${seconds}s`;
+  }
+}
+
+/**
+ * @param choices Choices from a poll.
+ * @returns The choice with the most votes.
+ */
+export function getTopChoice(choices: Choice[]): Choice {
+  let topChoice = choices[0];
+
+  choices.forEach((choice) => {
+    if (choice.totalVotes > topChoice.totalVotes) {
+      topChoice = choice;
+    }
+  });
+
+  return topChoice;
+}
+
+export function getChoiceItemName(choice: Choice) {
+  if (choice.artist === "") return undefined;
+
+  let value = "";
+
+  if (choice.track || choice.album) {
+    value += `${choice.track || choice.album} — `;
+  }
+
+  value += choice.artist;
+
+  return value;
 }

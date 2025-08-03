@@ -49,6 +49,7 @@ import AlbumResults from "./album-results/album-results";
 import ArtistResults from "./artist-results/artist-results";
 import TrackResults from "./track-results/track-results";
 
+import { getChoiceItemName } from "@/lib/utils";
 import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
 
@@ -194,24 +195,6 @@ function CreatePoll() {
   const clearSearch = () => {
     setMusicSearchResults([]);
     setActiveMusicSearchOption(null);
-  };
-
-  const createChoiceInputValue = (
-    artist: string,
-    album: string | null,
-    track: string | null,
-  ) => {
-    if (artist === "") return undefined;
-
-    let value = "";
-
-    if (track || album) {
-      value += `${track || album} — `;
-    }
-
-    value += artist;
-
-    return value;
   };
 
   const onSubmit = async (values: z.infer<typeof createPollSchema>) => {
@@ -410,11 +393,7 @@ function CreatePoll() {
                             <FormControl>
                               <input
                                 type="text"
-                                value={createChoiceInputValue(
-                                  choice.artist,
-                                  choice.album,
-                                  choice.track,
-                                )}
+                                value={getChoiceItemName(choice)}
                                 placeholder={`Search for ${pollType === "track" ? "a" : "an"} ${pollType}...`}
                                 className="placeholder:text-muted-foreground h-full flex-1 border-none bg-transparent p-1.5 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:p-0"
                                 onChange={(e) => {
