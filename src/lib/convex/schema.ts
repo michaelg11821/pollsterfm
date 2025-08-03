@@ -1,6 +1,7 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { pollValidator } from "./validators";
 
 const schema = defineSchema({
   ...authTables,
@@ -33,22 +34,7 @@ const schema = defineSchema({
   })
     .index("email", ["email"])
     .index("username", ["username"]),
-  polls: defineTable({
-    author: v.string(),
-    question: v.string(),
-    description: v.optional(v.string()),
-    duration: v.number(),
-    pollType: v.string(),
-    choices: v.array(
-      v.object({
-        image: v.string(),
-        artist: v.string(),
-        album: v.union(v.string(), v.null()),
-        track: v.union(v.string(), v.null()),
-        affinities: v.array(v.string()),
-      }),
-    ),
-  })
+  polls: defineTable(pollValidator)
     .index("author", ["author"])
     .index("pollType", ["pollType"]),
 });

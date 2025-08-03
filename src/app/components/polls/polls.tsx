@@ -44,7 +44,7 @@ function Polls() {
 
   const filteredPolls = polls.filter((poll) => {
     if (currentFilter === "all" || currentFilter === null) return true;
-    // if (currentFilter === "trending") return poll.totalVotes > 1000
+    if (currentFilter === "trending") return poll.totalVotes > 10;
     if (currentFilter === "recent")
       return Date.now() - poll._creationTime < oneDayMs;
 

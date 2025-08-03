@@ -44,6 +44,7 @@ const baseChoice = z.object({
     .array(Affinity)
     .min(1, { error: "At least 1 affinity is required." })
     .max(3, { error: "A choice cannot have more than 3 affinities." }),
+  totalVotes: z.number(),
 });
 
 const artistChoice = baseChoice.extend({
@@ -96,6 +97,7 @@ const pollSchema = z.object({
   duration: z.string({ error: "A duration is required." }),
   pollType: PollType,
   choices: z.array(z.any()),
+  totalVotes: z.number(),
 });
 
 export const createPollSchema = z.discriminatedUnion("pollType", [

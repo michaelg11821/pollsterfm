@@ -58,6 +58,7 @@ const createChoice = () => ({
   album: null,
   track: null,
   affinities: [] as Affinity[],
+  totalVotes: 0,
 });
 
 function CreatePoll() {
@@ -86,6 +87,7 @@ function CreatePoll() {
       duration: String(oneWeekMs),
       pollType: "artist",
       choices: [createChoice(), createChoice()],
+      totalVotes: 0,
     },
   });
 
@@ -213,9 +215,6 @@ function CreatePoll() {
   };
 
   const onSubmit = async (values: z.infer<typeof createPollSchema>) => {
-    console.log("Form submitted with values:", values);
-    console.log("Form errors:", form.formState.errors);
-
     if (!currentUser)
       return router.push(
         `/sign-in?redirectTo=${encodeURIComponent("/create-poll")}`,

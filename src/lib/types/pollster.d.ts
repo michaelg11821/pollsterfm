@@ -1,6 +1,8 @@
+import type { Infer } from "convex/values";
 import { affinities } from "../constants/affinities";
 import { pollTypes } from "../constants/polls";
 import type { Id } from "../convex/_generated/dataModel";
+import { choiceValidator, pollValidator } from "../convex/validators";
 
 type TopAlbumImage = {
   url: string;
@@ -24,21 +26,9 @@ export type PollType = (typeof pollTypes)[number];
 
 export type Affinity = (typeof affinities)[number];
 
-export type Choice = {
-  artist: string;
-  album: string | null;
-  track: string | null;
-  image: string;
-  affinities: Affinity[];
-};
+export type Choice = Infer<typeof choiceValidator>;
 
-export type Poll = {
+export type Poll = Infer<typeof pollValidator> & {
   _id: Id<"polls">;
   _creationTime: number;
-  description?: string | undefined;
-  author: string;
-  question: string;
-  duration: number;
-  pollType: string;
-  choices: Choice[];
 };

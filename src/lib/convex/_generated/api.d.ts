@@ -22,6 +22,7 @@ import type * as pollster_track from "../pollster/track.js";
 import type * as spotify_album from "../spotify/album.js";
 import type * as spotify_user from "../spotify/user.js";
 import type * as user from "../user.js";
+import type * as validators from "../validators.js";
 
 import type {
   ApiFromModules,
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   "spotify/album": typeof spotify_album;
   "spotify/user": typeof spotify_user;
   user: typeof user;
+  validators: typeof validators;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

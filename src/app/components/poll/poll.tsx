@@ -155,8 +155,8 @@ function Poll({ id }: PollProps) {
             <CardTitle className="flex items-center justify-between">
               <span className="text-lg">Cast Your Vote</span>
               <Badge variant="default" className="flex items-center gap-1">
-                <Users className="h-3 w-3" />0 votes
-                {/* {pollData.totalVotes.toLocaleString()} votes */}
+                <Users className="h-3 w-3" />
+                {pollData.totalVotes.toLocaleString()} votes
                 <div className="bg-primary/90 ml-1 h-1 w-1 animate-pulse rounded-full" />
               </Badge>
             </CardTitle>
@@ -201,7 +201,11 @@ function Poll({ id }: PollProps) {
                         {choice.artist && (
                           <Link
                             href={`/catalog/${encodeURIComponent(choice.artist)}`}
-                            className="text-muted-foreground block w-fit text-sm"
+                            className={
+                              choice.album || choice.track
+                                ? "text-muted-foreground block w-fit text-sm"
+                                : "block w-fit font-semibold"
+                            }
                             onClick={(e) => e.stopPropagation()}
                           >
                             {(choice.album || choice.track) && "by "}
@@ -277,7 +281,7 @@ function Poll({ id }: PollProps) {
               <div>
                 <p className="mb-1 text-xs text-white/50">Total Votes</p>
                 <p className="text-xl font-bold">
-                  0{/* {pollData.totalVotes.toLocaleString()} */}
+                  {pollData.totalVotes.toLocaleString()}
                 </p>
               </div>
               <div>

@@ -145,6 +145,14 @@ export const addVote = mutation({
       throw new Error("user not found");
     }
 
+    const hasVoted = user.choices?.some(
+      (choice) => choice.pollId === args.pollId,
+    );
+
+    if (hasVoted) {
+      throw new Error("user has already voted on this poll");
+    }
+
     const newChoice = {
       artist: args.artist,
       album: args.album,
@@ -158,6 +166,16 @@ export const addVote = mutation({
       : [newChoice];
 
     await ctx.db.patch(userId, { choices: newChoices });
+
+    const poll = await ctx.db.get(args.pollId);
+
+    if (poll === null) {
+      throw new Error("poll not found");
+    }
+
+    await ctx.db.patch(args.pollId, {
+      totalVotes: poll.totalVotes + 1,
+    });
 
     return null;
   },
