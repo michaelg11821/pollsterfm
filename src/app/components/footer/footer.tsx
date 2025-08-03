@@ -28,7 +28,7 @@ function Footer() {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/polls"
                   className="text-muted-foreground hover:text-foreground text-center transition-[color]"
                 >
                   Polls
