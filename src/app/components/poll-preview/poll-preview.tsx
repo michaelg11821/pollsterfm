@@ -5,7 +5,7 @@ import { Card } from "@/app/components/ui/card";
 import type { Affinity, Poll } from "@/lib/types/pollster";
 import { getChoiceItemName, getTopChoice } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
-import { Calendar, ChevronRight, TrendingUp, User } from "lucide-react";
+import { Calendar, ChevronRight, User } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
@@ -42,13 +42,6 @@ function PollPreview({ poll }: PollPreviewProps) {
                   {formatDistanceToNow(poll._creationTime, { addSuffix: true })}
                 </span>
               </div>
-              <div className="flex items-center gap-1">
-                <TrendingUp className="h-4 w-4" />
-                <span>
-                  {poll.totalVotes.toLocaleString()} vote
-                  {(poll.totalVotes <= 0 || poll.totalVotes > 1) && "s"}
-                </span>
-              </div>
             </div>
           </div>
           <ChevronRight className="text-muted-foreground h-5 w-5 transition-colors" />
@@ -71,7 +64,7 @@ function PollPreview({ poll }: PollPreviewProps) {
                   {poll.totalVotes.toLocaleString()}
                 </div>
                 <div className="text-muted-foreground text-sm">
-                  vote {(poll.totalVotes <= 0 || poll.totalVotes > 1) && "s"}{" "}
+                  vote{poll.totalVotes <= 0 || poll.totalVotes > 1 ? "s" : ""}
                   total
                 </div>
               </div>
