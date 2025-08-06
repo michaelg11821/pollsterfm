@@ -5,7 +5,7 @@ import { distance } from "fastest-levenshtein";
 import { twMerge } from "tailwind-merge";
 import nextConfig from "../../next.config";
 import { oneDayMs, oneMonthMs, oneWeekMs } from "./constants/time";
-import type { Choice } from "./types/pollster";
+import type { Choice, ChoiceInfo } from "./types/pollster";
 
 /**
  * Merges Tailwind classes into one className.
@@ -220,7 +220,7 @@ export function getTopChoice(choices: Choice[]): Choice {
   return topChoice;
 }
 
-export function getChoiceItemName(choice: Choice) {
+export function getChoiceItemName(choice: ChoiceInfo) {
   if (choice.artist === "") return undefined;
 
   let value = "";
