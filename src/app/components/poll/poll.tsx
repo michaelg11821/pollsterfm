@@ -16,11 +16,13 @@ import { toastManager } from "@/lib/toast";
 import type { Affinity } from "@/lib/types/pollster";
 import { formatTimeRemaining, getDateFromCreatedAt } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
-import { Clock, TrendingUp, Users } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { Clock, ExternalLink, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Choice from "../choice/choice";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import PollAuthorImage from "./author-image/author-image";
 import PollSkeleton from "./skeleton";
 
@@ -44,6 +46,8 @@ function Poll({ id }: PollProps) {
   const { timeLeft, isExpired } = useCountdown(endTime);
 
   useEffect(() => {
+    if (isExpired) return;
+
     async function view() {
       await viewPoll({ id });
     }
@@ -61,7 +65,7 @@ function Poll({ id }: PollProps) {
 
       unviewPoll({ id }).catch(console.error);
     };
-  }, [id, unviewPoll, viewPoll]);
+  }, [id, unviewPoll, viewPoll, isExpired]);
 
   const getSelectedChoiceData = useCallback(() => {
     if (selectedOption === null || pollData === null || pollData === undefined)
@@ -89,6 +93,11 @@ function Poll({ id }: PollProps) {
         title: "Error",
         description: "You must be logged in to vote.",
       });
+    } else if (isExpired) {
+      return toastManager.add({
+        title: "Error",
+        description: "This poll has ended.",
+      });
     }
 
     setSelectedOption(optionIndex);
@@ -104,6 +113,11 @@ function Poll({ id }: PollProps) {
       return toastManager.add({
         title: "Error",
         description: "You must be logged in to vote.",
+      });
+    } else if (isExpired) {
+      return toastManager.add({
+        title: "Error",
+        description: "This poll has ended.",
       });
     }
 
@@ -263,74 +277,101 @@ function Poll({ id }: PollProps) {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="flex items-center gap-2">
-                <div className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
-                <span>Live Activity</span>
+        {!isExpired && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
+                  <span>Live Activity</span>
+                </div>
+                <Badge
+                  variant="default"
+                  className="border-transparent bg-green-500/10 text-green-300"
+                >
+                  {pollData.liveStats?.currentViewers.length ?? 0} viewing
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="mb-4 grid grid-cols-2 gap-3">
+                <div className="bg-accent/80 rounded-lg p-2 text-center">
+                  <p className="text-lg font-bold">
+                    {pollData.liveStats?.votesInLastHour ?? 0}
+                  </p>
+                  <p className="text-muted-foreground text-xs">votes/hour</p>
+                </div>
+
+                <div className="bg-accent/80 rounded-lg p-2 text-center">
+                  {pollData.liveStats && (
+                    <p className="text-lg font-bold">{peakVotingTime}</p>
+                  )}
+
+                  <p className="text-muted-foreground text-xs">peak time</p>
+                </div>
               </div>
-              <Badge
-                variant="default"
-                className="border-transparent bg-green-500/10 text-green-300"
-              >
-                {pollData.liveStats?.currentViewers.length ?? 0} viewing
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="mb-4 grid grid-cols-2 gap-3">
-              <div className="bg-accent/80 rounded-lg p-2 text-center">
-                <p className="text-lg font-bold">
-                  {pollData.liveStats?.votesInLastHour ?? 0}
-                </p>
-                <p className="text-muted-foreground text-xs">votes/hour</p>
-              </div>
 
-              <div className="bg-accent/80 rounded-lg p-2 text-center">
-                {pollData.liveStats && (
-                  <p className="text-lg font-bold">{peakVotingTime}</p>
-                )}
+              <Separator className="text-muted-foreground/10" />
 
-                <p className="text-muted-foreground text-xs">peak time</p>
-              </div>
-            </div>
+              <div className="space-y-2">
+                <h4 className="text-muted-foreground mb-2 text-sm font-medium">
+                  Recent Activity
+                </h4>
 
-            <Separator className="text-muted-foreground/10" />
-
-            <div className="space-y-2">
-              <h4 className="text-muted-foreground mb-2 text-sm font-medium">
-                Recent Activity
-              </h4>
-              {/* {pollData.recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-center gap-2 text-sm">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={activity.user.image || "/placeholder.svg"} alt={activity.user.name} />
-                        <AvatarFallback className="text-xs">
-                          {activity.user.name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-rose-300 font-medium">{activity.user.name}</span>
-                        <span className="text-white/70 mx-1">{activity.action}</span>
-                        {activity.option && (
-                          <span className="text-white/90 font-medium truncate">{activity.option}</span>
-                        )}
+                {pollData.recentActivity && pollData.recentActivity.length >= 1
+                  ? pollData.recentActivity.map((activity, index) => (
+                      <div
+                        key={`activity-${index}`}
+                        className="flex items-center gap-1 text-sm"
+                      >
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={activity.user.image} alt="" />
+                          <AvatarFallback className="text-xs">
+                            {activity.user.username
+                              .substring(0, 2)
+                              .toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1">
+                          <Link
+                            href={`/user/${activity.user.username}`}
+                            className="inline-flex items-center gap-1 font-medium"
+                          >
+                            {activity.user.username}
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
+                          <span className="text-muted-foreground mx-1.5">
+                            {activity.action}
+                          </span>
+                          {activity.choice && (
+                            <span className="truncate font-medium select-none">
+                              {activity.choice}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-muted-foreground shrink-0 text-xs">
+                          {formatDistanceToNow(activity.timestamp, {
+                            addSuffix: true,
+                          })}
+                        </span>
                       </div>
-                      <span className="text-xs text-white/40 shrink-0">{activity.timestamp}</span>
-                    </div>
-                  ))} */}
-            </div>
+                    ))
+                  : "None yet"}
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full cursor-pointer text-xs"
-            >
-              View All Activity
-            </Button>
-          </CardContent>
-        </Card>
+                {pollData.recentActivity &&
+                  pollData.recentActivity.length >= 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 w-full cursor-pointer bg-transparent py-4.5 text-xs"
+                    >
+                      View All Activity
+                    </Button>
+                  )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

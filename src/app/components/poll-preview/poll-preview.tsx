@@ -64,7 +64,7 @@ function PollPreview({ poll }: PollPreviewProps) {
                   {poll.totalVotes.toLocaleString()}
                 </div>
                 <div className="text-muted-foreground text-sm">
-                  vote{poll.totalVotes <= 0 || poll.totalVotes > 1 ? "s" : ""}
+                  vote{poll.totalVotes <= 0 || poll.totalVotes > 1 ? "s " : " "}
                   total
                 </div>
               </div>
@@ -72,7 +72,6 @@ function PollPreview({ poll }: PollPreviewProps) {
           </div>
         </div>
 
-        {/* Affinities */}
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground self-start text-sm">
             Affinities:

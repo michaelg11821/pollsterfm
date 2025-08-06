@@ -1,7 +1,9 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { Infer, v } from "convex/values";
-import { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { type Infer, v } from "convex/values";
+import type { PollActivity } from "../types/pollster";
+import { getChoiceItemName } from "../utils";
+import type { Id } from "./_generated/dataModel";
+import { mutation, query, QueryCtx } from "./_generated/server";
 
 export const currentUser = query({
   args: {},
@@ -15,6 +17,36 @@ export const currentUser = query({
     return await ctx.db.get(userId);
   },
 });
+
+async function getProfileImages(
+  originalProfileIcon: string | undefined,
+  originalHeaderImage: string | undefined,
+  ctx: QueryCtx,
+) {
+  let profileIcon: string | null | undefined;
+  let headerImage: string | null | undefined;
+
+  // spotify image url
+  if (!originalProfileIcon) {
+    profileIcon = originalProfileIcon;
+  } else if (originalProfileIcon.startsWith("https://")) {
+    profileIcon = undefined;
+  } else {
+    profileIcon = await ctx.storage.getUrl(
+      originalProfileIcon as Id<"_storage">,
+    );
+  }
+
+  if (!originalHeaderImage) {
+    headerImage = undefined;
+  } else {
+    headerImage = await ctx.storage.getUrl(
+      originalHeaderImage as Id<"_storage">,
+    );
+  }
+
+  return { profileIcon, headerImage };
+}
 
 export const getProfile = query({
   args: { username: v.optional(v.string()) },
@@ -40,25 +72,11 @@ export const getProfile = query({
       return null;
     }
 
-    let profileIcon: string | null | undefined;
-    let headerImage: string | null | undefined;
-
-    // spotify image url
-    if (user.image?.startsWith("https://")) {
-      profileIcon = user.image;
-    } else if (!user.image) {
-      profileIcon = undefined;
-    } else {
-      profileIcon = await ctx.storage.getUrl(user.image as Id<"_storage">);
-    }
-
-    if (!user.headerImage) {
-      headerImage = undefined;
-    } else {
-      headerImage = await ctx.storage.getUrl(
-        user.headerImage as Id<"_storage">,
-      );
-    }
+    const { profileIcon, headerImage } = await getProfileImages(
+      user.image,
+      user.headerImage,
+      ctx,
+    );
 
     return {
       aboutMe: user.aboutMe,
@@ -177,9 +195,26 @@ export const addVote = mutation({
     const pollChoicesCopy = [...poll.choices];
     pollChoicesCopy[args.choiceIndex].totalVotes += 1;
 
+    const { profileIcon } = await getProfileImages(
+      user.image,
+      user.headerImage,
+      ctx,
+    );
+
+    const userActivity: PollActivity = {
+      user: { username: user.username, image: profileIcon ?? undefined },
+      action: "voted for",
+      choice: getChoiceItemName(newChoice)!,
+      timestamp: Date.now(),
+    };
+    const newRecentActivity = poll.recentActivity
+      ? [userActivity, ...poll.recentActivity]
+      : [userActivity];
+
     await ctx.db.patch(args.pollId, {
       totalVotes: poll.totalVotes + 1,
       choices: pollChoicesCopy,
+      recentActivity: newRecentActivity,
     });
 
     return null;

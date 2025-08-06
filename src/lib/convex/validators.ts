@@ -9,6 +9,13 @@ export const choiceValidator = v.object({
   totalVotes: v.number(),
 });
 
+export const activityValidator = v.object({
+  user: v.object({ username: v.string(), image: v.optional(v.string()) }),
+  action: v.string(),
+  choice: v.string(),
+  timestamp: v.number(),
+});
+
 export const pollValidator = v.object({
   author: v.string(),
   question: v.string(),
@@ -24,4 +31,5 @@ export const pollValidator = v.object({
       peakVotingTime: v.number(),
     }),
   ),
+  recentActivity: v.optional(v.array(activityValidator)),
 });
