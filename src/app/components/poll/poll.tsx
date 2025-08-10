@@ -221,6 +221,7 @@ function Poll({ id }: PollProps) {
                 index={index}
                 handleVote={handleVote}
                 calculatePercentage={calculatePercentage}
+                pollEnded={isExpired}
               />
             ))}
 

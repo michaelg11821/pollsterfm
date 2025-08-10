@@ -12,6 +12,7 @@ type ChoiceProps = {
   index: number;
   handleVote: (index: number) => void;
   calculatePercentage: (votes: number) => number;
+  pollEnded: boolean;
 };
 
 function Choice({
@@ -21,17 +22,18 @@ function Choice({
   index,
   handleVote,
   calculatePercentage,
+  pollEnded,
 }: ChoiceProps) {
   return (
     <div
       className={`relative overflow-hidden rounded-lg border transition-all duration-300 ${
-        hasVoted
+        hasVoted || pollEnded
           ? "bg-card border"
           : selectedOption === index
             ? "border-primary/50 bg-primary/20 ring-ring/30 ring-1"
             : "cursor-pointer border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
       }`}
-      onClick={() => !hasVoted && handleVote(index)}
+      onClick={() => !hasVoted && !pollEnded && handleVote(index)}
     >
       <div className="p-4">
         <div className="mb-3 flex items-center gap-4">
@@ -115,25 +117,27 @@ function Choice({
               ))}
             </div>
           </div>
-          {hasVoted && (
-            <div className="shrink-0 text-right">
-              <span className="text-2xl font-bold">
-                {calculatePercentage(choice.totalVotes)}%
-              </span>
-              <p className="text-muted-foreground text-xs">
-                {choice.totalVotes.toLocaleString()} vote
-                {(choice.totalVotes <= 0 || choice.totalVotes > 1) && "s"}
-              </p>
-            </div>
-          )}
+          {hasVoted ||
+            (pollEnded && (
+              <div className="shrink-0 text-right">
+                <span className="text-2xl font-bold">
+                  {calculatePercentage(choice.totalVotes)}%
+                </span>
+                <p className="text-muted-foreground text-xs">
+                  {choice.totalVotes.toLocaleString()} vote
+                  {(choice.totalVotes <= 0 || choice.totalVotes > 1) && "s"}
+                </p>
+              </div>
+            ))}
         </div>
 
-        {hasVoted && (
-          <Progress
-            value={calculatePercentage(choice.totalVotes)}
-            className="h-2"
-          />
-        )}
+        {hasVoted ||
+          (pollEnded && (
+            <Progress
+              value={calculatePercentage(choice.totalVotes)}
+              className="h-2"
+            />
+          ))}
       </div>
     </div>
   );
