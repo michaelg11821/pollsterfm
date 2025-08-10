@@ -21,7 +21,15 @@ export const getById = query({
 
 export const getPolls = query({
   handler: async (ctx) => {
-    return await ctx.db.query("polls").collect();
+    return await ctx.db
+      .query("polls")
+      .filter((q) => {
+        const expiresAt =
+          Number(q.field("_creationTime")) + Number(q.field("duration"));
+
+        return q.gt(expiresAt, Date.now());
+      })
+      .collect();
   },
 });
 
