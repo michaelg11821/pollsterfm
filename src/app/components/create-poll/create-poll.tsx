@@ -53,16 +53,57 @@ import { getChoiceItemName } from "@/lib/utils";
 import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
 
-const createChoice = () => ({
-  image: "",
-  artist: "",
+const createArtistChoice = (initArtist?: string, initImage?: string) => ({
+  image: initImage ?? "",
+  artist: initArtist ?? "",
   album: null,
   track: null,
   affinities: [] as Affinity[],
   totalVotes: 0,
 });
 
-function CreatePoll() {
+const createAlbumChoice = (
+  initArtist?: string,
+  initAlbum?: string,
+  initImage?: string,
+) => ({
+  image: initImage ?? "",
+  artist: initArtist ?? "",
+  album: initAlbum ?? "",
+  track: null,
+  affinities: [] as Affinity[],
+  totalVotes: 0,
+});
+
+const createTrackChoice = (
+  initArtist?: string,
+  initAlbum?: string,
+  initTrack?: string,
+  initImage?: string,
+) => ({
+  image: initImage ?? "",
+  artist: initArtist ?? "",
+  album: initAlbum ?? "",
+  track: initTrack ?? "",
+  affinities: [] as Affinity[],
+  totalVotes: 0,
+});
+
+type CreatePollProps = {
+  initPollType: PollType;
+  initArtist: string | undefined;
+  initAlbum: string | undefined;
+  initTrack: string | undefined;
+  initImage: string | undefined;
+};
+
+function CreatePoll({
+  initPollType,
+  initArtist,
+  initAlbum,
+  initTrack,
+  initImage,
+}: CreatePollProps) {
   const [musicSearchResults, setMusicSearchResults] = useState<
     Artist[] | Album[] | Track[]
   >([]);
@@ -82,14 +123,42 @@ function CreatePoll() {
   const form = useForm<z.infer<typeof createPollSchema>>({
     resolver: zodResolver(createPollSchema),
     mode: "onChange",
-    defaultValues: {
-      question: "",
-      description: "",
-      duration: String(oneWeekMs),
-      pollType: "artist",
-      choices: [createChoice(), createChoice()],
-      totalVotes: 0,
-    },
+    defaultValues:
+      initPollType === "artist"
+        ? {
+            question: "",
+            description: "",
+            duration: String(oneWeekMs),
+            pollType: "artist",
+            choices: [
+              createArtistChoice(initArtist, initImage),
+              createArtistChoice(),
+            ],
+            totalVotes: 0,
+          }
+        : initPollType === "album"
+          ? {
+              question: "",
+              description: "",
+              duration: String(oneWeekMs),
+              pollType: "album",
+              choices: [
+                createAlbumChoice(initArtist, initAlbum, initImage),
+                createAlbumChoice(),
+              ],
+              totalVotes: 0,
+            }
+          : {
+              question: "",
+              description: "",
+              duration: String(oneWeekMs),
+              pollType: "track",
+              choices: [
+                createTrackChoice(initArtist, initAlbum, initTrack, initImage),
+                createTrackChoice(),
+              ],
+              totalVotes: 0,
+            },
   });
 
   const { fields, append, remove, update, replace } = useFieldArray({
@@ -118,7 +187,17 @@ function CreatePoll() {
       form.clearErrors(`choices.${i}`);
     }
 
-    replace(fields.map(() => createChoice()));
+    switch (val) {
+      case "artist":
+        replace(fields.map(() => createArtistChoice()));
+        break;
+      case "album":
+        replace(fields.map(() => createAlbumChoice()));
+        break;
+      case "track":
+        replace(fields.map(() => createTrackChoice()));
+        break;
+    }
 
     setMusicSearchResults([]);
     setActiveMusicSearchOption(null);
@@ -617,7 +696,19 @@ function CreatePoll() {
                 type="button"
                 variant="outline"
                 className="w-full cursor-pointer bg-transparent"
-                onClick={() => append(createChoice())}
+                onClick={() => {
+                  switch (pollType) {
+                    case "artist":
+                      append(createArtistChoice());
+                      break;
+                    case "album":
+                      append(createAlbumChoice());
+                      break;
+                    case "track":
+                      append(createTrackChoice());
+                      break;
+                  }
+                }}
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Choice
