@@ -117,27 +117,25 @@ function Choice({
               ))}
             </div>
           </div>
-          {hasVoted ||
-            (pollEnded && (
-              <div className="shrink-0 text-right">
-                <span className="text-2xl font-bold">
-                  {calculatePercentage(choice.totalVotes)}%
-                </span>
-                <p className="text-muted-foreground text-xs">
-                  {choice.totalVotes.toLocaleString()} vote
-                  {(choice.totalVotes <= 0 || choice.totalVotes > 1) && "s"}
-                </p>
-              </div>
-            ))}
+          {(hasVoted || pollEnded) && (
+            <div className="shrink-0 text-right">
+              <span className="text-2xl font-bold">
+                {calculatePercentage(choice.totalVotes)}%
+              </span>
+              <p className="text-muted-foreground text-xs">
+                {choice.totalVotes.toLocaleString()} vote
+                {(choice.totalVotes <= 0 || choice.totalVotes > 1) && "s"}
+              </p>
+            </div>
+          )}
         </div>
 
-        {hasVoted ||
-          (pollEnded && (
-            <Progress
-              value={calculatePercentage(choice.totalVotes)}
-              className="h-2"
-            />
-          ))}
+        {(hasVoted || pollEnded) && (
+          <Progress
+            value={calculatePercentage(choice.totalVotes)}
+            className="h-2"
+          />
+        )}
       </div>
     </div>
   );
