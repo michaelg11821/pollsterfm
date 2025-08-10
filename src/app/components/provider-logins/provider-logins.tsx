@@ -28,6 +28,20 @@ function ProviderLogins() {
     ? decodeURIComponent(redirectPath)
     : null;
 
+  const allParams = new URLSearchParams();
+
+  for (const [key, value] of searchParams.entries()) {
+    if (key !== "redirectTo") {
+      allParams.set(key, value);
+    }
+  }
+
+  const fullRedirectPath = decodedRedirectPath
+    ? allParams.toString()
+      ? `${decodedRedirectPath}?${allParams.toString()}`
+      : decodedRedirectPath
+    : null;
+
   const { signIn } = useAuthActions();
 
   const verifyTurnstile = useAction(api.misc.verifyTurnstile);
@@ -47,7 +61,7 @@ function ProviderLogins() {
 
       if (result.success) {
         return void signIn("spotify", {
-          redirectTo: decodedRedirectPath ?? profilePath,
+          redirectTo: fullRedirectPath ?? profilePath,
         });
       } else {
         return toastManager.add({
