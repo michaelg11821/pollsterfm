@@ -87,7 +87,7 @@ function ClientArtistHeader({ artistData }: ClientArtistHeaderProps) {
               </div>
             </div>
             <Link
-              href="#"
+              href={`/create-poll?type=artist&artist=${encodeURIComponent(artistData.name)}&image=${artistData.image ? encodeURIComponent(artistData.image) : ""}`}
               className={cn(
                 buttonVariants({ variant: "default" }),
                 "bg-primary self-center md:self-end",

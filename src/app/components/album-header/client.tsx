@@ -135,7 +135,7 @@ function ClientAlbumHeader({ albumData }: ClientAlbumHeaderProps) {
               </div>
             </div>
             <Link
-              href="#"
+              href={`/create-poll?type=album&artist=${encodeURIComponent(albumData.artists[0])}&album=${encodeURIComponent(albumData.name)}&image=${albumData.image ? encodeURIComponent(albumData.image) : ""}`}
               className={cn(
                 buttonVariants({ variant: "default" }),
                 "bg-primary self-center md:self-end",

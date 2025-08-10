@@ -135,7 +135,7 @@ function ClientTrackHeader({ trackData }: ClientTrackHeaderProps) {
               </div>
             </div>
             <Link
-              href="#"
+              href={`/create-poll?type=track&artist=${encodeURIComponent(trackData.artists[0])}&album=${encodeURIComponent(trackData.albumName)}&track=${encodeURIComponent(trackData.name)}&image=${trackData.image ? encodeURIComponent(trackData.image) : ""}`}
               className={cn(
                 buttonVariants({ variant: "default" }),
                 "bg-primary self-center md:self-end",
