@@ -42,7 +42,7 @@ function Poll({ id }: PollProps) {
   const viewPoll = useMutation(api.pollster.poll.view);
   const unviewPoll = useMutation(api.pollster.poll.unview);
 
-  const endTime = pollData ? pollData._creationTime + pollData.duration : 0;
+  const endTime = pollData ? pollData.expiresAt : 0;
   const { timeLeft, isExpired } = useCountdown(endTime);
 
   useEffect(() => {
@@ -243,7 +243,7 @@ function Poll({ id }: PollProps) {
                   );
                 }}
               >
-                {isExpired ? "Poll Ended" : "Submit Vote"}
+                {isExpired ? "Poll ended" : "Submit Vote"}
               </Button>
             )}
           </CardContent>

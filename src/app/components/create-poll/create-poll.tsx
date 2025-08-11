@@ -289,6 +289,7 @@ function CreatePoll({
         ...values,
         duration: Number(values.duration),
         author: currentUser.username,
+        expiresAt: Date.now() + Number(values.duration),
       });
 
       router.push(`/polls/${result}`);

@@ -32,4 +32,5 @@ export const pollValidator = v.object({
     }),
   ),
   recentActivity: v.optional(v.array(activityValidator)),
+  expiresAt: v.number(),
 });

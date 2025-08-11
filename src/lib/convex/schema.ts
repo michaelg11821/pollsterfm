@@ -36,7 +36,8 @@ const schema = defineSchema({
     .index("username", ["username"]),
   polls: defineTable(pollValidator)
     .index("author", ["author"])
-    .index("pollType", ["pollType"]),
+    .index("pollType", ["pollType"])
+    .index("expiresAt", ["expiresAt"]),
 });
 
 export default schema;
