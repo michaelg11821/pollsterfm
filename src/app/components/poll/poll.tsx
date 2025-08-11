@@ -43,7 +43,7 @@ function Poll({ id }: PollProps) {
   const unviewPoll = useMutation(api.pollster.poll.unview);
 
   const endTime = pollData ? pollData.expiresAt : 0;
-  const { timeLeft, isExpired } = useCountdown(endTime);
+  const { timeLeft, isExpired } = useCountdown(endTime ?? 0);
 
   useEffect(() => {
     if (isExpired) return;
