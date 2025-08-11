@@ -85,6 +85,7 @@ export const getProfile = query({
       username: user.username,
       headerImage,
       name: user.name,
+      createdPolls: user.createdPolls,
     };
   },
 });

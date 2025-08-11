@@ -123,9 +123,17 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
                 href="#"
                 className="text-foreground/80 hover:text-foreground"
               >
-                <span className="font-bold">33</span>
+                <span className="font-bold">
+                  {profile.createdPolls?.length ?? 0}
+                </span>
                 <span className="text-muted-foreground ml-1">
-                  Polls Created
+                  Poll
+                  {profile.createdPolls
+                    ? profile.createdPolls.length > 1
+                      ? "s "
+                      : ""
+                    : "s "}
+                  Created
                 </span>
               </Link>
             </div>

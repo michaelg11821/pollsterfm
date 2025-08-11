@@ -31,6 +31,7 @@ const schema = defineSchema({
         }),
       ),
     ),
+    createdPolls: v.optional(v.array(pollValidator)),
   })
     .index("email", ["email"])
     .index("username", ["username"]),

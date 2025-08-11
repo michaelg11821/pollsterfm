@@ -6,6 +6,22 @@ import { pollValidator } from "../validators";
 export const create = mutation({
   args: pollValidator,
   handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (userId === null) {
+      throw new Error("user not logged in");
+    }
+
+    const user = await ctx.db.get(userId);
+
+    if (user === null) {
+      throw new Error("user not found");
+    }
+
+    const createdPollsCopy = user.createdPolls ? [...user.createdPolls] : [];
+
+    await ctx.db.patch(userId, { createdPolls: [...createdPollsCopy, args] });
+
     return await ctx.db.insert("polls", args);
   },
 });
