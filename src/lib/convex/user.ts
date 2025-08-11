@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { type Infer, v } from "convex/values";
 import type { PollActivity } from "../types/pollster";
-import { getChoiceItemName } from "../utils";
+import { capitalize, getChoiceItemName } from "../utils";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query, QueryCtx } from "./_generated/server";
 
@@ -219,5 +219,56 @@ export const addVote = mutation({
     });
 
     return null;
+  },
+});
+
+export const getAffinities = query({
+  args: {
+    amount: v.optional(v.number()),
+    username: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (user === null) {
+      return null;
+    }
+
+    if (!user.choices || user.choices.length === 0) {
+      return [];
+    }
+
+    const affinityCounts = new Map<string, number>();
+
+    user.choices.forEach((choice) => {
+      choice.affinities.forEach((affinity) => {
+        const currentCount = affinityCounts.get(affinity) || 0;
+
+        affinityCounts.set(affinity, currentCount + 1);
+      });
+    });
+
+    const totalChoices = user.choices.length;
+
+    const affinityScores = Array.from(affinityCounts.entries())
+      .map(([name, count]) => {
+        const frequencyScore = Math.round((count / totalChoices) * 100);
+
+        const countBonus = Math.min(20, count * 5);
+        const finalScore = Math.min(100, frequencyScore + countBonus);
+
+        return {
+          name: capitalize(name),
+          score: finalScore,
+        };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    const amount = args.amount || affinityScores.length;
+
+    return affinityScores.slice(0, amount);
   },
 });
