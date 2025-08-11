@@ -131,7 +131,7 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
                   {profile.createdPolls
                     ? profile.createdPolls.length > 1
                       ? "s "
-                      : ""
+                      : " "
                     : "s "}
                   Created
                 </span>
