@@ -220,16 +220,20 @@ export function getTopChoice(choices: Choice[]): Choice {
   return topChoice;
 }
 
-export function getChoiceItemName(choice: ChoiceInfo) {
-  if (choice.artist === "") return undefined;
+/**
+ * @param choiceInfo Information for a choice in a poll.
+ * @returns The name of the choice with the most votes.
+ */
+export function getChoiceItemName(choiceInfo: ChoiceInfo) {
+  if (choiceInfo.artist === "") return undefined;
 
   let value = "";
 
-  if (choice.track || choice.album) {
-    value += `${choice.track || choice.album} — `;
+  if (choiceInfo.track || choiceInfo.album) {
+    value += `${choiceInfo.track || choiceInfo.album} — `;
   }
 
-  value += choice.artist;
+  value += choiceInfo.artist;
 
   return value;
 }
