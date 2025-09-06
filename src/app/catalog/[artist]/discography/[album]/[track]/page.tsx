@@ -4,7 +4,7 @@ import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 import TrackHeaderSkeleton from "@/app/components/track-header/skeleton";
 import TrackHeader from "@/app/components/track-header/track-header";
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";

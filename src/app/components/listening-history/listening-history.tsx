@@ -1,5 +1,5 @@
-import { Platform } from "@/config";
 import { spotifyHistoryImported } from "@/lib/data-access/user/read";
+import type { Platform } from "@/lib/types/pollster";
 import { Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { MAX_TRACKS_WITHOUT_IMPORT } from "./spotify/config";

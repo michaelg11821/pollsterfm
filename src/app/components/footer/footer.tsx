@@ -1,4 +1,4 @@
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import Link from "next/link";
 
 function Footer() {

@@ -5,7 +5,7 @@ import Link from "next/link";
 import DesktopMenu from "./desktop-menu/desktop-menu";
 import MobileMenu from "./mobile-menu/mobile-menu";
 
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { usePathname, useSearchParams } from "next/navigation";

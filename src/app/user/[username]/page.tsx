@@ -7,7 +7,7 @@ import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
 import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import { buttonVariants } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import { ChevronRight } from "lucide-react";
 import { type Metadata } from "next";
 import Link from "next/link";

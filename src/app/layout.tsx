@@ -1,8 +1,8 @@
+import { siteName } from "@/lib/constants/site-info";
 import { Toast } from "@base-ui-components/react/toast";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
 import { Lexend } from "next/font/google";
-import { siteName } from "../config";
 import { toastManager } from "../lib/toast";
 import Nav from "./components/nav/nav";
 import { ThemeProvider } from "./components/theme-provider";

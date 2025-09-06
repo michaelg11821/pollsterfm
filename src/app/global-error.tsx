@@ -1,7 +1,7 @@
 "use client";
 
+import { siteName } from "@/lib/constants/site-info";
 import { Lexend } from "next/font/google";
-import { siteName } from "../config";
 
 import { toastManager } from "@/lib/toast";
 import { Toast } from "@base-ui-components/react";

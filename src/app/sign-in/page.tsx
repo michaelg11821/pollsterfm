@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import ProviderLogins from "../components/provider-logins/provider-logins";
 

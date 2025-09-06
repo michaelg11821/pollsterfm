@@ -4,7 +4,7 @@ import AlbumTracks from "@/app/components/album-tracks/album-tracks";
 import AlbumTracksSkeleton from "@/app/components/album-tracks/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";

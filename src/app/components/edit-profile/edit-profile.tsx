@@ -32,7 +32,7 @@ import { headerImageSchema, profileIconSchema } from "@/lib/zod/user";
 
 import type { EditProfileFormData } from "@/lib/types/formData";
 
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { Id } from "@/lib/convex/_generated/dataModel";
 import { UpdateProfileArgs } from "@/lib/convex/user";

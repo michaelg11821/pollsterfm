@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import ListeningHistory from "@/app/components/listening-history/listening-history";
 import { buttonVariants } from "@/app/components/ui/button";
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 

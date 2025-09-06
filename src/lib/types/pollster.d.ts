@@ -1,12 +1,8 @@
 import type { Infer } from "convex/values";
 import { affinities } from "../constants/affinities";
 import { pollTypes } from "../constants/polls";
-import type { Id } from "../convex/_generated/dataModel";
-import {
-  activityValidator,
-  choiceValidator,
-  pollValidator,
-} from "../convex/validators";
+import type { Doc } from "../convex/_generated/dataModel";
+import { activityValidator, choiceValidator } from "../convex/validators";
 
 type TopAlbumImage = {
   url: string;
@@ -33,9 +29,8 @@ export type Affinity = (typeof affinities)[number];
 export type Choice = Infer<typeof choiceValidator>;
 export type ChoiceInfo = Pick<Choice, PollType>;
 
-export type Poll = Infer<typeof pollValidator> & {
-  _id: Id<"polls">;
-  _creationTime: number;
-};
+export type Poll = Doc<"polls">;
 
 export type PollActivity = Infer<typeof activityValidator>;
+
+export type Platform = "spotify" | "lastfm";

@@ -1,6 +1,6 @@
 import Discography from "@/app/components/discography/discography";
 import DiscographySkeleton from "@/app/components/discography/skeleton";
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { siteName } from "@/config";
+import { siteName } from "@/lib/constants/site-info";
 
 function NavSkeleton() {
   return (
