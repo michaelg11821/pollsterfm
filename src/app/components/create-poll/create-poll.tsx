@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -178,7 +178,10 @@ function CreatePoll({
 
   const router = useRouter();
 
-  const pollType = form.watch("pollType");
+  const pollType = useWatch({
+    control: form.control,
+    name: "pollType",
+  });
 
   const handlePollTypeChange = (val: PollType) => {
     form.setValue("pollType", val);
