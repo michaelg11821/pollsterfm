@@ -6,7 +6,7 @@ import { toastManager } from "@/lib/toast";
 import type { Album } from "@/lib/types/lastfm";
 import type { Affinity, PollType } from "@/lib/types/pollster";
 import type { Artist, Track } from "@/lib/types/spotify";
-import { createPollSchema } from "@/lib/zod/forms";
+import { createPollSchema, createPollSchemaType } from "@/lib/zod/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAction, useMutation, useQuery } from "convex/react";
 import {
@@ -23,7 +23,6 @@ import {
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
@@ -120,7 +119,7 @@ function CreatePoll({
 
   const [creatingPoll, setCreatingPoll] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof createPollSchema>>({
+  const form = useForm<createPollSchemaType>({
     resolver: zodResolver(createPollSchema),
     mode: "onChange",
     defaultValues:
@@ -279,7 +278,7 @@ function CreatePoll({
     setActiveMusicSearchOption(null);
   };
 
-  const onSubmit = async (values: z.infer<typeof createPollSchema>) => {
+  const onSubmit = async (values: createPollSchemaType) => {
     if (!currentUser)
       return router.push(
         `/sign-in?redirectTo=${encodeURIComponent("/create-poll")}`,
