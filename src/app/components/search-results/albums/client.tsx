@@ -2,7 +2,7 @@
 
 import type { Album as LastfmAlbum } from "@/lib/types/lastfm";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Album from "../../album/album";
 import { Button } from "../../ui/button";
 
@@ -11,6 +11,8 @@ type ClientAlbumResultsProps = {
 };
 
 function ClientAlbumResults({ albums }: ClientAlbumResultsProps) {
+  const [atLeftEdge, setAtLeftEdge] = useState<boolean>(true);
+
   const albumsScrollRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {
@@ -49,10 +51,20 @@ function ClientAlbumResults({ albums }: ClientAlbumResultsProps) {
         </div>
       </div>
 
-      <div className="scroll-gradient relative">
+      <div
+        className={`scroll-gradient-right relative ${
+          !atLeftEdge ? "scroll-gradient-left" : ""
+        }`}
+      >
         <div
           ref={albumsScrollRef}
           className="flex gap-6 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none]"
+          onScroll={() => {
+            const el = albumsScrollRef.current;
+
+            if (!el) return;
+            setAtLeftEdge(el.scrollLeft === 0);
+          }}
         >
           {albums.map((album) => (
             <Album

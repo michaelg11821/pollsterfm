@@ -210,3 +210,30 @@ body:has(div[role="dialog"][data-open]) .profile-header-image {
   pointer-events: none;
   z-index: 10;
 }
+
+.scroll-gradient-right::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 72px;
+  background: linear-gradient(to left, var(--background), transparent);
+  pointer-events: none;
+  z-index: 10;
+}
+.scroll-gradient-right::before {
+  content: none;
+}
+
+.scroll-gradient-left::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 72px;
+  background: linear-gradient(to right, var(--background), transparent);
+  pointer-events: none;
+  z-index: 10;
+}

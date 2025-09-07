@@ -4,7 +4,7 @@ import type { Artist } from "@/lib/types/spotify";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "../../ui/button";
 import { Card } from "../../ui/card";
 
@@ -13,6 +13,8 @@ type ClientArtistResultsProps = {
 };
 
 function ClientArtistResults({ artists }: ClientArtistResultsProps) {
+  const [atLeftEdge, setAtLeftEdge] = useState<boolean>(true);
+
   const artistsScrollRef = useRef<HTMLDivElement>(null);
 
   const scrollLeft = () => {
@@ -51,10 +53,20 @@ function ClientArtistResults({ artists }: ClientArtistResultsProps) {
         </div>
       </div>
 
-      <div className="scroll-gradient relative">
+      <div
+        className={`scroll-gradient-right relative ${
+          !atLeftEdge ? "scroll-gradient-left" : ""
+        }`}
+      >
         <div
           ref={artistsScrollRef}
           className="flex gap-6 overflow-x-auto py-2 [-ms-overflow-style:none] [scrollbar-width:none]"
+          onScroll={() => {
+            const el = artistsScrollRef.current;
+
+            if (!el) return;
+            setAtLeftEdge(el.scrollLeft === 0);
+          }}
         >
           {artists.map((artist) => (
             <Link
