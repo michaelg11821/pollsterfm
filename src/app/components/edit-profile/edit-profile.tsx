@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  type ChangeEvent,
-  type FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 
 import {
   Dialog,
@@ -28,20 +22,27 @@ import { Camera, ImageIcon, SquarePen, Trash2 } from "lucide-react";
 
 import { toastManager } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { headerImageSchema, profileIconSchema } from "@/lib/zod/user";
-
-import type { EditProfileFormData } from "@/lib/types/formData";
 
 import { siteName } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
-import { Id } from "@/lib/convex/_generated/dataModel";
+import type { Id } from "@/lib/convex/_generated/dataModel";
 import { UpdateProfileArgs } from "@/lib/convex/user";
-import { editProfileSchema } from "@/lib/zod/forms";
+import { editProfileSchema, editProfileSchemaType } from "@/lib/zod/forms";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ZodError } from "zod";
+import { useForm, useWatch } from "react-hook-form";
 import { Button, buttonVariants } from "../ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
@@ -68,159 +69,97 @@ function EditProfile({
     string | null | undefined
   >(profileIcon);
   const [saving, setSaving] = useState<boolean>(false);
-  const [formData, setFormData] = useState<EditProfileFormData>({
-    newHeaderImg: null,
-    newProfileIcon: null,
-    newName: name,
-    newUsername: username,
-    newAboutMe: aboutMe,
-    deleteHeaderImg: false,
-    deleteProfileIcon: false,
-  });
 
-  const formRef = useRef<HTMLFormElement>(null);
   const headerImgInputRef = useRef<HTMLInputElement>(null);
   const profilePicInputRef = useRef<HTMLInputElement>(null);
+
+  const defaultValues = {
+    newHeaderImg: null,
+    newProfileIcon: null,
+    newName: name ?? "",
+    newUsername: username ?? "",
+    newAboutMe: aboutMe ?? "",
+    deleteHeaderImg: false,
+    deleteProfileIcon: false,
+  };
+
+  const form = useForm<editProfileSchemaType>({
+    resolver: zodResolver(editProfileSchema),
+    defaultValues,
+  });
+
+  const newHeaderImg = useWatch({
+    control: form.control,
+    name: "newHeaderImg",
+  });
+
+  const newProfileIcon = useWatch({
+    control: form.control,
+    name: "newProfileIcon",
+  });
+
+  const newUsername = useWatch({
+    control: form.control,
+    name: "newUsername",
+  });
 
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const deleteImage = useMutation(api.files.deleteById);
   const currentUser = useQuery(api.user.currentUser);
   const existingUser = useQuery(api.user.checkForExisting, {
-    username: formData.newUsername,
+    username: newUsername,
   });
   const updateProfile = useMutation(api.user.updateProfile);
 
   const router = useRouter();
 
   useEffect(() => {
-    if (!formData.newHeaderImg) return;
+    if (!newHeaderImg) return;
 
-    const imageUrl = URL.createObjectURL(formData.newHeaderImg);
+    const imageUrl = URL.createObjectURL(newHeaderImg);
 
     setHeaderImgPreview(imageUrl);
 
     return () => URL.revokeObjectURL(imageUrl);
-  }, [formData.newHeaderImg]);
+  }, [newHeaderImg]);
 
   useEffect(() => {
-    if (!formData.newProfileIcon) return;
+    if (!newProfileIcon) return;
 
-    const imageUrl = URL.createObjectURL(formData.newProfileIcon);
+    const imageUrl = URL.createObjectURL(newProfileIcon);
 
     setProfileIconPreview(imageUrl);
 
     return () => URL.revokeObjectURL(imageUrl);
-  }, [formData.newProfileIcon]);
+  }, [newProfileIcon]);
 
   useEffect(() => {
-    if (!open) {
-      setHeaderImgPreview(headerImage);
-      setProfileIconPreview(profileIcon);
+    if (open) return;
 
-      setFormData({
-        newHeaderImg: null,
-        newProfileIcon: null,
-        newName: name,
-        newUsername: username,
-        newAboutMe: aboutMe,
-        deleteHeaderImg: false,
-        deleteProfileIcon: false,
+    setHeaderImgPreview(headerImage);
+    setProfileIconPreview(profileIcon);
+
+    form.reset();
+  }, [headerImage, profileIcon, form, open]);
+
+  const onSubmit = async (values: editProfileSchemaType) => {
+    if (!currentUser)
+      return toastManager.add({
+        title: "Error",
+        description: "Please log in to make changes.",
       });
 
-      if (formRef.current) {
-        formRef.current.reset();
-      }
-    }
-  }, [open, headerImage, profileIcon, name, username, aboutMe]);
-
-  const validateFile = (
-    file: File,
-    schema: typeof headerImageSchema | typeof profileIconSchema,
-  ) => {
-    const result = schema.safeParse(file);
-
-    if (!result.success) {
-      if (schema === headerImageSchema) {
-        if (headerImgInputRef.current) {
-          headerImgInputRef.current.value = "";
-        }
-      } else {
-        if (profilePicInputRef.current) {
-          profilePicInputRef.current.value = "";
-        }
-      }
-
-      result.error.issues.forEach(({ message }) =>
-        toastManager.add({
-          title: "Error",
-          description: message,
-        }),
-      );
-
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const handleHeaderImgChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-      const isValid = validateFile(file, headerImageSchema);
-
-      if (isValid)
-        setFormData((prev) => ({
-          ...prev,
-          newHeaderImg: file,
-        }));
-    }
-  };
-
-  const handleProfileIconChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-      const isValid = validateFile(file, profileIconSchema);
-
-      if (isValid)
-        setFormData((prev) => ({
-          ...prev,
-          newProfileIcon: file,
-        }));
-    }
-  };
-
-  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, newName: e.target.value }));
-  };
-
-  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, newUsername: e.target.value }));
-  };
-
-  const handleAboutMeChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData((prev) => ({ ...prev, newAboutMe: e.target.value }));
-  };
-
-  const onSubmitChanges = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    const {
+      newHeaderImg,
+      newProfileIcon,
+      newName,
+      newUsername,
+      newAboutMe,
+      deleteHeaderImg,
+      deleteProfileIcon,
+    } = values;
 
     try {
-      if (!currentUser) throw new Error("Please log in to make changes.");
-
-      const result = editProfileSchema.parse(formData);
-
-      const {
-        newHeaderImg,
-        newProfileIcon,
-        newName,
-        newUsername,
-        newAboutMe,
-        deleteHeaderImg,
-        deleteProfileIcon,
-      } = result;
-
       setSaving(true);
 
       const args: UpdateProfileArgs = {
@@ -280,16 +219,19 @@ function EditProfile({
       }
 
       if (newUsername !== username && existingUser) {
-        throw new Error("Username already taken.");
-      } else {
-        await updateProfile(args);
+        return toastManager.add({
+          title: "Error",
+          description: "Username already taken.",
+        });
       }
+
+      await updateProfile(args);
 
       router.replace(`/user/${newUsername}`);
 
       setOpen(false);
 
-      toastManager.add({
+      return toastManager.add({
         title: "Success",
         description: "Profile updated successfully.",
       });
@@ -299,56 +241,39 @@ function EditProfile({
         err,
       );
 
-      if (err instanceof ZodError) {
-        err.issues.forEach(({ message }) => {
-          toastManager.add({
-            title: "Error",
-            description: message,
-          });
-        });
-      } else if (
-        err instanceof Error &&
-        err.message === "Username already taken."
-      ) {
-        toastManager.add({
-          title: "Error",
-          description: err.message,
-        });
-      } else {
-        toastManager.add({
-          title: "Error",
-          description: "An unexpected server error occurred. Please try again.",
-        });
-      }
+      return toastManager.add({
+        title: "Error",
+        description: "An unexpected server error occurred. Please try again.",
+      });
     } finally {
       setSaving(false);
     }
   };
 
-  const onHeaderImgReset = () => {
-    if (headerImgInputRef.current) {
-      headerImgInputRef.current.value = "";
-    }
+  const handleHeaderImgChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
 
-    setFormData((prev) => ({
-      ...prev,
-      newHeaderImg: null,
-      deleteHeaderImg: true,
-    }));
+    form.setValue("deleteHeaderImg", false);
+    form.setValue("newHeaderImg", file, { shouldValidate: true });
+  };
+
+  const handleProfileIconChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+
+    form.setValue("deleteProfileIcon", false);
+    form.setValue("newProfileIcon", file, { shouldValidate: true });
+  };
+
+  const onHeaderImgReset = () => {
+    form.resetField("newHeaderImg");
+    form.setValue("deleteHeaderImg", true);
 
     setHeaderImgPreview(null);
   };
 
   const onProfileIconReset = () => {
-    if (profilePicInputRef.current) {
-      profilePicInputRef.current.value = "";
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      newProfileIcon: null,
-      deleteProfileIcon: true,
-    }));
+    form.resetField("newProfileIcon");
+    form.setValue("deleteProfileIcon", true);
 
     setProfileIconPreview(null);
   };
@@ -373,95 +298,43 @@ function EditProfile({
           Update your profile information and customize your presence on
           {` ${siteName}`}.
         </DialogDescription>
-        <form
-          className="flex flex-col gap-5 pt-7.5"
-          ref={formRef}
-          onSubmit={onSubmitChanges}
-        >
-          <div className="bg-background/50 relative h-26 w-full overflow-hidden rounded-[0.5rem]">
-            {headerImgPreview && (
-              <Image
-                src={headerImgPreview}
-                alt="Header image preview"
-                fill
-                sizes="100%"
-                className="object-cover"
-              />
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <button
-                    className="absolute top-2 right-2 inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 p-0 text-white transition-[background-color]"
-                    aria-label="Upload header image"
-                  >
-                    <Camera className="h-4 w-4" />
-                  </button>
-                }
-              />
-              <DropdownMenuContent sideOffset={2}>
-                <DropdownMenuItem
-                  onClick={() => headerImgInputRef.current?.click()}
-                >
-                  <ImageIcon className="h-5 w-5" />
-                  Upload Image
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => onHeaderImgReset()}
-                  data-testid="header-remove"
-                >
-                  <Trash2 className="h-5 w-5" />
-                  Remove Image
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-              <input
-                type="file"
-                ref={headerImgInputRef}
-                name="headerImage"
-                accept="image/jpeg,image/png,image/webp"
-                className="visually-hidden"
-                data-testid="header-upload"
-                onChange={handleHeaderImgChange}
-              />
-            </DropdownMenu>
-            <div className="absolute bottom-2 left-4 rounded-lg bg-black/60 px-2 py-1 text-xs text-white/80">
-              Header Image
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="bg-background/5 relative h-20 w-20 rounded-full border-2">
-              {profileIconPreview && (
+        <Form {...form}>
+          <form
+            className="flex flex-col gap-5 pt-7.5"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <div className="bg-background/50 relative h-26 w-full overflow-hidden rounded-[0.5rem]">
+              {headerImgPreview && (
                 <Image
-                  src={profileIconPreview}
-                  alt="Profile picture preview"
+                  src={headerImgPreview}
+                  alt="Header image preview"
                   fill
                   sizes="100%"
-                  className="rounded-full object-cover"
+                  className="object-cover"
                 />
               )}
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
                     <button
-                      className="absolute right-0 bottom-0 inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 p-0 text-white transition-[background-color]"
-                      aria-label="Upload profile picture"
+                      className="absolute top-2 right-2 inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 p-0 text-white transition-[background-color]"
+                      aria-label="Upload header image"
                     >
-                      <Camera className="h-3 w-3" />
+                      <Camera className="h-4 w-4" />
                     </button>
                   }
                 />
-                <DropdownMenuContent>
+                <DropdownMenuContent sideOffset={2}>
                   <DropdownMenuItem
-                    onClick={() => profilePicInputRef.current?.click()}
+                    onClick={() => headerImgInputRef.current?.click()}
                   >
                     <ImageIcon className="h-5 w-5" />
                     Upload Image
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => onProfileIconReset()}
-                    data-testid="profile-picture-remove"
+                    onClick={() => onHeaderImgReset()}
+                    data-testid="header-remove"
                   >
                     <Trash2 className="h-5 w-5" />
                     Remove Image
@@ -469,96 +342,168 @@ function EditProfile({
                 </DropdownMenuContent>
                 <input
                   type="file"
-                  ref={profilePicInputRef}
-                  title=""
-                  name="profileIcon"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  ref={headerImgInputRef}
+                  name="headerImage"
+                  accept="image/jpeg,image/png,image/webp"
                   className="visually-hidden"
-                  data-testid="profile-picture-upload"
-                  onChange={handleProfileIconChange}
+                  data-testid="header-upload"
+                  onChange={handleHeaderImgChange}
                 />
               </DropdownMenu>
-            </div>
-            <div className="text-foreground text-sm">
-              <p className="font-medium">Profile Picture</p>
-              <p className="text-muted-foreground text-xs">
-                Recommended size: 400x400px
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="nameInput">Name</label>
-              <Input
-                name="name"
-                id="nameInput"
-                type="text"
-                minLength={1}
-                maxLength={15}
-                defaultValue={name ? name : ""}
-                onChange={(e) => handleNameChange(e)}
-                autoComplete="name"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="usernameInput">Username</label>
-              <div className="relative">
-                <span className="text-muted-foreground absolute top-[50%] left-3 transform-[translateY(-50%)] select-none">
-                  @
-                </span>
-                <Input
-                  name="username"
-                  id="usernameInput"
-                  type="text"
-                  minLength={3}
-                  maxLength={25}
-                  defaultValue={username}
-                  onChange={(e) => handleUsernameChange(e)}
-                  autoComplete="username"
-                  className="pl-7"
-                />
+              <div className="absolute bottom-2 left-4 rounded-lg bg-black/60 px-2 py-1 text-xs text-white/80">
+                Header Image
               </div>
             </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="aboutMeTextArea">About Me</label>
-            <Textarea
-              id="aboutMeTextArea"
-              name="aboutMe"
-              maxLength={250}
-              defaultValue={aboutMe ? aboutMe : ""}
-              placeholder="Tell us about yourself and your music taste..."
-              onChange={(e) => handleAboutMeChange(e)}
-            />
-            <p className="text-muted-foreground text-right text-xs">
-              250 characters max
-            </p>
-          </div>
-          <div className="mt-8 flex justify-end gap-2 border-t pt-4">
-            <DialogClose
-              className={cn(
-                buttonVariants({
-                  variant: "outline",
-                  size: "default",
-                }),
-                "cursor-pointer",
+            <div className="flex items-center gap-4">
+              <div className="bg-background/5 relative h-20 w-20 rounded-full border-2">
+                {profileIconPreview && (
+                  <Image
+                    src={profileIconPreview}
+                    alt="Profile picture preview"
+                    fill
+                    sizes="100%"
+                    className="rounded-full object-cover"
+                  />
+                )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <button
+                        className="absolute right-0 bottom-0 inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-black/60 p-0 text-white transition-[background-color]"
+                        aria-label="Upload profile picture"
+                      >
+                        <Camera className="h-3 w-3" />
+                      </button>
+                    }
+                  />
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() => profilePicInputRef.current?.click()}
+                    >
+                      <ImageIcon className="h-5 w-5" />
+                      Upload Image
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => onProfileIconReset()}
+                      data-testid="profile-picture-remove"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                      Remove Image
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                  <input
+                    type="file"
+                    ref={profilePicInputRef}
+                    title=""
+                    name="profileIcon"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="visually-hidden"
+                    data-testid="profile-picture-upload"
+                    onChange={handleProfileIconChange}
+                  />
+                </DropdownMenu>
+              </div>
+              <div className="text-foreground text-sm">
+                <p className="font-medium">Profile Picture</p>
+                <p className="text-muted-foreground text-xs">
+                  Recommended size: 400x400px
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="newName"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel htmlFor="nameInput">Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        id="nameInput"
+                        type="text"
+                        maxLength={15}
+                        autoComplete="name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="newUsername"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel htmlFor="usernameInput">Username</FormLabel>
+                    <div className="relative">
+                      <span className="text-muted-foreground absolute top-[50%] left-3 transform-[translateY(-50%)] select-none">
+                        @
+                      </span>
+                      <FormControl>
+                        <Input
+                          id="usernameInput"
+                          type="text"
+                          maxLength={25}
+                          autoComplete="username"
+                          className="pl-7"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="newAboutMe"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-2">
+                  <FormLabel htmlFor="aboutMeTextArea">About Me</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="aboutMeTextArea"
+                      maxLength={250}
+                      placeholder="Tell us about yourself and your music taste..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription className="text-right">
+                    250 characters max
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
               )}
-              type="button"
-              disabled={saving}
-            >
-              Cancel
-            </DialogClose>
-            <Button
-              variant="default"
-              size="default"
-              className="bg-primary cursor-pointer"
-              type="submit"
-              disabled={saving}
-            >
-              {saving ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
-        </form>
+            />
+            <div className="mt-8 flex justify-end gap-2 border-t pt-4">
+              <DialogClose
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "default",
+                  }),
+                  "cursor-pointer",
+                )}
+                type="button"
+                disabled={saving}
+              >
+                Cancel
+              </DialogClose>
+              <Button
+                variant="default"
+                size="default"
+                className="bg-primary cursor-pointer"
+                type="submit"
+                disabled={saving}
+              >
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
