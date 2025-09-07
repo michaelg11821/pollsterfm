@@ -35,6 +35,8 @@ export const editProfileSchema = z.object({
   deleteProfileIcon: z.boolean(),
 });
 
+export type editProfileSchemaType = z.infer<typeof editProfileSchema>;
+
 const baseChoice = z.object({
   image: z.url().or(z.literal("")),
   artist: z.string(),
@@ -123,3 +125,5 @@ export const createPollSchema = z.discriminatedUnion("pollType", [
       .max(5, { error: "Polls cannot have more than 5 choices." }),
   }),
 ]);
+
+export type createPollSchemaType = z.infer<typeof createPollSchema>;
