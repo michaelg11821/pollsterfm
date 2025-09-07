@@ -1,4 +1,4 @@
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { Toast } from "@base-ui-components/react/toast";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
@@ -19,7 +19,7 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
-  title: `Home | ${siteName}`,
+  title: `Home | ${SITE_NAME}`,
   description: "A poll-based music social platform",
 };
 

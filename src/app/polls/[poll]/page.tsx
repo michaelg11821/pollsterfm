@@ -1,12 +1,31 @@
 import Poll from "@/app/components/poll/poll";
+import { SITE_NAME } from "@/lib/constants/site-info";
+import { api } from "@/lib/convex/_generated/api";
 import type { Id } from "@/lib/convex/_generated/dataModel";
+import { fetchQuery } from "convex/nextjs";
 import { ChevronLeft } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 type PollPageProps = {
-  params: Promise<{ poll: string }>;
+  params: Promise<{ poll: Id<"polls"> }>;
 };
+
+export async function generateMetadata({
+  params,
+}: PollPageProps): Promise<Metadata> {
+  const { poll } = await params;
+
+  const pollData = await fetchQuery(api.pollster.poll.getById, { id: poll });
+
+  if (!pollData) redirect("/not-found");
+
+  return {
+    title: `${pollData?.question} | ${SITE_NAME}`,
+    description: `${pollData?.description ?? "Learn more about this poll on pollster.fm!"}`,
+  };
+}
 
 async function PollPage({ params }: PollPageProps) {
   const { poll } = await params;
@@ -22,7 +41,7 @@ async function PollPage({ params }: PollPageProps) {
         <ChevronLeft className="mr-2 h-4 w-4" />
         Back to polls
       </Link>
-      <Poll id={poll as Id<"polls">} />
+      <Poll id={poll} />
     </main>
   );
 }

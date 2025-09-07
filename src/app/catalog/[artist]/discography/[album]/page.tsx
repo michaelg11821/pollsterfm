@@ -4,7 +4,7 @@ import AlbumTracks from "@/app/components/album-tracks/album-tracks";
 import AlbumTracksSkeleton from "@/app/components/album-tracks/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
@@ -38,8 +38,8 @@ export async function generateMetadata({ params }: AlbumPageProps) {
   if (!albumData) redirect("/not-found");
 
   return {
-    title: `${albumData.name} — ${artistData.name} | ${siteName}`,
-    description: `Find more about ${albumData.name} by ${artistData.name} on ${siteName}.`,
+    title: `${albumData.name} — ${artistData.name} | ${SITE_NAME}`,
+    description: `Find more about ${albumData.name} by ${artistData.name} on ${SITE_NAME}.`,
   };
 }
 

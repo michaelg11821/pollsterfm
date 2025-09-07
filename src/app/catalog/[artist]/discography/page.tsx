@@ -1,6 +1,6 @@
 import Discography from "@/app/components/discography/discography";
 import DiscographySkeleton from "@/app/components/discography/skeleton";
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: DiscographyPageProps) {
   if (!artistData) redirect("/not-found");
 
   return {
-    title: `${artistData.name} discography | ${siteName}`,
-    description: `View the discography of ${artistData.name} on ${siteName}.`,
+    title: `${artistData.name} discography | ${SITE_NAME}`,
+    description: `View the discography of ${artistData.name} on ${SITE_NAME}.`,
   };
 }
 

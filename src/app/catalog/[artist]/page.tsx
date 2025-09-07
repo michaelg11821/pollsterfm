@@ -8,7 +8,7 @@ import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import TopAlbumsSkeleton from "@/app/components/top-albums/skeleton";
 import TopAlbums from "@/app/components/top-albums/top-albums";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
@@ -32,8 +32,8 @@ export async function generateMetadata({ params }: ArtistProps) {
   if (!artistData) redirect("/not-found");
 
   return {
-    title: `${artistData.name} | ${siteName}`,
-    description: `Find more about ${artistData.name} on ${siteName}.`,
+    title: `${artistData.name} | ${SITE_NAME}`,
+    description: `Find more about ${artistData.name} on ${SITE_NAME}.`,
   };
 }
 

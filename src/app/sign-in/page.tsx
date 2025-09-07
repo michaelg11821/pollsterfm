@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import ProviderLogins from "../components/provider-logins/provider-logins";
 
@@ -9,8 +9,8 @@ import { fetchQuery } from "convex/nextjs";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: `Sign In | ${siteName}`,
-  description: `Sign in to ${siteName}`,
+  title: `Sign In | ${SITE_NAME}`,
+  description: `Sign in to ${SITE_NAME}`,
 };
 
 async function SignIn() {

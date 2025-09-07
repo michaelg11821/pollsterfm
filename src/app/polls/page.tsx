@@ -1,4 +1,11 @@
+import { SITE_NAME } from "@/lib/constants/site-info";
+import type { Metadata } from "next";
 import Polls from "../components/polls/polls";
+
+export const metadata: Metadata = {
+  title: `Polls | ${SITE_NAME}`,
+  description: "See more music polls on pollster.fm!",
+};
 
 function PollsPage() {
   return (

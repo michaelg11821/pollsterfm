@@ -7,7 +7,7 @@ import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
 import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import { buttonVariants } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { ChevronRight } from "lucide-react";
 import { type Metadata } from "next";
 import Link from "next/link";
@@ -24,8 +24,8 @@ export async function generateMetadata({
   const { username } = await params;
 
   return {
-    title: `${username} | ${siteName}`,
-    description: `Check out ${username}'s profile on ${siteName}!`,
+    title: `${username} | ${SITE_NAME}`,
+    description: `Check out ${username}'s profile on ${SITE_NAME}!`,
   };
 }
 

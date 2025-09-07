@@ -1,4 +1,4 @@
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import Link from "next/link";
 
 function Footer() {
@@ -8,7 +8,7 @@ function Footer() {
         <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
           <div>
             <div className="mb-6 flex items-center gap-3">
-              <span className="text-xl font-semibold">{siteName}</span>
+              <span className="text-xl font-semibold">{SITE_NAME}</span>
             </div>
             <p className="text-muted-foreground text-sm">
               Connecting music lovers through shared affinities since 2025.
@@ -122,7 +122,7 @@ function Footer() {
 
         <div className="flex flex-col items-center gap-4 border-t pt-8 md:flex-row md:justify-between">
           <p className="text-muted-foreground text-sm md:mb-0">
-            © {new Date().getFullYear()} {siteName}. All rights reserved.
+            © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
           </p>
 
           <div className="flex gap-6">

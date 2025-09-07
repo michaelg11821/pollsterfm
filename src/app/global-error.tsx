@@ -1,6 +1,6 @@
 "use client";
 
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { Lexend } from "next/font/google";
 
 import { toastManager } from "@/lib/toast";
@@ -30,7 +30,7 @@ export default function GlobalError({
       className={`${lexend.variable} antialiased`}
       suppressHydrationWarning
     >
-      <title>{`Error | ${siteName}`}</title>
+      <title>{`Error | ${SITE_NAME}`}</title>
       <body className="min-h-svh">
         <ThemeProvider
           attribute="class"

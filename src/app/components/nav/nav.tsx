@@ -5,7 +5,7 @@ import Link from "next/link";
 import DesktopMenu from "./desktop-menu/desktop-menu";
 import MobileMenu from "./mobile-menu/mobile-menu";
 
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -30,7 +30,7 @@ function Nav() {
         <nav className="flex w-full items-center justify-between">
           <div className="flex items-center gap-12.5">
             <h1 className="text-2xl font-semibold">
-              <Link href="/">{siteName}</Link>
+              <Link href="/">{SITE_NAME}</Link>
             </h1>
             <ul className="hidden list-none md:flex md:gap-6">
               <li>

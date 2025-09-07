@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import ListeningHistory from "@/app/components/listening-history/listening-history";
 import { buttonVariants } from "@/app/components/ui/button";
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -18,8 +18,8 @@ export async function generateMetadata({
   const { username } = await params;
 
   return {
-    title: `${username}'s listening history | ${siteName}`,
-    description: `Check out ${username}'s listening history on ${siteName}!`,
+    title: `${username}'s listening history | ${SITE_NAME}`,
+    description: `Check out ${username}'s listening history on ${SITE_NAME}!`,
   };
 }
 

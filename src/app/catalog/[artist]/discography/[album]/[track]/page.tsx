@@ -4,7 +4,7 @@ import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 import TrackHeaderSkeleton from "@/app/components/track-header/skeleton";
 import TrackHeader from "@/app/components/track-header/track-header";
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
@@ -50,8 +50,8 @@ export async function generateMetadata({ params }: TrackProps) {
   if (!trackData) redirect("/not-found");
 
   return {
-    title: `${trackData.name} — ${artistData.name} | ${siteName}`,
-    description: `Find more about ${trackData.name} by ${artistData.name} on ${siteName}.`,
+    title: `${trackData.name} — ${artistData.name} | ${SITE_NAME}`,
+    description: `Find more about ${trackData.name} by ${artistData.name} on ${SITE_NAME}.`,
   };
 }
 

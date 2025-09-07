@@ -23,7 +23,7 @@ import { Camera, ImageIcon, SquarePen, Trash2 } from "lucide-react";
 import { toastManager } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import type { Id } from "@/lib/convex/_generated/dataModel";
 import { UpdateProfileArgs } from "@/lib/convex/user";
@@ -296,7 +296,7 @@ function EditProfile({
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogDescription>
           Update your profile information and customize your presence on
-          {` ${siteName}`}.
+          {` ${SITE_NAME}`}.
         </DialogDescription>
         <Form {...form}>
           <form

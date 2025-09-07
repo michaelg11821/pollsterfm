@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { siteName } from "@/lib/constants/site-info";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import ThemeToggle from "../components/theme-toggle";
 
 export const metadata: Metadata = {
-  title: `Settings | ${siteName}`,
-  description: `Your settings on ${siteName}.`,
+  title: `Settings | ${SITE_NAME}`,
+  description: `Your settings on ${SITE_NAME}.`,
 };
 
 async function Settings() {

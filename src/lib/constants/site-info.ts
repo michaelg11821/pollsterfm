@@ -1,1 +1,1 @@
-export const siteName = "pollster.fm";
+export const SITE_NAME = "pollster.fm";
