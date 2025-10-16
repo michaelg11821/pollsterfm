@@ -1,6 +1,7 @@
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { Toast } from "@base-ui-components/react/toast";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Lexend } from "next/font/google";
 import { toastManager } from "../lib/toast";
@@ -52,6 +53,7 @@ export default function RootLayout({
                 </Toast.Viewport>
               </Toast.Provider>
             </ThemeProvider>
+            <Analytics />
           </body>
         </html>
       </ConvexClientProvider>

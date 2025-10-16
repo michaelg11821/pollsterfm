@@ -41,7 +41,7 @@ function ClientAlbumHeader({ albumData }: ClientAlbumHeaderProps) {
 
         <div className="flex-1 text-center md:text-left">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center md:items-start">
               <div className="mb-2 flex items-center justify-center gap-2 md:justify-start">
                 <Badge variant="default">Album</Badge>
               </div>

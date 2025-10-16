@@ -40,7 +40,7 @@ function ClientArtistHeader({ artistData }: ClientArtistHeaderProps) {
         </div>
         <div className="shrink-1 grow-1 basis-0">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div className="flex flex-col items-center md:block">
+            <div className="flex flex-col items-center md:items-start">
               <div className="mb-2 flex items-center gap-2">
                 <Badge variant="default">Artist</Badge>
               </div>
