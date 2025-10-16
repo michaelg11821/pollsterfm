@@ -52,6 +52,8 @@ import { getChoiceItemName } from "@/lib/convex-utils";
 import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
 
+import * as Sentry from "@sentry/nextjs";
+
 const createArtistChoice = (initArtist?: string, initImage?: string) => ({
   image: initImage ?? "",
   artist: initArtist ?? "",
@@ -301,7 +303,7 @@ function CreatePoll({
         description: "Poll created successfully.",
       });
     } catch (err: unknown) {
-      console.error("error creating poll:", err);
+      Sentry.captureException(err);
 
       return toastManager.add({
         title: "Error",

@@ -18,6 +18,8 @@ import { useSearchParams } from "next/navigation";
 import SpotifySvg from "../../../../public/spotify.svg";
 import { Button } from "../ui/button";
 
+import * as Sentry from "@sentry/nextjs";
+
 function ProviderLogins() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -59,18 +61,20 @@ function ProviderLogins() {
 
       const result = await verifyTurnstile({ token: turnstileToken });
 
-      if (result.success) {
-        return void signIn("spotify", {
-          redirectTo: fullRedirectPath ?? profilePath,
-        });
-      } else {
-        return toastManager.add({
+      if (!result.success) {
+        toastManager.add({
           title: "Error",
           description: "Verification failed. Please try again.",
         });
+
+        throw new Error("turnstile verification failed");
       }
+
+      return void signIn("spotify", {
+        redirectTo: fullRedirectPath ?? profilePath,
+      });
     } catch (err: unknown) {
-      console.error(err);
+      Sentry.captureException(err);
 
       return toastManager.add({
         title: "Error",

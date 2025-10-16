@@ -13,6 +13,8 @@ import {
   trackFetchingError,
 } from "./config";
 
+import * as Sentry from "@sentry/nextjs";
+
 type SpotifyListeningHistoryProps = {
   historyImported: boolean;
   username: string;
@@ -67,14 +69,12 @@ function SpotifyListeningHistory({
 
       setNextUrl(response.next);
     } catch (err: unknown) {
-      console.error("error getting tracks:", err);
+      Sentry.captureException(err);
 
-      if (err instanceof Error) {
-        toastManager.add({
-          title: "Error",
-          description: err.message,
-        });
-      }
+      toastManager.add({
+        title: "Error",
+        description: trackFetchingError,
+      });
 
       hasMoreRef.current = false;
       setHasMore(false);

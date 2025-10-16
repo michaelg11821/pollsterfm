@@ -11,6 +11,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import LoadingIndicator from "../ui/loading-indicator";
 
+import * as Sentry from "@sentry/nextjs";
+
 type LastfmAlbumTracksProps = {
   artistName: string;
   albumName: string;
@@ -37,9 +39,7 @@ function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
       const response = await getLastfmAlbumTracks({ artistName, albumName });
 
       if (!response || !response.track) {
-        throw new Error(
-          `Failed to get tracks for ${albumName}. Please refresh the page.`,
-        );
+        throw new Error("bad album tracks response");
       }
 
       setTracks((prevTracks) => {
@@ -48,14 +48,12 @@ function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
         return newTracks;
       });
     } catch (err: unknown) {
-      console.error("error getting tracks:", err);
+      Sentry.captureException(err);
 
-      if (err instanceof Error) {
-        toastManager.add({
-          title: "Error",
-          description: err.message,
-        });
-      }
+      toastManager.add({
+        title: "Error",
+        description: `Failed to get tracks for ${albumName}. Please refresh the page.`,
+      });
     } finally {
       loadingRef.current = false;
       setLoading(false);

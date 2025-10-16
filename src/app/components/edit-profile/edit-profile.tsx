@@ -46,6 +46,8 @@ import {
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
+import * as Sentry from "@sentry/nextjs";
+
 type EditProfileProps = {
   headerImage: string | null | undefined;
   profileIcon: string | undefined;
@@ -236,14 +238,11 @@ function EditProfile({
         description: "Profile updated successfully.",
       });
     } catch (err: unknown) {
-      console.error(
-        `error updating profile for ${currentUser?.username}:`,
-        err,
-      );
+      Sentry.captureException(err);
 
       return toastManager.add({
         title: "Error",
-        description: "An unexpected server error occurred. Please try again.",
+        description: "Failed to submit changes to profile. Please try again.",
       });
     } finally {
       setSaving(false);
