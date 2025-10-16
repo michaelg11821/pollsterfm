@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { type Infer, v } from "convex/values";
+import { capitalize, getChoiceItemName } from "../convex-utils";
 import type { PollActivity } from "../types/pollster";
-import { capitalize, getChoiceItemName } from "../utils";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query, QueryCtx } from "./_generated/server";
 

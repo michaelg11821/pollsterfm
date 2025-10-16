@@ -1,4 +1,4 @@
-import { dateStringDistanceToNow, msToDuration } from "@/lib/utils";
+import { dateStringDistanceToNow, msToDuration } from "@/lib/convex-utils";
 
 import type { Album } from "@/lib/types/spotify";
 

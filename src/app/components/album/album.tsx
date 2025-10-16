@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { TopAlbum } from "@/lib/types/pollster";
 import { Star } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/next-utils";
 import Image from "next/image";
 
 type AlbumProps = {

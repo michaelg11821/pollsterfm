@@ -9,12 +9,12 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
+import { formatTimeRemaining, getDateFromCreatedAt } from "@/lib/convex-utils";
 import { api } from "@/lib/convex/_generated/api";
 import type { Id } from "@/lib/convex/_generated/dataModel";
 import { useCountdown } from "@/lib/hooks/useCountdown";
 import { toastManager } from "@/lib/toast";
 import type { Affinity } from "@/lib/types/pollster";
-import { formatTimeRemaining, getDateFromCreatedAt } from "@/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
 import { Clock, ExternalLink, TrendingUp, Users } from "lucide-react";

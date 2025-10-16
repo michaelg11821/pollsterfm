@@ -3,6 +3,10 @@
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { Lexend } from "next/font/google";
 
+import * as Sentry from "@sentry/nextjs";
+import Error from "next/error";
+import { useEffect } from "react";
+
 import { toastManager } from "@/lib/toast";
 import { Toast } from "@base-ui-components/react";
 import { ThemeProvider } from "./components/theme-provider";
@@ -15,15 +19,11 @@ const lexend = Lexend({
   display: "swap",
 });
 
-export default function GlobalError({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  error,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+export default function GlobalError({ error }: { error: Error }) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
   return (
     <html
       lang="en"

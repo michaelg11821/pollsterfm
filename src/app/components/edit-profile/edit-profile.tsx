@@ -20,8 +20,8 @@ import {
 
 import { Camera, ImageIcon, SquarePen, Trash2 } from "lucide-react";
 
+import { cn } from "@/lib/next-utils";
 import { toastManager } from "@/lib/toast";
-import { cn } from "@/lib/utils";
 
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";

@@ -1,3 +1,4 @@
+import { isSimilar } from "../convex-utils";
 import { DISCOGRAPHY_PAGE_LIMIT } from "../convex/pollster/config";
 import type { Track } from "../types/spotify";
 import type {
@@ -5,7 +6,6 @@ import type {
   SpotifyArtistSearchResponse,
   SpotifyArtistTopTracksResponse,
 } from "../types/spotifyResponses";
-import { isSimilar } from "../utils";
 import { getClientCredentials } from "./credentials";
 
 /**

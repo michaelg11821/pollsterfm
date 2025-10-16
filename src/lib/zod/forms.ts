@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getImageHostnamesRegex } from "../utils";
+import { getImageHostnamesRegex } from "../next-utils";
 import { Affinity, PollType } from "./pollster";
 import { headerImageSchema, profileIconSchema } from "./user";
 

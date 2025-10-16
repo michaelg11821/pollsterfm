@@ -4,8 +4,8 @@ import Image from "next/image";
 
 import EditProfile from "../edit-profile/edit-profile";
 
+import { getDateFromCreatedAt } from "@/lib/convex-utils";
 import { api } from "@/lib/convex/_generated/api";
-import { getDateFromCreatedAt } from "@/lib/utils";
 import { useQuery } from "convex/react";
 import { Calendar, Ellipsis } from "lucide-react";
 import Link from "next/link";

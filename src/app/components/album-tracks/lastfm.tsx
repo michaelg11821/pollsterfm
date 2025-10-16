@@ -1,10 +1,10 @@
 "use client";
 
+import { msToDuration } from "@/lib/convex-utils";
 import { api } from "@/lib/convex/_generated/api";
 import { ALBUM_PAGE_TRACK_LIMIT } from "@/lib/convex/pollster/config";
 import { toastManager } from "@/lib/toast";
 import type { LastfmAlbumInfoResponse } from "@/lib/types/lastfmResponses";
-import { msToDuration } from "@/lib/utils";
 import { useAction } from "convex/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

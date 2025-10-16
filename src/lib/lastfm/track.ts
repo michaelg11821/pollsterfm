@@ -1,9 +1,9 @@
+import { isSimilar } from "../convex-utils";
 import type {
   LastfmTrackCorrectionResponse,
   LastfmTrackInfoResponse,
   LastfmTrackSearchResponse,
 } from "../types/lastfmResponses";
-import { isSimilar } from "../utils";
 import { suffix } from "./suffix";
 
 /**

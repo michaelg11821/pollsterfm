@@ -1,5 +1,5 @@
+import { isSimilar } from "../convex-utils";
 import type { SpotifyTrackSearchResponse } from "../types/spotifyResponses";
-import { isSimilar } from "../utils";
 import { getClientCredentials } from "./credentials";
 
 /**

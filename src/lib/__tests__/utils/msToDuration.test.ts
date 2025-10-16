@@ -1,4 +1,4 @@
-import { msToDuration } from "@/lib/utils";
+import { msToDuration } from "@/lib/convex-utils";
 
 describe("one digit", () => {
   it("returns minute duration", () => {

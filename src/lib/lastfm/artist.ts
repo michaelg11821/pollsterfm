@@ -1,3 +1,4 @@
+import { isSimilar } from "../convex-utils";
 import type {
   LastfmArtistAlbumsResponse,
   LastfmArtistCorrectionResponse,
@@ -5,7 +6,6 @@ import type {
   LastfmArtistTagsResponse,
   LastfmSimilarArtistsResponse,
 } from "../types/lastfmResponses";
-import { isSimilar } from "../utils";
 import { suffix } from "./suffix";
 
 /**

@@ -1,9 +1,9 @@
 "use client";
 
+import { msToDuration } from "@/lib/convex-utils";
 import { api } from "@/lib/convex/_generated/api";
 import { toastManager } from "@/lib/toast";
 import type { SpotifyAlbumTracksResponse } from "@/lib/types/spotifyResponses";
-import { msToDuration } from "@/lib/utils";
 import { useAction } from "convex/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

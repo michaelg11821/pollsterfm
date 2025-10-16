@@ -2,8 +2,8 @@
 
 import { Badge } from "@/app/components/ui/badge";
 import { Card } from "@/app/components/ui/card";
+import { getChoiceItemName, getTopChoice } from "@/lib/convex-utils";
 import type { Affinity, Poll } from "@/lib/types/pollster";
-import { getChoiceItemName, getTopChoice } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { Calendar, ChevronRight, User } from "lucide-react";
 import Link from "next/link";

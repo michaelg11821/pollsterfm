@@ -4,8 +4,8 @@ import { api } from "@/lib/convex/_generated/api";
 import { useQuery } from "convex/react";
 
 import { oneDayMs } from "@/lib/constants/time";
+import { cn } from "@/lib/next-utils";
 import type { Poll } from "@/lib/types/pollster";
-import { cn } from "@/lib/utils";
 import { TrendingUp } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import PollPreview from "../poll-preview/poll-preview";

@@ -1,4 +1,4 @@
-import { dateStringDistanceToNow } from "@/lib/utils";
+import { dateStringDistanceToNow } from "@/lib/convex-utils";
 
 const FIXED_NOW = new Date("2025-07-13T18:48:00.000Z");
 

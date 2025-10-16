@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 
+import { cn } from "@/lib/next-utils";
 import type { AlbumData } from "@/lib/types/internalResponses";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import TopGenres from "../top-genres/top-genres";

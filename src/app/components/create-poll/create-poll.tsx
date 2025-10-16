@@ -48,7 +48,7 @@ import AlbumResults from "./album-results/album-results";
 import ArtistResults from "./artist-results/artist-results";
 import TrackResults from "./track-results/track-results";
 
-import { getChoiceItemName } from "@/lib/utils";
+import { getChoiceItemName } from "@/lib/convex-utils";
 import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
 
