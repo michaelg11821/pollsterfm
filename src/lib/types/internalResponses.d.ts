@@ -33,3 +33,5 @@ export type AlbumData = FirstAlbumResult;
 export type ArtistData = FirstArtistResult;
 
 export type TrackData = FirstTrackResult;
+
+export type CatalogData = AlbumData | ArtistData | TrackData;

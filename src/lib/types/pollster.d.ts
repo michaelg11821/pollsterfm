@@ -23,6 +23,7 @@ export type SimilarArtist = {
 };
 
 export type PollType = (typeof pollTypes)[number];
+export type CatalogItemType = PollType;
 
 export type Affinity = (typeof affinities)[number];
 

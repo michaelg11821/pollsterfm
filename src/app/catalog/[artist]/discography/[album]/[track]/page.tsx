@@ -1,9 +1,9 @@
+import CatalogHeader from "@/app/components/catalog-header/catalog-header";
+import CatalogHeaderSkeleton from "@/app/components/catalog-header/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
 import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
-import TrackHeaderSkeleton from "@/app/components/track-header/skeleton";
-import TrackHeader from "@/app/components/track-header/track-header";
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
@@ -60,8 +60,13 @@ async function Track({ params }: TrackProps) {
 
   return (
     <main className="px-0 py-8">
-      <Suspense fallback={<TrackHeaderSkeleton />}>
-        <TrackHeader artistName={artist} albumName={album} trackName={track} />
+      <Suspense fallback={<CatalogHeaderSkeleton itemType="track" />}>
+        <CatalogHeader
+          itemType="track"
+          artistName={artist}
+          albumName={album}
+          trackName={track}
+        />
       </Suspense>
       <div className="content-wrapper mt-10 px-5 py-0 xl:p-0">
         <div className="flex flex-col gap-8 lg:grid lg:grid-cols-4">

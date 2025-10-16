@@ -1,7 +1,7 @@
-import AlbumHeader from "@/app/components/album-header/album-header";
-import AlbumHeaderSkeleton from "@/app/components/album-header/skeleton";
 import AlbumTracks from "@/app/components/album-tracks/album-tracks";
 import AlbumTracksSkeleton from "@/app/components/album-tracks/skeleton";
+import CatalogHeader from "@/app/components/catalog-header/catalog-header";
+import CatalogHeaderSkeleton from "@/app/components/catalog-header/skeleton";
 import FeaturedIn from "@/app/components/featured-in/featured-in";
 import TopListeners from "@/app/components/top-listeners/top-listeners";
 import { SITE_NAME } from "@/lib/constants/site-info";
@@ -48,8 +48,8 @@ async function AlbumPage({ params }: AlbumPageProps) {
 
   return (
     <main className="px-0 py-8">
-      <Suspense fallback={<AlbumHeaderSkeleton />}>
-        <AlbumHeader artistName={artist} albumName={album} />
+      <Suspense fallback={<CatalogHeaderSkeleton itemType="album" />}>
+        <CatalogHeader itemType="album" artistName={artist} albumName={album} />
       </Suspense>
       <div className="content-wrapper mt-10 px-5 py-0 xl:p-0">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
