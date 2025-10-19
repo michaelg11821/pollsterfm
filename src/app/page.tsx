@@ -1,6 +1,9 @@
 import { ArrowRight, ChevronRight, Users } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 import HomepageSearch from "./components/homepage-search/homepage-search";
+import RandomAffinities from "./components/random-affinities/random-affinities";
+import RandomAffinitiesSkeleton from "./components/random-affinities/skeleton";
 import { Badge } from "./components/ui/badge";
 import { Button, buttonVariants } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
@@ -158,31 +161,9 @@ async function Home({ searchParams }: HomeProps) {
               View All Affinities <ChevronRight className="h-5 w-5" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {[
-              { name: "Introspective" },
-              { name: "Energetic" },
-              { name: "Melancholic" },
-              { name: "Euphoric" },
-              { name: "Nostalgic" },
-              { name: "Atmospheric" },
-              { name: "Dreamy" },
-              { name: "Intense" },
-              { name: "Soothing" },
-              { name: "Rebellious" },
-              { name: "Ethereal" },
-              { name: "Passionate" },
-            ].map((affinity, i) => (
-              <Card
-                key={i}
-                className="bg-primary/20 border-primary/20 hover:bg-primary/30 h-32 cursor-pointer justify-center transition-[background-color]"
-              >
-                <span className="self-center text-lg font-medium">
-                  {affinity.name}
-                </span>
-              </Card>
-            ))}
-          </div>
+          <Suspense fallback={<RandomAffinitiesSkeleton />}>
+            <RandomAffinities />
+          </Suspense>
         </div>
       </section>
     </main>
