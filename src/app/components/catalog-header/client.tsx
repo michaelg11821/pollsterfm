@@ -27,7 +27,7 @@ function ClientCatalogHeader({ itemType, data }: ClientCatalogHeaderProps) {
       case "track":
         const trackData = data as TrackData;
 
-        return `/catalog/${encodeURIComponent(trackData.artists![0])}/discography/${encodeURIComponent(trackData.albumName)}/${encodeURIComponent(trackData.name)}`;
+        return `/catalog/${encodeURIComponent(trackData.artists[0])}/discography/${encodeURIComponent(trackData.albumName)}/${encodeURIComponent(trackData.name)}`;
     }
   }, [itemType, data]);
 
