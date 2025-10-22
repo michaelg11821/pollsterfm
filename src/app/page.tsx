@@ -35,14 +35,17 @@ async function Home({ searchParams }: HomeProps) {
               music like you do.
             </p>
             <div className="flex flex-col justify-center gap-4 md:flex-row">
-              <Button
-                variant="default"
-                size="lg"
-                className="bg-primary cursor-pointer px-8 py-5.5"
+              <Link
+                href="/polls"
+                className={buttonVariants({
+                  variant: "default",
+                  size: "lg",
+                  className: "bg-primary cursor-pointer px-8 py-5.5",
+                })}
               >
                 Get started
                 <ArrowRight className="ml-1 h-5 w-5" />
-              </Button>
+              </Link>
               <Button
                 variant="outline"
                 size="lg"
