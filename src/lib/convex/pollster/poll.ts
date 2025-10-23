@@ -1,3 +1,5 @@
+import { TRENDING_VOTE_COUNT } from "@/lib/constants/polls";
+import { oneDayMs } from "@/lib/constants/time";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "../_generated/server";
@@ -37,10 +39,7 @@ export const getById = query({
 
 export const getPolls = query({
   handler: async (ctx) => {
-    return await ctx.db
-      .query("polls")
-      .withIndex("expiresAt", (q) => q.gt("expiresAt", Date.now()))
-      .collect();
+    return await ctx.db.query("polls").collect();
   },
 });
 
@@ -137,5 +136,19 @@ export const unview = mutation({
         },
       });
     }
+  },
+});
+
+export const getPopularPolls = query({
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("polls")
+      .filter((q) =>
+        q.and(
+          q.gt(q.field("totalVotes"), TRENDING_VOTE_COUNT),
+          q.lt(q.sub(Date.now(), q.field("_creationTime")), oneDayMs),
+        ),
+      )
+      .collect();
   },
 });

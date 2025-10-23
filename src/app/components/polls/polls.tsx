@@ -3,6 +3,7 @@
 import { api } from "@/lib/convex/_generated/api";
 import { useQuery } from "convex/react";
 
+import { TRENDING_VOTE_COUNT } from "@/lib/constants/polls";
 import { oneDayMs } from "@/lib/constants/time";
 import { cn } from "@/lib/next-utils";
 import type { Poll } from "@/lib/types/pollster";
@@ -44,7 +45,8 @@ function Polls() {
 
   const filteredPolls = polls.filter((poll) => {
     if (currentFilter === "all" || currentFilter === null) return true;
-    if (currentFilter === "trending") return poll.totalVotes > 10;
+    if (currentFilter === "trending")
+      return poll.totalVotes > TRENDING_VOTE_COUNT;
     if (currentFilter === "recent")
       return Date.now() - poll._creationTime < oneDayMs;
 

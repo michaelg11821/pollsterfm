@@ -26,6 +26,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import PollAuthorImage from "./author-image/author-image";
 import PollSkeleton from "./skeleton";
 
+import * as Sentry from "@sentry/nextjs";
+
 type PollProps = {
   id: Id<"polls">;
 };
@@ -46,16 +48,20 @@ function Poll({ id }: PollProps) {
   const { timeLeft, isExpired } = useCountdown(endTime);
 
   useEffect(() => {
-    if (isExpired) return;
+    if (isExpired || !currentUser) return;
 
     async function view() {
-      await viewPoll({ id });
+      try {
+        await viewPoll({ id });
+      } catch (err: unknown) {
+        Sentry.captureException(err);
+      }
     }
 
     view();
 
     const handleBeforeUnload = () => {
-      unviewPoll({ id }).catch(console.error);
+      unviewPoll({ id }).catch((err) => Sentry.captureException(err));
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -63,9 +69,9 @@ function Poll({ id }: PollProps) {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
 
-      unviewPoll({ id }).catch(console.error);
+      unviewPoll({ id }).catch((err) => Sentry.captureException(err));
     };
-  }, [id, unviewPoll, viewPoll, isExpired]);
+  }, [id, unviewPoll, viewPoll, isExpired, currentUser]);
 
   const getSelectedChoiceData = useCallback(() => {
     if (selectedOption === null || pollData === null || pollData === undefined)

@@ -1,12 +1,11 @@
-import { ArrowRight, ChevronRight, Users } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import HomepageSearch from "./components/homepage-search/homepage-search";
+import PopularPolls from "./components/popular-polls/popular-polls";
 import RandomAffinities from "./components/random-affinities/random-affinities";
 import RandomAffinitiesSkeleton from "./components/random-affinities/skeleton";
-import { Badge } from "./components/ui/badge";
 import { Button, buttonVariants } from "./components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 
 type HomeProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -80,71 +79,7 @@ async function Home({ searchParams }: HomeProps) {
             </Link>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                title: "Best Albums of 2023",
-                votes: 1243,
-                affinities: ["Contemporary", "Diverse"],
-                hot: true,
-              },
-              {
-                title: "Most Energetic Workout Songs",
-                votes: 876,
-                affinities: ["Energetic", "Motivational"],
-              },
-              {
-                title: "Albums That Define Gen Z",
-                votes: 754,
-                affinities: ["Cultural", "Defining"],
-              },
-              {
-                title: "Best Vocal Performances",
-                votes: 692,
-                affinities: ["Technical", "Emotional"],
-              },
-              {
-                title: "Most Innovative Production",
-                votes: 587,
-                affinities: ["Experimental", "Creative"],
-              },
-              {
-                title: "Songs That Make You Cry",
-                votes: 521,
-                affinities: ["Emotional", "Vulnerable"],
-              },
-            ].map((poll, i) => (
-              <Card
-                key={i}
-                className="hover:bg-accent max-h-112.5 cursor-pointer transition-[background-color]"
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2.5">
-                    {poll.title}
-                    {poll.hot && (
-                      <Badge variant="default">
-                        <span className="bg-primary h-2 w-2 rounded-full"></span>
-                        HOT
-                      </Badge>
-                    )}
-                  </CardTitle>
-                  <div className="my-1 flex flex-wrap gap-2">
-                    {poll.affinities.map((affinity, j) => (
-                      <Badge key={j} variant="secondary">
-                        {affinity}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent className="-mt-5">
-                  <div className="text-muted-foreground flex items-center text-sm">
-                    <Users className="mr-1 h-5 w-5" />
-                    <span>{poll.votes} votes</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <PopularPolls />
         </div>
       </section>
 
