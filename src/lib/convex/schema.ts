@@ -16,10 +16,13 @@ const schema = defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     spotifyProfileLink: v.optional(v.string()),
+    lastfmProfileLink: v.optional(v.string()),
     isAnonymous: v.optional(v.boolean()),
     spotifyAccessToken: v.optional(v.string()),
     spotifyRefreshToken: v.optional(v.string()),
     spotifyExpiresAt: v.optional(v.number()),
+    lastfmUsername: v.optional(v.string()),
+    lastfmSessionToken: v.optional(v.string()),
     choices: v.optional(
       v.array(
         v.object({
