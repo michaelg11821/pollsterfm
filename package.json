@@ -69,6 +69,9 @@
     "overrides": {
       "@types/react": "19.2.2",
       "@types/react-dom": "19.2.2"
+    },
+    "patchedDependencies": {
+      "@auth/core@0.37.0": "patches/@auth__core@0.37.0.patch"
     }
   }
 }
