@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as lastfm_album from "../lastfm/album.js";
+import type * as lastfm_oauth from "../lastfm/oauth.js";
 import type * as misc from "../misc.js";
 import type * as pollster_affinity from "../pollster/affinity.js";
 import type * as pollster_album from "../pollster/album.js";
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   http: typeof http;
   "lastfm/album": typeof lastfm_album;
+  "lastfm/oauth": typeof lastfm_oauth;
   misc: typeof misc;
   "pollster/affinity": typeof pollster_affinity;
   "pollster/album": typeof pollster_album;

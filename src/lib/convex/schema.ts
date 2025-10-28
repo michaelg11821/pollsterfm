@@ -22,7 +22,7 @@ const schema = defineSchema({
     spotifyRefreshToken: v.optional(v.string()),
     spotifyExpiresAt: v.optional(v.number()),
     lastfmUsername: v.optional(v.string()),
-    lastfmSessionToken: v.optional(v.string()),
+    lastfmSessionKey: v.optional(v.string()),
     choices: v.optional(
       v.array(
         v.object({
@@ -42,6 +42,14 @@ const schema = defineSchema({
     .index("author", ["author"])
     .index("pollType", ["pollType"])
     .index("expiresAt", ["expiresAt"]),
+  lastfmOAuthState: defineTable({
+    authCode: v.string(),
+    lastfmToken: v.optional(v.string()),
+    redirectUri: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("authCode", ["authCode"])
+    .index("createdAt", ["createdAt"]),
 });
 
 export default schema;

@@ -15,9 +15,11 @@ import { toastManager } from "@/lib/toast";
 import { useAction } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import LastfmSvg from "../../../../public/lastfm.svg";
 import SpotifySvg from "../../../../public/spotify.svg";
 import { Button } from "../ui/button";
 
+import type { Platform } from "@/lib/types/pollster";
 import * as Sentry from "@sentry/nextjs";
 
 function ProviderLogins() {
@@ -48,7 +50,7 @@ function ProviderLogins() {
 
   const verifyTurnstile = useAction(api.misc.verifyTurnstile);
 
-  const handleSignIn = async () => {
+  const handleSignIn = async (provider: Platform) => {
     if (!turnstileToken) {
       return toastManager.add({
         title: "Error",
@@ -70,7 +72,7 @@ function ProviderLogins() {
         throw new Error("turnstile verification failed");
       }
 
-      return void signIn("spotify", {
+      return void signIn(provider, {
         redirectTo: fullRedirectPath ?? profilePath,
       });
     } catch (err: unknown) {
@@ -92,7 +94,7 @@ function ProviderLogins() {
         size="lg"
         className="min-w-62 cursor-pointer gap-2.5 py-5.5"
         type="button"
-        onClick={handleSignIn}
+        onClick={async () => await handleSignIn("spotify")}
         disabled={!turnstileToken || loading}
       >
         {!loading ? (
@@ -100,6 +102,34 @@ function ProviderLogins() {
             {" "}
             <Image src={SpotifySvg} width={30} height={30} alt="" priority />
             Sign in with Spotify
+          </>
+        ) : (
+          <Loader2 className="h-5 w-62 animate-spin" />
+        )}
+      </Button>
+      <Button
+        variant="outline"
+        size="lg"
+        className="min-w-62 cursor-pointer gap-2.5 py-5.5"
+        type="button"
+        onClick={async () => await handleSignIn("lastfm")}
+        disabled={!turnstileToken || loading}
+      >
+        {!loading ? (
+          <>
+            {" "}
+            <Image
+              src={LastfmSvg}
+              width={30}
+              height={30}
+              alt=""
+              priority
+              style={{
+                filter:
+                  "invert(19%) sepia(96%) saturate(6474%) hue-rotate(356deg) brightness(91%) contrast(114%)",
+              }}
+            />
+            Sign in with Lastfm
           </>
         ) : (
           <Loader2 className="h-5 w-62 animate-spin" />

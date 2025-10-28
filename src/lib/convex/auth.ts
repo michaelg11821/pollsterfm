@@ -22,6 +22,29 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         };
       },
     }),
+    {
+      id: "lastfm",
+      name: "Last.fm",
+      type: "oauth",
+      authorization: {
+        url: `${process.env.CONVEX_HTTP_ACTION_ENDPOINT}/api/lastfm/authorize`,
+      },
+      token: `${process.env.CONVEX_HTTP_ACTION_ENDPOINT}/api/lastfm/token`,
+      userinfo: `${process.env.CONVEX_HTTP_ACTION_ENDPOINT}/api/lastfm/userinfo`,
+      profile(lastfmProfile, tokens) {
+        return {
+          id: lastfmProfile.id,
+          name: lastfmProfile.name,
+          email: lastfmProfile.email,
+          username: lastfmProfile.username,
+          image: lastfmProfile.image,
+          lastfmProfileLink: lastfmProfile.lastfmProfileLink,
+          lastfmSessionKey: tokens.access_token,
+        };
+      },
+      clientId: "dummy",
+      clientSecret: "dummy",
+    },
   ],
   callbacks: {
     async createOrUpdateUser(ctx, args) {
@@ -42,6 +65,8 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         spotifyAccessToken: args.profile.spotifyAccessToken,
         spotifyRefreshToken: args.profile.spotifyRefreshToken,
         spotifyExpiresAt: args.profile.spotifyExpiresAt,
+        lastfmProfileLink: args.profile.lastfmProfileLink,
+        lastfmSessionKey: args.profile.lastfmSessionKey,
       });
     },
   },
