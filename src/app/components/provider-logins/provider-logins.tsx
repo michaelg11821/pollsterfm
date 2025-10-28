@@ -129,7 +129,7 @@ function ProviderLogins() {
                   "invert(19%) sepia(96%) saturate(6474%) hue-rotate(356deg) brightness(91%) contrast(114%)",
               }}
             />
-            Sign in with Lastfm
+            Sign in with Last.fm
           </>
         ) : (
           <Loader2 className="h-5 w-62 animate-spin" />
