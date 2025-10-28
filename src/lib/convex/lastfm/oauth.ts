@@ -1,5 +1,5 @@
 import { generateRandomCode, md5 } from "@/lib/convex-utils";
-import type { LastfmProfile } from "@/lib/types/lastfmResponses";
+import type { LastfmProfileResponse } from "@/lib/types/lastfmResponses";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import {
@@ -282,7 +282,7 @@ export const lastfmUserinfo = httpAction(async (_, request) => {
       `https://ws.audioscrobbler.com/2.0/?method=user.getInfo&api_key=${process.env.LASTFM_API_KEY}&sk=${sessionKey}&format=json`,
     );
 
-    const data: LastfmProfile = await res.json();
+    const data: LastfmProfileResponse = await res.json();
 
     if (!res.ok || !data.user) {
       return new Response(
