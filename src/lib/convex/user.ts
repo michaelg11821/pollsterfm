@@ -26,15 +26,12 @@ async function getProfileImages(
   let profileIcon: string | null | undefined;
   let headerImage: string | null | undefined;
 
-  // spotify image url
-  if (!originalProfileIcon) {
-    profileIcon = originalProfileIcon;
-  } else if (originalProfileIcon.startsWith("https://")) {
-    profileIcon = undefined;
-  } else {
+  if (originalProfileIcon && !originalProfileIcon?.startsWith("https://")) {
     profileIcon = await ctx.storage.getUrl(
       originalProfileIcon as Id<"_storage">,
     );
+  } else {
+    profileIcon = originalProfileIcon;
   }
 
   if (!originalHeaderImage) {

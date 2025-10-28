@@ -302,7 +302,7 @@ export const lastfmUserinfo = httpAction(async (_, request) => {
       email: `${data.user.name}@lastfmplaceholder.com`,
       username: data.user.name,
       name: data.user.realname,
-      image: data.user.image[1]["#text"],
+      image: data.user.image[2]["#text"],
       lastfmProfileLink: data.user.url,
     };
 
