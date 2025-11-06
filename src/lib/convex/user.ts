@@ -1,9 +1,15 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { type Infer, v } from "convex/values";
+import { INTERNAL_SERVER_ERROR, NO_PLATFORM } from "../constants/errors";
 import { capitalize, getChoiceItemName } from "../convex-utils";
-import type { PollActivity } from "../types/pollster";
+import { LastfmRecentlyPlayedResponse } from "../types/lastfmResponses";
+import type { Platform, PollActivity } from "../types/pollster";
+import { SpotifyRecentlyPlayedResponse } from "../types/spotifyResponses";
+import { api } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query, QueryCtx } from "./_generated/server";
+import { action, mutation, query, QueryCtx } from "./_generated/server";
+import { getRecentlyPlayedLastfmTracks } from "./lastfm/user";
+import { getRecentlyPlayedSpotifyTracks } from "./spotify/user";
 
 export const currentUser = query({
   args: {},
@@ -267,5 +273,110 @@ export const getAffinities = query({
     const amount = args.amount || affinityScores.length;
 
     return affinityScores.slice(0, amount);
+  },
+});
+
+export const getAccountPlatform = query({
+  args: {
+    username: v.string(),
+  },
+  handler: async (ctx, args): Promise<Platform | null> => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (user === null) {
+      return null;
+    }
+
+    if (user.spotifyAccessToken) {
+      return "spotify";
+    } else if (user.lastfmSessionKey) {
+      return "lastfm";
+    }
+
+    return null;
+  },
+});
+
+export const getRecentlyPlayedTracks = action({
+  args: {
+    username: v.string(),
+    limit: v.number(),
+    next: v.optional(v.string()),
+    page: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const platform = await ctx.runQuery(api.user.getAccountPlatform, {
+        username: args.username,
+      });
+
+      if (!platform) return { error: NO_PLATFORM };
+
+      let rawTracks:
+        | SpotifyRecentlyPlayedResponse["items"]
+        | LastfmRecentlyPlayedResponse["recenttracks"]["track"];
+
+      switch (platform) {
+        case "spotify":
+          const spotifyTracks = await getRecentlyPlayedSpotifyTracks(
+            ctx,
+            args.username,
+            args.limit,
+            args.next,
+          );
+
+          if ("error" in spotifyTracks) {
+            const error = spotifyTracks;
+
+            return error;
+          }
+
+          rawTracks = spotifyTracks.items;
+          break;
+        case "lastfm":
+          const lastfmTracks = await getRecentlyPlayedLastfmTracks(
+            ctx,
+            args.username,
+            args.limit,
+            args.page,
+          );
+
+          if ("error" in lastfmTracks) {
+            const error = lastfmTracks;
+
+            return error;
+          }
+
+          rawTracks = lastfmTracks.recenttracks.track;
+          break;
+      }
+
+      const tracks = rawTracks!.map((trackData) =>
+        "track" in trackData
+          ? {
+              name: trackData.track.name,
+              image: trackData.track.album.images[1].url,
+              artists: trackData.track.artists.map((artist) => artist.name),
+              albumName: trackData.track.album.name,
+              playedAt: trackData.played_at,
+            }
+          : {
+              name: trackData.name,
+              image: trackData.image[1]["#text"],
+              artists: [trackData.artist["#text"]],
+              albumName: trackData.album["#text"],
+              playedAt: trackData.date["#text"],
+            },
+      );
+
+      return tracks;
+    } catch (err: unknown) {
+      console.error("error getting recently played tracks:", err);
+
+      return { error: INTERNAL_SERVER_ERROR };
+    }
   },
 });

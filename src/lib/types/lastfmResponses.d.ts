@@ -125,3 +125,22 @@ export type LastfmProfileResponse = {
     type: string;
   };
 };
+
+export type LastfmRecentlyPlayedResponse = {
+  recenttracks: {
+    track: {
+      artist: {
+        "#text": string;
+      };
+      image: Image[];
+      album: {
+        "#text": string;
+      };
+      name: string;
+      date: {
+        uts: string;
+        "#text": string;
+      };
+    }[];
+  };
+};

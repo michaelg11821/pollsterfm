@@ -15,23 +15,26 @@ type RecentlyPlayedProps = {
 
 async function RecentlyPlayed({ username, limit }: RecentlyPlayedProps) {
   const token = await convexAuthNextjsToken();
+
   const recentTracks = await fetchAction(
-    api.spotify.user.getRecentlyPlayedTracks,
+    api.user.getRecentlyPlayedTracks,
     { username, limit: limit ?? 20 },
     { token },
   );
 
-  if (!recentTracks || !recentTracks.items)
+  if (!recentTracks || "error" in recentTracks)
     return <p>Could not retrieve recently played tracks.</p>;
 
   return (
     <div className="flex flex-col gap-3">
-      {recentTracks.items.map(({ track, played_at }) => (
+      {recentTracks.map((track) => (
         <Track
           key={randomUUID()}
-          album={track.album}
-          trackTitle={track.name}
-          playedAt={played_at}
+          name={track.name}
+          image={track.image}
+          artists={track.artists}
+          albumName={track.albumName}
+          playedAt={track.playedAt}
         />
       ))}
     </div>

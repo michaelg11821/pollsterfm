@@ -1,13 +1,13 @@
 import { dateStringDistanceToNow, msToDuration } from "@/lib/convex-utils";
 
-import type { Album } from "@/lib/types/spotify";
-
 import Image from "next/image";
 import Link from "next/link";
 
 type TrackProps = {
-  album: Album;
-  trackTitle: string;
+  name: string;
+  image: string;
+  artists: string[];
+  albumName: string;
   /**
    * A string in the ISO 8601 format.
    */
@@ -15,22 +15,29 @@ type TrackProps = {
   duration?: number;
 };
 
-function Track({ album, trackTitle, playedAt, duration }: TrackProps) {
+function Track({
+  name,
+  image,
+  artists,
+  albumName,
+  playedAt,
+  duration,
+}: TrackProps) {
   return (
     <Link
       className="hover:bg-foreground/10 flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-[background-color]"
-      href={`/catalog/${encodeURIComponent(album.artists[0].name)}/discography/${encodeURIComponent(album.name)}/${encodeURIComponent(trackTitle)}`}
+      href={`/catalog/${encodeURIComponent(artists[0])}/discography/${encodeURIComponent(albumName)}/${encodeURIComponent(name)}`}
     >
       <div className="relative z-0 h-10 w-10 shrink-0 overflow-hidden rounded-sm">
-        <Image src={album.images[0].url} alt="" fill sizes="100%" priority />
+        <Image src={image} alt="" fill sizes="100%" priority />
       </div>
       <div className="flex min-w-0 flex-1 flex-col text-xs select-none">
         <h4 className="overflow-hidden text-sm font-medium overflow-ellipsis whitespace-nowrap">
-          {trackTitle}
+          {name}
         </h4>
         <p className="flex gap-1">
-          {album.artists.map(({ name }, index) => {
-            if (index !== album.artists.length - 1) {
+          {artists.map((name, index) => {
+            if (index !== artists.length - 1) {
               return (
                 <span
                   key={`${name}-${index}`}
@@ -52,7 +59,7 @@ function Track({ album, trackTitle, playedAt, duration }: TrackProps) {
           })}{" "}
           <span className="text-muted-foreground overflow-hidden overflow-ellipsis whitespace-nowrap">
             {" "}
-            • {album.name}
+            • {albumName}
           </span>
         </p>
       </div>

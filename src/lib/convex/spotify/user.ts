@@ -1,3 +1,4 @@
+import { INTERNAL_SERVER_ERROR, SERVICE_ERROR } from "@/lib/constants/errors";
 import { v } from "convex/values";
 import type {
   SpotifyAccessTokenResponse,
@@ -173,6 +174,48 @@ export const getCurrentlyPlayingTrack = action({
  * @param next (optional) The endpoint for the next page of recently played tracks provided by the Spotify API.
  * @returns The user's recently played tracks on Spotify.
  */
+export async function getRecentlyPlayedSpotifyTracks(
+  ctx: ActionCtx,
+  username: string,
+  limit: number,
+  next?: string,
+) {
+  try {
+    const accessToken = await getAccessToken(ctx, username);
+
+    if (!accessToken) throw new Error("error getting access token");
+
+    const res = next
+      ? await fetch(next, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+      : await fetch(
+          `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+
+    if (!res.ok) return { error: SERVICE_ERROR };
+
+    const trackInfo: SpotifyRecentlyPlayedResponse = await res.json();
+
+    if (!trackInfo?.items) {
+      return { error: SERVICE_ERROR };
+    }
+
+    return trackInfo;
+  } catch (err: unknown) {
+    console.error("error getting recently played tracks:", err);
+
+    return { error: INTERNAL_SERVER_ERROR };
+  }
+}
+
 export const getRecentlyPlayedTracks = action({
   args: {
     username: v.string(),
@@ -180,39 +223,11 @@ export const getRecentlyPlayedTracks = action({
     next: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    try {
-      const accessToken = await getAccessToken(ctx, args.username);
-
-      if (!accessToken) throw new Error("error getting access token");
-
-      const res = args.next
-        ? await fetch(args.next, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          })
-        : await fetch(
-            `https://api.spotify.com/v1/me/player/recently-played?limit=${args.limit}`,
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            },
-          );
-
-      if (!res.ok) throw new Error("failed to get recently played tracks");
-
-      const trackInfo: SpotifyRecentlyPlayedResponse = await res.json();
-
-      if (!trackInfo?.items) {
-        throw new Error("malformed track data");
-      }
-
-      return trackInfo;
-    } catch (err: unknown) {
-      console.error("error getting recently played tracks:", err);
-
-      return null;
-    }
+    return await getRecentlyPlayedSpotifyTracks(
+      ctx,
+      args.username,
+      args.limit,
+      args.next,
+    );
   },
 });

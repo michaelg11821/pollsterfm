@@ -18,8 +18,10 @@ function ClientTrackResults({ tracks }: ClientTrackResultsProps) {
         {tracks.map((track, index) => (
           <Track
             key={`track-${index}`}
-            album={track.album}
-            trackTitle={track.name}
+            name={track.name}
+            image={track.album.images[1].url}
+            artists={track.album.artists.map((artist) => artist.name)}
+            albumName={track.album.name}
             duration={track.duration_ms}
           />
         ))}
