@@ -11,7 +11,7 @@ function AlbumResultsSkeleton() {
         </div>
       </div>
 
-      <div className="scroll-gradient relative">
+      <div className="scroll-gradient-right relative">
         <div className="flex gap-6 overflow-x-hidden py-2">
           {Array(25)
             .fill(null)
