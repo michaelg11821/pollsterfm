@@ -8,18 +8,13 @@ overrides:
   '@types/react': 19.2.2
   '@types/react-dom': 19.2.2
 
-patchedDependencies:
-  '@auth/core@0.37.0':
-    hash: a15920475cf4c2eb6b75ee7e13b2be26bfa31fdfc5961d4bf6b71b67ef0c3bbf
-    path: patches/@auth__core@0.37.0.patch
-
 importers:
 
   .:
     dependencies:
       '@auth/core':
         specifier: 0.37.0
-        version: 0.37.0(patch_hash=a15920475cf4c2eb6b75ee7e13b2be26bfa31fdfc5961d4bf6b71b67ef0c3bbf)
+        version: 0.37.0
       '@base-ui-components/react':
         specifier: 1.0.0-alpha.8
         version: 1.0.0-alpha.8(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -28,7 +23,7 @@ importers:
         version: 0.2.10(convex@1.28.0(react@19.2.0))
       '@convex-dev/auth':
         specifier: ^0.0.87
-        version: 0.0.87(@auth/core@0.37.0(patch_hash=a15920475cf4c2eb6b75ee7e13b2be26bfa31fdfc5961d4bf6b71b67ef0c3bbf))(convex@1.28.0(react@19.2.0))(react@19.2.0)
+        version: 0.0.87(@auth/core@0.37.0)(convex@1.28.0(react@19.2.0))(react@19.2.0)
       '@hookform/resolvers':
         specifier: ^5.1.1
         version: 5.1.1(react-hook-form@7.60.0(react@19.2.0))
@@ -4759,7 +4754,7 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.3
       lru-cache: 10.4.3
 
-  '@auth/core@0.37.0(patch_hash=a15920475cf4c2eb6b75ee7e13b2be26bfa31fdfc5961d4bf6b71b67ef0c3bbf)':
+  '@auth/core@0.37.0':
     dependencies:
       '@panva/hkdf': 1.2.1
       '@types/cookie': 0.6.0
@@ -4900,9 +4895,9 @@ snapshots:
     dependencies:
       convex: 1.28.0(react@19.2.0)
 
-  '@convex-dev/auth@0.0.87(@auth/core@0.37.0(patch_hash=a15920475cf4c2eb6b75ee7e13b2be26bfa31fdfc5961d4bf6b71b67ef0c3bbf))(convex@1.28.0(react@19.2.0))(react@19.2.0)':
+  '@convex-dev/auth@0.0.87(@auth/core@0.37.0)(convex@1.28.0(react@19.2.0))(react@19.2.0)':
     dependencies:
-      '@auth/core': 0.37.0(patch_hash=a15920475cf4c2eb6b75ee7e13b2be26bfa31fdfc5961d4bf6b71b67ef0c3bbf)
+      '@auth/core': 0.37.0
       convex: 1.28.0(react@19.2.0)
       cookie: 1.0.2
       is-network-error: 1.1.0
