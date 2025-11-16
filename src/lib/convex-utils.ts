@@ -25,6 +25,7 @@ export function dateStringDistanceToNow(dateString: string): string {
     const month = enUS.localize.month(monthNum, { width: "abbreviated" });
 
     const day = parsedDate.getDate();
+    const year = parsedDate.getFullYear();
 
     const time = parsedDate
       .toLocaleTimeString([], {
@@ -34,6 +35,10 @@ export function dateStringDistanceToNow(dateString: string): string {
         timeZone: "UTC",
       })
       .toLowerCase();
+
+    if (year !== now.getFullYear()) {
+      return `${day} ${month} ${year}, ${time}`;
+    }
 
     return `${day} ${month} ${time}`;
   } else if (timeDiffInMs < oneMinInMs) {

@@ -49,3 +49,10 @@ it("returns formatted date for a date 2 months ago", () => {
 
   expect(result).toEqual("13 May 10:00 am");
 });
+
+it("returns formatted date for a date 5 years ago", () => {
+  const fiveYearsAgo = new Date("2020-10-27T18:01:18.000Z").toISOString();
+  const result = dateStringDistanceToNow(fiveYearsAgo);
+
+  expect(result).toEqual("27 Oct 2020, 6:01 pm");
+});
