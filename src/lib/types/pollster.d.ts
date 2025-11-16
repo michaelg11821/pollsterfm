@@ -1,5 +1,6 @@
 import type { Infer } from "convex/values";
 import { affinities } from "../constants/affinities";
+import { platforms } from "../constants/platforms";
 import { pollTypes } from "../constants/polls";
 import type { Doc } from "../convex/_generated/dataModel";
 import { activityValidator, choiceValidator } from "../convex/validators";
@@ -34,4 +35,4 @@ export type Poll = Doc<"polls">;
 
 export type PollActivity = Infer<typeof activityValidator>;
 
-export type Platform = "spotify" | "lastfm";
+export type Platform = (typeof platforms)[number];

@@ -24,7 +24,7 @@ import * as Sentry from "@sentry/nextjs";
 
 function ProviderLogins() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<Record<string, boolean>>({});
 
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirectTo");
@@ -59,7 +59,7 @@ function ProviderLogins() {
     }
 
     try {
-      setLoading(true);
+      setLoading((prev) => ({ ...prev, [provider]: true }));
 
       const result = await verifyTurnstile({ token: turnstileToken });
 
@@ -83,7 +83,7 @@ function ProviderLogins() {
         description: "Verification failed. Please try again.",
       });
     } finally {
-      return setLoading(false);
+      return setLoading((prev) => ({ ...prev, [provider]: false }));
     }
   };
 
@@ -95,9 +95,9 @@ function ProviderLogins() {
         className="min-w-62 cursor-pointer gap-2.5 py-5.5"
         type="button"
         onClick={async () => await handleSignIn("spotify")}
-        disabled={!turnstileToken || loading}
+        disabled={!turnstileToken || !!loading["spotify"]}
       >
-        {!loading ? (
+        {!loading["spotify"] ? (
           <>
             {" "}
             <Image src={SpotifySvg} width={30} height={30} alt="" priority />
@@ -113,9 +113,9 @@ function ProviderLogins() {
         className="min-w-62 cursor-pointer gap-2.5 py-5.5"
         type="button"
         onClick={async () => await handleSignIn("lastfm")}
-        disabled={!turnstileToken || loading}
+        disabled={!turnstileToken || !!loading["lastfm"]}
       >
-        {!loading ? (
+        {!loading["lastfm"] ? (
           <>
             {" "}
             <Image
