@@ -117,6 +117,7 @@ function SpotifyListeningHistory({
         image={track.album.images[1].url}
         artists={track.artists.map(({ name }) => name)}
         albumName={track.album.name}
+        playedAt={played_at}
       />
     ));
   }, [tracks]);
