@@ -450,7 +450,7 @@ export const getCurrentlyPlayingTrack = action({
         "image" in rawTrack!
           ? {
               name: rawTrack!.name,
-              image: rawTrack.image[1]["#text"],
+              image: rawTrack.image[3]["#text"],
               artists: [rawTrack.artist["#text"]],
               albumName: rawTrack.album["#text"],
             }
