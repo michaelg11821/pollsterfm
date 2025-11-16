@@ -1,8 +1,12 @@
-import { INTERNAL_SERVER_ERROR, SERVICE_ERROR } from "@/lib/constants/errors";
+import {
+  INTERNAL_SERVER_ERROR,
+  PRIVATE_LASTFM_PROFILE,
+  SERVICE_ERROR,
+} from "@/lib/constants/errors";
 import type { LastfmRecentlyPlayedResponse } from "@/lib/types/lastfmResponses";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
-import { action, internalQuery, type ActionCtx } from "../_generated/server";
+import { internalQuery, type ActionCtx } from "../_generated/server";
 
 export const getLastfmUsername = internalQuery({
   args: { username: v.string() },
@@ -44,15 +48,28 @@ export async function getRecentlyPlayedLastfmTracks(
     if (!lastfmUsername) throw new Error("could not find lastfm username");
 
     const res = await fetch(
-      `http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastfmUsername}&limit=${limit}&page=${page ?? 1}&api_key=${process.env.LASTFM_API_KEY}&format=json`,
+      `http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastfmUsername}&limit=${limit + 1}&page=${page ?? 1}&api_key=${process.env.LASTFM_API_KEY}&format=json`,
     );
 
-    if (!res.ok) return { error: SERVICE_ERROR };
+    if (res.status === 403) {
+      return { error: PRIVATE_LASTFM_PROFILE };
+    } else if (res.status < 200 || res.status > 299) {
+      return { error: SERVICE_ERROR };
+    }
 
     const trackInfo: LastfmRecentlyPlayedResponse = await res.json();
 
     if (!trackInfo?.recenttracks.track) {
       return { error: SERVICE_ERROR };
+    }
+
+    const firstTrack = trackInfo.recenttracks.track[0];
+
+    if (firstTrack["@attr"]) {
+      trackInfo.recenttracks.track.shift();
+      trackInfo.recenttracks.track.pop();
+    } else {
+      trackInfo.recenttracks.track.pop();
     }
 
     return trackInfo;
@@ -63,18 +80,46 @@ export async function getRecentlyPlayedLastfmTracks(
   }
 }
 
-export const getRecentlyPlayedTracks = action({
-  args: {
-    username: v.string(),
-    limit: v.number(),
-    page: v.optional(v.number()),
-  },
-  handler: async (ctx, args) => {
-    return await getRecentlyPlayedLastfmTracks(
-      ctx,
-      args.username,
-      args.limit,
-      args.page,
+export async function getCurrentlyPlayingLastfmTrack(
+  ctx: ActionCtx,
+  username: string,
+) {
+  try {
+    const lastfmUsername = await ctx.runQuery(
+      internal.lastfm.user.getLastfmUsername,
+      {
+        username,
+      },
     );
-  },
-});
+
+    if (!lastfmUsername) throw new Error("could not find lastfm username");
+
+    const res = await fetch(
+      `http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastfmUsername}&limit=1&page=1&api_key=${process.env.LASTFM_API_KEY}&format=json`,
+    );
+
+    if (res.status === 403) {
+      return { error: PRIVATE_LASTFM_PROFILE };
+    } else if (res.status < 200 || res.status > 299) {
+      return { error: SERVICE_ERROR };
+    }
+
+    const trackInfo: LastfmRecentlyPlayedResponse = await res.json();
+
+    if (!trackInfo?.recenttracks.track) {
+      return { error: SERVICE_ERROR };
+    }
+
+    const track = trackInfo.recenttracks.track[0];
+
+    if (!track["@attr"]?.nowplaying) {
+      return null;
+    }
+
+    return track;
+  } catch (err: unknown) {
+    console.error("error getting recently played tracks:", err);
+
+    return { error: INTERNAL_SERVER_ERROR };
+  }
+}

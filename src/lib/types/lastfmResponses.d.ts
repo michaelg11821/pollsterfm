@@ -137,10 +137,31 @@ export type LastfmRecentlyPlayedResponse = {
         "#text": string;
       };
       name: string;
-      date: {
+      "@attr"?: {
+        nowplaying: "true";
+      };
+      date?: {
         uts: string;
         "#text": string;
       };
     }[];
+  };
+};
+
+export type LastfmCurrentlyPlayingResponse = {
+  artist: {
+    "#text": string;
+  };
+  image: Image[];
+  album: {
+    "#text": string;
+  };
+  name: string;
+  "@attr"?: {
+    nowplaying: "true";
+  };
+  date?: {
+    uts: string;
+    "#text": string;
   };
 };

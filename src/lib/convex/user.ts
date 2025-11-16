@@ -1,15 +1,27 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { type Infer, v } from "convex/values";
 import { INTERNAL_SERVER_ERROR, NO_PLATFORM } from "../constants/errors";
-import { capitalize, getChoiceItemName } from "../convex-utils";
-import { LastfmRecentlyPlayedResponse } from "../types/lastfmResponses";
+import { capitalize, getChoiceItemName, utsToIsoString } from "../convex-utils";
+import {
+  LastfmCurrentlyPlayingResponse,
+  LastfmRecentlyPlayedResponse,
+} from "../types/lastfmResponses";
 import type { Platform, PollActivity } from "../types/pollster";
-import { SpotifyRecentlyPlayedResponse } from "../types/spotifyResponses";
+import {
+  SpotifyCurrentlyPlayingResponse,
+  SpotifyRecentlyPlayedResponse,
+} from "../types/spotifyResponses";
 import { api } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { action, mutation, query, QueryCtx } from "./_generated/server";
-import { getRecentlyPlayedLastfmTracks } from "./lastfm/user";
-import { getRecentlyPlayedSpotifyTracks } from "./spotify/user";
+import {
+  getCurrentlyPlayingLastfmTrack,
+  getRecentlyPlayedLastfmTracks,
+} from "./lastfm/user";
+import {
+  getCurrentlyPlayingSpotifyTrack,
+  getRecentlyPlayedSpotifyTracks,
+} from "./spotify/user";
 
 export const currentUser = query({
   args: {},
@@ -368,13 +380,90 @@ export const getRecentlyPlayedTracks = action({
               image: trackData.image[1]["#text"],
               artists: [trackData.artist["#text"]],
               albumName: trackData.album["#text"],
-              playedAt: trackData.date["#text"],
+              playedAt: utsToIsoString(trackData.date!.uts),
             },
       );
 
       return tracks;
     } catch (err: unknown) {
       console.error("error getting recently played tracks:", err);
+
+      return { error: INTERNAL_SERVER_ERROR };
+    }
+  },
+});
+
+export const getCurrentlyPlayingTrack = action({
+  args: {
+    username: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const platform = await ctx.runQuery(api.user.getAccountPlatform, {
+        username: args.username,
+      });
+
+      if (!platform) return { error: NO_PLATFORM };
+
+      let rawTrack:
+        | SpotifyCurrentlyPlayingResponse["item"]
+        | LastfmCurrentlyPlayingResponse;
+
+      switch (platform) {
+        case "spotify":
+          const spotifyTrack = await getCurrentlyPlayingSpotifyTrack(
+            ctx,
+            args.username,
+          );
+
+          if (!spotifyTrack) return null;
+
+          if ("error" in spotifyTrack) {
+            const error = spotifyTrack;
+
+            return error;
+          } else if (spotifyTrack.item.is_local) {
+            return null;
+          }
+
+          rawTrack = spotifyTrack.item;
+          break;
+        case "lastfm":
+          const lastfmTrack = await getCurrentlyPlayingLastfmTrack(
+            ctx,
+            args.username,
+          );
+
+          if (!lastfmTrack) return null;
+
+          if ("error" in lastfmTrack) {
+            const error = lastfmTrack;
+
+            return error;
+          }
+
+          rawTrack = lastfmTrack;
+          break;
+      }
+
+      const track =
+        "image" in rawTrack!
+          ? {
+              name: rawTrack!.name,
+              image: rawTrack.image[1]["#text"],
+              artists: [rawTrack.artist["#text"]],
+              albumName: rawTrack.album["#text"],
+            }
+          : {
+              name: rawTrack!.name,
+              image: rawTrack!.album.images[1].url,
+              artists: rawTrack!.album.artists.map((artist) => artist.name),
+              albumName: rawTrack!.album.name,
+            };
+
+      return track;
+    } catch (err: unknown) {
+      console.error("error getting currently playing track:", err);
 
       return { error: INTERNAL_SERVER_ERROR };
     }

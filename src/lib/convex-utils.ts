@@ -446,3 +446,15 @@ export function generateRandomCode(): string {
   }
   return result;
 }
+
+export function utsToIsoString(uts: string): string {
+  const seconds = Number.parseInt(uts, 10);
+
+  if (Number.isNaN(seconds)) {
+    throw new Error(`invalid unix timestamp: ${uts}`);
+  }
+
+  const date = new Date(seconds * 1000);
+
+  return date.toISOString();
+}

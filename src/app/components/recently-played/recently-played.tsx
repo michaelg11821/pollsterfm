@@ -4,6 +4,7 @@ import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
 import Track from "../track/track";
+import RecentlyPlayedSkeleton from "./skeleton";
 
 type RecentlyPlayedProps = {
   username: string;
@@ -22,8 +23,17 @@ async function RecentlyPlayed({ username, limit }: RecentlyPlayedProps) {
     { token },
   );
 
-  if (!recentTracks || "error" in recentTracks)
+  if (recentTracks === undefined) {
+    return <RecentlyPlayedSkeleton limit={limit ?? 20} />;
+  }
+
+  if (recentTracks === null || "error" in recentTracks) {
+    if (recentTracks.error === "PRIVATE_LASTFM_PROFILE") {
+      return <p>Last.fm profile is set to private.</p>;
+    }
+
     return <p>Could not retrieve recently played tracks.</p>;
+  }
 
   return (
     <div className="flex flex-col gap-3">

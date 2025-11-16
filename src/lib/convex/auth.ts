@@ -40,6 +40,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           image: lastfmProfile.image,
           lastfmProfileLink: lastfmProfile.lastfmProfileLink,
           lastfmSessionKey: tokens.access_token,
+          lastfmUsername: lastfmProfile.username,
         };
       },
       clientId: "dummy",
@@ -67,6 +68,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         spotifyExpiresAt: args.profile.spotifyExpiresAt,
         lastfmProfileLink: args.profile.lastfmProfileLink,
         lastfmSessionKey: args.profile.lastfmSessionKey,
+        lastfmUsername: args.profile.lastfmUsername,
       });
     },
   },

@@ -1,8 +1,6 @@
 import NowPlaying from "@/app/components/now-playing/now-playing";
-import NowPlayingSkeleton from "@/app/components/now-playing/skeleton";
 import ProfileHeader from "@/app/components/profile/profile";
 import RecentlyPlayed from "@/app/components/recently-played/recently-played";
-import RecentlyPlayedSkeleton from "@/app/components/recently-played/skeleton";
 import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
 import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import { buttonVariants } from "@/app/components/ui/button";
@@ -51,12 +49,8 @@ async function Profile({ params }: ProfileProps) {
             </div>
             <Card>
               <CardContent>
-                <Suspense fallback={<NowPlayingSkeleton />}>
-                  <NowPlaying username={username} />
-                </Suspense>
-                <Suspense fallback={<RecentlyPlayedSkeleton limit={4} />}>
-                  <RecentlyPlayed username={username} limit={4} />
-                </Suspense>
+                <NowPlaying username={username} />
+                <RecentlyPlayed username={username} limit={4} />
               </CardContent>
             </Card>
           </div>

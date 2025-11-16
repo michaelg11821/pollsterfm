@@ -131,39 +131,46 @@ async function getAccessToken(ctx: ActionCtx, username: string) {
   }
 }
 
+export async function getCurrentlyPlayingSpotifyTrack(
+  ctx: ActionCtx,
+  username: string,
+) {
+  try {
+    const accessToken = await getAccessToken(ctx, username);
+
+    if (!accessToken) throw new Error("error getting access token");
+
+    const res = await fetch(
+      "https://api.spotify.com/v1/me/player/currently-playing",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    if (!res.ok) return { error: SERVICE_ERROR };
+
+    if (res.status === 204) return null;
+
+    const trackInfo: SpotifyCurrentlyPlayingResponse = await res.json();
+
+    if (!trackInfo?.item) {
+      return { error: SERVICE_ERROR };
+    }
+
+    return trackInfo;
+  } catch (err: unknown) {
+    console.error("error getting currently playing track:", err);
+
+    return { error: INTERNAL_SERVER_ERROR };
+  }
+}
+
 export const getCurrentlyPlayingTrack = action({
   args: { username: v.string() },
   handler: async (ctx, args) => {
-    try {
-      const accessToken = await getAccessToken(ctx, args.username);
-
-      if (!accessToken) throw new Error("error getting access token");
-
-      const res = await fetch(
-        "https://api.spotify.com/v1/me/player/currently-playing",
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-
-      if (!res.ok) throw new Error("failed to get currently playing track");
-
-      if (res.status === 204) return null;
-
-      const trackInfo: SpotifyCurrentlyPlayingResponse = await res.json();
-
-      if (!trackInfo?.item) {
-        throw new Error("malformed track data");
-      }
-
-      return trackInfo;
-    } catch (err: unknown) {
-      console.error("error getting currently playing track:", err);
-
-      return null;
-    }
+    return await getCurrentlyPlayingSpotifyTrack(ctx, args.username);
   },
 });
 
