@@ -145,6 +145,11 @@ export type LastfmRecentlyPlayedResponse = {
         "#text": string;
       };
     }[];
+    "@attr": {
+      totalPages: string;
+      page: string;
+      total: string;
+    };
   };
 };
 

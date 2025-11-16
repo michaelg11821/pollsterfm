@@ -1,17 +1,34 @@
+import { api } from "@/lib/convex/_generated/api";
 import { spotifyHistoryImported } from "@/lib/data-access/user/read";
+import { toastManager } from "@/lib/toast";
 import type { Platform } from "@/lib/types/pollster";
+import { fetchQuery } from "convex/nextjs";
 import { Info } from "lucide-react";
+import { Suspense } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { MAX_TRACKS_WITHOUT_IMPORT } from "./spotify/config";
-import SpotifyListeningHistory from "./spotify/spotify";
+import LoadingIndicator from "../ui/loading-indicator";
+import { MAX_TRACKS_WITHOUT_IMPORT } from "./config";
+import LastfmListeningHistory from "./lastfm";
+import SpotifyListeningHistory from "./spotify";
 
 type ListeningHistoryProps = {
   username: string;
+  page: number;
 };
 
-async function ListeningHistory({ username }: ListeningHistoryProps) {
-  const platform: Platform = "spotify";
+async function ListeningHistory({ username, page }: ListeningHistoryProps) {
+  const platform: Platform | null = await fetchQuery(
+    api.user.getAccountPlatform,
+    { username },
+  );
   const hasImported = await spotifyHistoryImported(username);
+
+  if (!platform) {
+    return toastManager.add({
+      title: "Error",
+      description: "This user does not have a platform associated with them.",
+    });
+  }
 
   return platform === "spotify" ? (
     <div className="pt-5">
@@ -31,9 +48,11 @@ async function ListeningHistory({ username }: ListeningHistoryProps) {
         username={username}
       />
     </div>
-  ) : (
-    <p>not implemented yet</p>
-  );
+  ) : platform === "lastfm" ? (
+    <Suspense fallback={<LoadingIndicator loading={true} />}>
+      <LastfmListeningHistory username={username} page={page} />
+    </Suspense>
+  ) : null;
 }
 
 export default ListeningHistory;

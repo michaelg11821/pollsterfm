@@ -6,7 +6,7 @@ import {
 import type { LastfmRecentlyPlayedResponse } from "@/lib/types/lastfmResponses";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
-import { internalQuery, type ActionCtx } from "../_generated/server";
+import { action, internalQuery, type ActionCtx } from "../_generated/server";
 
 export const getLastfmUsername = internalQuery({
   args: { username: v.string() },
@@ -79,6 +79,22 @@ export async function getRecentlyPlayedLastfmTracks(
     return { error: INTERNAL_SERVER_ERROR };
   }
 }
+
+export const getRecentlyPlayedTracks = action({
+  args: {
+    username: v.string(),
+    limit: v.number(),
+    page: v.number(),
+  },
+  handler: async (ctx, args) => {
+    return await getRecentlyPlayedLastfmTracks(
+      ctx,
+      args.username,
+      args.limit,
+      args.page,
+    );
+  },
+});
 
 export async function getCurrentlyPlayingLastfmTrack(
   ctx: ActionCtx,

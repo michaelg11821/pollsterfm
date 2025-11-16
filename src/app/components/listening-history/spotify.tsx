@@ -5,12 +5,12 @@ import { toastManager } from "@/lib/toast";
 import { SpotifyRecentlyPlayedResponse } from "@/lib/types/spotifyResponses";
 import { useAction } from "convex/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Track from "../../track/track";
-import LoadingIndicator from "../../ui/loading-indicator";
+import Track from "../track/track";
+import LoadingIndicator from "../ui/loading-indicator";
 import {
   MAX_TRACKS_WITHOUT_IMPORT,
   TRACK_CHUNK_SIZE,
-  trackFetchingError,
+  TRACK_FETCHING_ERROR,
 } from "./config";
 
 import * as Sentry from "@sentry/nextjs";
@@ -53,11 +53,11 @@ function SpotifyListeningHistory({
       });
 
       if ("error" in response) {
-        throw new Error(trackFetchingError);
+        throw new Error(TRACK_FETCHING_ERROR);
       }
 
       if (!response || !response.items) {
-        throw new Error(trackFetchingError);
+        throw new Error(TRACK_FETCHING_ERROR);
       }
 
       setTracks((prevTracks) => {
@@ -77,7 +77,7 @@ function SpotifyListeningHistory({
 
       toastManager.add({
         title: "Error",
-        description: trackFetchingError,
+        description: TRACK_FETCHING_ERROR,
       });
 
       hasMoreRef.current = false;

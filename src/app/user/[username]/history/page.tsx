@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 
 type HistoryProps = {
   params: Promise<{ username: string }>;
+  searchParams: Promise<{ page?: string }>;
 };
 
 export async function generateMetadata({
@@ -23,8 +24,9 @@ export async function generateMetadata({
   };
 }
 
-async function History({ params }: HistoryProps) {
+async function History({ params, searchParams }: HistoryProps) {
   const { username } = await params;
+  const { page } = await searchParams;
 
   if (!username) return redirect("/not-found");
 
@@ -47,7 +49,7 @@ async function History({ params }: HistoryProps) {
           </div>
         </div>
       </div>
-      <ListeningHistory username={username} />
+      <ListeningHistory username={username} page={Number(page) ?? 1} />
     </main>
   );
 }
