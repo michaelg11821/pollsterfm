@@ -52,6 +52,10 @@ function SpotifyListeningHistory({
         next: nextUrl || undefined,
       });
 
+      if ("error" in response) {
+        throw new Error(trackFetchingError);
+      }
+
       if (!response || !response.items) {
         throw new Error(trackFetchingError);
       }
@@ -109,9 +113,10 @@ function SpotifyListeningHistory({
     return tracks?.map(({ track, played_at }) => (
       <Track
         key={`${track.id}-${played_at}`}
-        album={track.album}
-        trackTitle={track.name}
-        playedAt={played_at}
+        name={track.name}
+        image={track.album.images[1].url}
+        artists={track.artists.map(({ name }) => name)}
+        albumName={track.album.name}
       />
     ));
   }, [tracks]);
