@@ -36,6 +36,7 @@ export async function getRecentlyPlayedLastfmTracks(
   username: string,
   limit: number,
   page?: number,
+  includeLastTrack: boolean = false,
 ) {
   try {
     const lastfmUsername = await ctx.runQuery(
@@ -47,8 +48,11 @@ export async function getRecentlyPlayedLastfmTracks(
 
     if (!lastfmUsername) throw new Error("could not find lastfm username");
 
+    const computedPage = page ?? 1;
+    const computedLimit = computedPage === 1 ? limit + 1 : limit;
+
     const res = await fetch(
-      `http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastfmUsername}&limit=${limit + 1}&page=${page ?? 1}&api_key=${process.env.LASTFM_API_KEY}&format=json`,
+      `http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${lastfmUsername}&limit=${computedLimit}&page=${computedPage}&api_key=${process.env.LASTFM_API_KEY}&format=json`,
     );
 
     if (res.status === 403) {
@@ -65,11 +69,20 @@ export async function getRecentlyPlayedLastfmTracks(
 
     const firstTrack = trackInfo.recenttracks.track[0];
 
-    if (firstTrack["@attr"]) {
+    if (firstTrack["@attr"]?.nowplaying === "true") {
       trackInfo.recenttracks.track.shift();
+    }
+
+    if (includeLastTrack === false) {
       trackInfo.recenttracks.track.pop();
-    } else {
-      trackInfo.recenttracks.track.pop();
+    }
+
+    if (computedLimit === limit + 1) {
+      const { total } = trackInfo.recenttracks["@attr"];
+
+      trackInfo.recenttracks["@attr"].totalPages = String(
+        Math.ceil(Number(total) / limit),
+      );
     }
 
     return trackInfo;
@@ -92,6 +105,7 @@ export const getRecentlyPlayedTracks = action({
       args.username,
       args.limit,
       args.page,
+      true,
     );
   },
 });

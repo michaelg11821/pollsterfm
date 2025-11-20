@@ -354,6 +354,7 @@ export const getRecentlyPlayedTracks = action({
             args.username,
             args.limit,
             args.page,
+            false,
           );
 
           if ("error" in lastfmTracks) {
