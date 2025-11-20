@@ -15,19 +15,14 @@ export const getAffinities = query({
 export const getRandomAffinities = query({
   args: { amount: v.number(), upper: v.boolean() },
   handler: async (_, args) => {
-    const randomAffinities: Affinity[] = [];
+    const shuffled = [...affinities].sort(() => Math.random() - 0.5);
 
-    for (let i = 0; i < args.amount; i++) {
-      const randomIndex = Math.floor(Math.random() * affinities.length);
-      const affinity: Affinity = affinities[randomIndex];
+    const selected = shuffled.slice(0, Math.min(args.amount, shuffled.length));
 
-      if (args.upper) {
-        randomAffinities.push(capitalize(affinity) as Affinity);
-      } else {
-        randomAffinities.push(affinity);
-      }
+    if (args.upper) {
+      return selected.map((affinity) => capitalize(affinity) as Affinity);
     }
 
-    return randomAffinities;
+    return selected;
   },
 });
