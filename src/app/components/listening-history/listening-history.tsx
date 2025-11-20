@@ -13,7 +13,7 @@ import SpotifyListeningHistory from "./spotify";
 
 type ListeningHistoryProps = {
   username: string;
-  page: number;
+  page: string;
 };
 
 async function ListeningHistory({ username, page }: ListeningHistoryProps) {
@@ -50,7 +50,7 @@ async function ListeningHistory({ username, page }: ListeningHistoryProps) {
     </div>
   ) : platform === "lastfm" ? (
     <Suspense fallback={<LoadingIndicator loading={true} />}>
-      <LastfmListeningHistory username={username} page={page} />
+      <LastfmListeningHistory username={username} page={Number(page)} />
     </Suspense>
   ) : null;
 }

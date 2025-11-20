@@ -49,7 +49,7 @@ async function History({ params, searchParams }: HistoryProps) {
           </div>
         </div>
       </div>
-      <ListeningHistory username={username} page={Number(page) ?? 1} />
+      <ListeningHistory username={username} page={page ?? "1"} />
     </main>
   );
 }
