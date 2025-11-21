@@ -54,6 +54,8 @@ function MobileSearch({ initialQuery }: MobileSearchProps) {
             onSubmit={(e) => {
               e.preventDefault();
 
+              setOpen(false);
+
               return router.push(
                 `/search?query=${encodeURIComponent(searchQuery ?? "")}`,
               );
