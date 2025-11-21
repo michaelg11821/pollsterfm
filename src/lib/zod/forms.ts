@@ -62,8 +62,8 @@ const artistChoice = baseChoice.extend({
 });
 
 const albumChoice = baseChoice.extend({
-  artist: z.string().min(1, { error: "Please select an artist." }),
-  album: z.string({ error: "Please select an album." }),
+  artist: z.string(),
+  album: z.string().min(1, { error: "Please select an album." }),
   track: z.null(),
   image: z
     .url({
@@ -74,9 +74,9 @@ const albumChoice = baseChoice.extend({
 });
 
 const trackChoice = baseChoice.extend({
-  artist: z.string().min(1, { error: "Please select an artist." }),
-  album: z.string({ error: "Please select an album." }),
-  track: z.string({ error: "Please select a track." }),
+  artist: z.string(),
+  album: z.string(),
+  track: z.string().min(1, { error: "Please select a track." }),
   image: z
     .url({
       hostname: getImageHostnamesRegex(),
