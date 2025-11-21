@@ -7,6 +7,7 @@ import type {
   TrackData,
 } from "@/lib/types/internalResponses";
 import type { CatalogItemType } from "@/lib/types/pollster";
+import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import TopGenres from "../top-genres/top-genres";
@@ -179,6 +180,7 @@ function CatalogInfo({ itemType, data }: CatalogInfoProps) {
             "bg-primary self-center md:self-end",
           )}
         >
+          <PlusCircle className="h-4 w-4" />
           Create Poll
         </Link>
       </div>

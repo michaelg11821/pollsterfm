@@ -15,6 +15,7 @@ import {
   Loader2,
   Music2,
   Plus,
+  PlusCircle,
   Search,
   Trash2,
   User,
@@ -732,7 +733,10 @@ function CreatePoll({
             {creatingPoll ? (
               <Loader2 className="h-5 w-62 animate-spin" />
             ) : (
-              "Create Poll"
+              <>
+                <PlusCircle className="h-4 w-4" />
+                Create Poll
+              </>
             )}
           </Button>
         </div>

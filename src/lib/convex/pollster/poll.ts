@@ -152,3 +152,25 @@ export const getPopularPolls = query({
       .collect();
   },
 });
+
+export const getMyPolls = query({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (userId === null) {
+      return null;
+    }
+
+    const user = await ctx.db.get(userId);
+
+    if (user === null) {
+      return null;
+    }
+
+    return await ctx.db
+      .query("polls")
+      .withIndex("author", (q) => q.eq("author", user.username))
+      .order("desc")
+      .collect();
+  },
+});
