@@ -8,11 +8,11 @@ type RandomAffinitiesProps = {
   upper?: boolean;
 };
 
-async function RandomAffinities({ amount, upper }: RandomAffinitiesProps) {
+async function RandomAffinities({ amount }: RandomAffinitiesProps) {
   const token = await convexAuthNextjsToken();
   const affinities = await fetchQuery(
     api.pollster.affinity.getRandomAffinities,
-    { amount: amount ?? 12, upper: upper ?? true },
+    { amount: amount ?? 12, upper: false },
     { token },
   );
 

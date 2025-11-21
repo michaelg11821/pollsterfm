@@ -32,7 +32,10 @@ function TopAlbumAffinities({ album }: TopAlbumAffinitiesProps) {
     <Card>
       <CardHeader className="mb-0 flex items-center justify-between">
         <h2 className="text-xl font-bold">Affinities</h2>
-        <Link href="#" className={buttonVariants({ variant: "ghost" })}>
+        <Link
+          href="/affinities"
+          className={buttonVariants({ variant: "ghost" })}
+        >
           View All
         </Link>
       </CardHeader>

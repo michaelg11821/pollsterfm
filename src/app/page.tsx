@@ -1,3 +1,4 @@
+import { cn } from "@/lib/next-utils";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -88,15 +89,18 @@ async function Home({ searchParams }: HomeProps) {
           <div className="mb-12 flex flex-col items-start justify-between md:flex-row md:items-center">
             <div>
               <p className="mb-4 text-3xl font-bold md:text-4xl">
-                Discover Through Affinities
+                Discover through affinities
               </p>
               <p className="text-muted-foreground max-w-lg">
                 Affinities connect you with people who feel the same way about
                 music.
               </p>
             </div>
-            <Link href="#" className={buttonVariants({ variant: "secondary" })}>
-              View All Affinities <ChevronRight className="h-5 w-5" />
+            <Link
+              href="affinities"
+              className={cn(buttonVariants({ variant: "secondary" }), "mt-2")}
+            >
+              View all affinities <ChevronRight className="h-5 w-5" />
             </Link>
           </div>
           <Suspense fallback={<RandomAffinitiesSkeleton />}>
