@@ -174,3 +174,14 @@ export const getMyPolls = query({
       .collect();
   },
 });
+
+export const getUserPolls = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("polls")
+      .withIndex("author", (q) => q.eq("author", args.username))
+      .order("desc")
+      .collect();
+  },
+});

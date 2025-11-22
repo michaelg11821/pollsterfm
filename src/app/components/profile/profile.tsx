@@ -120,7 +120,7 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
                 <span className="text-muted-foreground ml-1">Followers</span>
               </Link>
               <Link
-                href={user?.username === username ? "/my-polls" : "#"}
+                href={`/user/${username}/polls`}
                 className="text-foreground/80 hover:text-foreground"
               >
                 <span className="font-bold">

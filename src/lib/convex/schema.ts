@@ -35,6 +35,7 @@ const schema = defineSchema({
       ),
     ),
     createdPolls: v.optional(v.array(pollValidator)),
+    followers: v.optional(v.id("users")),
   })
     .index("email", ["email"])
     .index("username", ["username"]),
