@@ -21,7 +21,7 @@ function ProfileHeaderSkeleton() {
                 <div className="skeleton mt-1 h-5 w-25 animate-pulse rounded-md"></div>
               </div>
               <div className="flex items-end gap-2">
-                <div className="skeleton h-9 w-33 animate-pulse rounded-md"></div>
+                <div className="skeleton h-9 w-25 animate-pulse rounded-md"></div>
                 <div className="skeleton h-9 w-9 animate-pulse rounded-md"></div>
               </div>
             </div>

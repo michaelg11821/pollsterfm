@@ -1,6 +1,11 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { type Infer, v } from "convex/values";
-import { INTERNAL_SERVER_ERROR, NO_PLATFORM } from "../constants/errors";
+import {
+  INTERNAL_SERVER_ERROR,
+  NO_PLATFORM,
+  NOT_FOUND,
+  UNAUTHORIZED,
+} from "../constants/errors";
 import { capitalize, getChoiceItemName, utsToIsoString } from "../convex-utils";
 import {
   LastfmCurrentlyPlayingResponse,
@@ -13,7 +18,13 @@ import {
 } from "../types/spotifyResponses";
 import { api } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
-import { action, mutation, query, QueryCtx } from "./_generated/server";
+import {
+  action,
+  mutation,
+  MutationCtx,
+  query,
+  QueryCtx,
+} from "./_generated/server";
 import {
   getCurrentlyPlayingLastfmTrack,
   getRecentlyPlayedLastfmTracks,
@@ -23,16 +34,20 @@ import {
   getRecentlyPlayedSpotifyTracks,
 } from "./spotify/user";
 
+async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
+  const userId = await getAuthUserId(ctx);
+
+  if (userId === null) {
+    return null;
+  }
+
+  return await ctx.db.get(userId);
+}
+
 export const currentUser = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-
-    if (userId === null) {
-      return null;
-    }
-
-    return await ctx.db.get(userId);
+    return await getCurrentUser(ctx);
   },
 });
 
@@ -74,13 +89,7 @@ export const getProfile = query({
         .withIndex("username", (q) => q.eq("username", args.username!))
         .unique();
     } else {
-      const userId = await getAuthUserId(ctx);
-
-      if (userId === null) {
-        return null;
-      }
-
-      user = await ctx.db.get(userId);
+      user = await getCurrentUser(ctx);
     }
 
     if (user === null) {
@@ -168,13 +177,7 @@ export const addVote = mutation({
     choiceIndex: v.number(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-
-    if (userId === null) {
-      throw new Error("user not logged in");
-    }
-
-    const user = await ctx.db.get(userId);
+    const user = await getCurrentUser(ctx);
 
     if (user === null) {
       throw new Error("user not found");
@@ -200,7 +203,7 @@ export const addVote = mutation({
       ? [...user.choices, newChoice]
       : [newChoice];
 
-    await ctx.db.patch(userId, { choices: newChoices });
+    await ctx.db.patch(user._id, { choices: newChoices });
 
     const poll = await ctx.db.get(args.pollId);
 
@@ -467,6 +470,109 @@ export const getCurrentlyPlayingTrack = action({
       console.error("error getting currently playing track:", err);
 
       return { error: INTERNAL_SERVER_ERROR };
+    }
+  },
+});
+
+export const followUser = mutation({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    try {
+      const sender = await getCurrentUser(ctx);
+
+      if (sender === null) return { error: UNAUTHORIZED };
+
+      const recipient = await ctx.db
+        .query("users")
+        .withIndex("username", (q) => q.eq("username", args.username))
+        .unique();
+
+      if (recipient === null) return { error: NOT_FOUND };
+
+      await ctx.db.insert("follows", {
+        recipient: recipient._id,
+        sender: sender._id,
+      });
+
+      const senderProfileLink = `${process.env.SITE_URL}user/${sender.username}`;
+
+      await ctx.db.insert("notifications", {
+        userId: recipient._id,
+        description: `${sender.username} is now following you.`,
+        link: `${senderProfileLink}`,
+      });
+    } catch (err: unknown) {
+      console.error(`error following user ${args.username}: ${err}`);
+
+      return { error: INTERNAL_SERVER_ERROR };
+    }
+  },
+});
+
+export const unfollowUser = mutation({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    try {
+      const sender = await getCurrentUser(ctx);
+
+      if (sender === null) return { error: UNAUTHORIZED };
+
+      const recipient = await ctx.db
+        .query("users")
+        .withIndex("username", (q) => q.eq("username", args.username))
+        .unique();
+
+      if (recipient === null) return { error: NOT_FOUND };
+
+      const followToRemove = await ctx.db
+        .query("follows")
+        .withIndex("by_recipient_sender", (q) =>
+          q.eq("recipient", recipient._id).eq("sender", sender._id),
+        )
+        .unique();
+
+      if (followToRemove === null) return { error: NOT_FOUND };
+
+      await ctx.db.delete(followToRemove._id);
+    } catch (err: unknown) {
+      console.error(`error following user ${args.username}: ${err}`);
+
+      return { error: INTERNAL_SERVER_ERROR };
+    }
+  },
+});
+
+export const isFollowing = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    try {
+      const sender = await getCurrentUser(ctx);
+
+      if (sender === null) return null;
+
+      const recipient = await ctx.db
+        .query("users")
+        .withIndex("username", (q) => q.eq("username", args.username))
+        .unique();
+
+      if (recipient === null) return null;
+
+      const follow = await ctx.db
+        .query("follows")
+        .withIndex("by_recipient_sender", (q) =>
+          q.eq("recipient", recipient._id).eq("sender", sender._id),
+        )
+        .unique();
+
+      if (follow === null) return false;
+
+      return true;
+    } catch (err: unknown) {
+      console.error(
+        `error checking if user is following ${args.username}: ${err}`,
+      );
+
+      return null;
     }
   },
 });

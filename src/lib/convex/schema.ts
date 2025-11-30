@@ -35,7 +35,6 @@ const schema = defineSchema({
       ),
     ),
     createdPolls: v.optional(v.array(pollValidator)),
-    followers: v.optional(v.id("users")),
   })
     .index("email", ["email"])
     .index("username", ["username"]),
@@ -51,6 +50,18 @@ const schema = defineSchema({
   })
     .index("authCode", ["authCode"])
     .index("createdAt", ["createdAt"]),
+  follows: defineTable({
+    recipient: v.id("users"),
+    sender: v.id("users"),
+  })
+    .index("recipient", ["recipient"])
+    .index("sender", ["sender"])
+    .index("by_recipient_sender", ["recipient", "sender"]),
+  notifications: defineTable({
+    description: v.string(),
+    link: v.string(),
+    userId: v.id("users"),
+  }),
 });
 
 export default schema;

@@ -4,33 +4,131 @@ import Image from "next/image";
 
 import EditProfile from "../edit-profile/edit-profile";
 
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { getDateFromCreatedAt } from "@/lib/convex-utils";
 import { api } from "@/lib/convex/_generated/api";
-import { useQuery } from "convex/react";
-import { Calendar, Ellipsis } from "lucide-react";
+import { toastManager } from "@/lib/toast";
+import { useMutation, useQuery } from "convex/react";
+import { Calendar, Ellipsis, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import ProfileHeaderSkeleton from "./skeleton";
+
+import * as Sentry from "@sentry/nextjs";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type ProfileHeaderProps = {
   username: string;
 };
 
 function ProfileHeader({ username }: ProfileHeaderProps) {
+  const [followLoading, setFollowLoading] = useState<boolean>(false);
+
   const profile = useQuery(api.user.getProfile, { username });
   const user = useQuery(api.user.currentUser);
+  const isFollowing = useQuery(api.user.isFollowing, { username });
 
-  if (profile === undefined || user === undefined) {
+  const followUser = useMutation(api.user.followUser);
+  const unfollowUser = useMutation(api.user.unfollowUser);
+
+  const router = useRouter();
+
+  if (
+    profile === undefined ||
+    user === undefined ||
+    isFollowing === undefined
+  ) {
     return <ProfileHeaderSkeleton />;
   }
 
   if (profile === null) {
-    return null;
+    return router.push("/not-found");
   }
 
   const createdAtDate = new Date(profile.createdAt);
 
   const joinDate = getDateFromCreatedAt(profile.createdAt);
+
+  const onFollow = async () => {
+    try {
+      setFollowLoading(true);
+
+      const result = await followUser({ username });
+
+      if (result === null) return;
+
+      if ("error" in result) {
+        switch (result.error) {
+          case "INTERNAL_SERVER_ERROR":
+            return toastManager.add({
+              title: "Error",
+              description: `Unknown error attempting to follow ${username}. Please try again.`,
+            });
+          case "NOT_FOUND":
+            return toastManager.add({
+              title: "Error",
+              description: `Could not find ${username} on ${SITE_NAME}. Their username may have changed.`,
+            });
+          case "UNAUTHORIZED":
+            return toastManager.add({
+              title: "Error",
+              description: `Please log in to follow ${username} on ${SITE_NAME}.`,
+            });
+        }
+      }
+    } catch (err: unknown) {
+      Sentry.captureException(err);
+
+      return toastManager.add({
+        title: "Error",
+        description:
+          "Unknown error attempting to follow ${username}. Please try again.",
+      });
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
+  const onUnfollow = async () => {
+    try {
+      setFollowLoading(true);
+
+      const result = await unfollowUser({ username });
+
+      if (result === null) return;
+
+      if ("error" in result) {
+        switch (result.error) {
+          case "INTERNAL_SERVER_ERROR":
+            return toastManager.add({
+              title: "Error",
+              description: `Unknown error attempting to unfollow ${username}. Please try again.`,
+            });
+          case "NOT_FOUND":
+            return toastManager.add({
+              title: "Error",
+              description: `Could not find ${username} on ${SITE_NAME}. Their username may have changed.`,
+            });
+          case "UNAUTHORIZED":
+            return toastManager.add({
+              title: "Error",
+              description: `Please log in to unfollow ${username} on ${SITE_NAME}.`,
+            });
+        }
+      }
+    } catch (err: unknown) {
+      Sentry.captureException(err);
+
+      return toastManager.add({
+        title: "Error",
+        description:
+          "Unknown error attempting to unfollow ${username}. Please try again.",
+      });
+    } finally {
+      setFollowLoading(false);
+    }
+  };
 
   return (
     <>
@@ -77,13 +175,32 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
                     username={username}
                     aboutMe={profile.aboutMe}
                   />
-                ) : (
+                ) : isFollowing === false ? (
                   <Button
                     variant="default"
-                    className="bg-primary cursor-pointer px-4 py-2"
+                    className="bg-primary w-25 cursor-pointer px-4 py-2"
+                    onClick={async () => await onFollow()}
                   >
-                    Follow
+                    {followLoading ? (
+                      <Loader2 className="h-5 w-25 animate-spin" />
+                    ) : (
+                      "Follow"
+                    )}
                   </Button>
+                ) : isFollowing === true ? (
+                  <Button
+                    variant="secondary"
+                    className="w-25 cursor-pointer px-4 py-2"
+                    onClick={async () => await onUnfollow()}
+                  >
+                    {followLoading ? (
+                      <Loader2 className="h-5 w-25 animate-spin" />
+                    ) : (
+                      "Following"
+                    )}
+                  </Button>
+                ) : (
+                  ""
                 )}
                 <Button
                   variant="outline"
