@@ -29,6 +29,12 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
   const user = useQuery(api.user.currentUser);
   const isFollowing = useQuery(api.user.isFollowing, { username });
 
+  // const { followers, status, loadMore } = usePaginatedQuery(
+  //   api.user.getFollowers,
+  //   { username },
+  //   { initialNumItems: 10 },
+  // );
+
   const followUser = useMutation(api.user.followUser);
   const unfollowUser = useMutation(api.user.unfollowUser);
 
@@ -43,7 +49,8 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
   }
 
   if (profile === null) {
-    return router.push("/not-found");
+    router.push("/not-found");
+    return null;
   }
 
   const createdAtDate = new Date(profile.createdAt);

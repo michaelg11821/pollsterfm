@@ -36,7 +36,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hook-form": "^7.60.0",
-    "require-in-the-middle": "^8.0.1",
+    "require-in-the-middle": "^7.5.2",
     "tailwind-merge": "^3.2.0",
     "zod": "^4.0.5"
   },
