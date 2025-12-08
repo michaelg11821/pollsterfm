@@ -1,4 +1,5 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { paginationOptsValidator } from "convex/server";
 import { type Infer, v } from "convex/values";
 import {
   INTERNAL_SERVER_ERROR,
@@ -51,33 +52,6 @@ export const currentUser = query({
   },
 });
 
-async function getProfileImages(
-  originalProfileIcon: string | undefined,
-  originalHeaderImage: string | undefined,
-  ctx: QueryCtx,
-) {
-  let profileIcon: string | null | undefined;
-  let headerImage: string | null | undefined;
-
-  if (originalProfileIcon && !originalProfileIcon?.startsWith("https://")) {
-    profileIcon = await ctx.storage.getUrl(
-      originalProfileIcon as Id<"_storage">,
-    );
-  } else {
-    profileIcon = originalProfileIcon;
-  }
-
-  if (!originalHeaderImage) {
-    headerImage = undefined;
-  } else {
-    headerImage = await ctx.storage.getUrl(
-      originalHeaderImage as Id<"_storage">,
-    );
-  }
-
-  return { profileIcon, headerImage };
-}
-
 export const getProfile = query({
   args: { username: v.optional(v.string()) },
   handler: async (ctx, args) => {
@@ -96,18 +70,12 @@ export const getProfile = query({
       return null;
     }
 
-    const { profileIcon, headerImage } = await getProfileImages(
-      user.image,
-      user.headerImage,
-      ctx,
-    );
-
     return {
       aboutMe: user.aboutMe,
       createdAt: user._creationTime,
-      image: profileIcon,
+      image: user.image,
       username: user.username,
-      headerImage,
+      headerImage: user.headerImage,
       name: user.name,
       createdPolls: user.createdPolls,
     };
@@ -134,8 +102,8 @@ const updateProfileValidator = v.object({
   name: v.string(),
   username: v.string(),
   aboutMe: v.optional(v.string()),
-  image: v.optional(v.union(v.string(), v.id("_storage"))),
-  headerImage: v.optional(v.id("_storage")),
+  image: v.optional(v.string()),
+  headerImage: v.optional(v.string()),
 });
 
 export type UpdateProfileArgs = Infer<typeof updateProfileValidator>;
@@ -145,11 +113,37 @@ export const updateProfile = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
 
+    let headerImage: string | undefined;
+    let profileIcon: string | undefined;
+
     if (userId === null) {
       return null;
     }
 
-    await ctx.db.patch(userId, args);
+    if (!args.headerImage) {
+      headerImage = undefined;
+    } else {
+      headerImage =
+        (await ctx.storage.getUrl(args.headerImage as Id<"_storage">)) ??
+        undefined;
+    }
+
+    if (args.image && !args.image?.startsWith("https://")) {
+      profileIcon =
+        (await ctx.storage.getUrl(args.image as Id<"_storage">)) ?? undefined;
+    } else {
+      profileIcon = args.image;
+    }
+
+    const newArgs: UpdateProfileArgs = {
+      aboutMe: args.aboutMe,
+      image: profileIcon,
+      headerImage,
+      name: args.name,
+      username: args.username,
+    };
+
+    await ctx.db.patch(userId, newArgs);
   },
 });
 
@@ -214,14 +208,8 @@ export const addVote = mutation({
     const pollChoicesCopy = [...poll.choices];
     pollChoicesCopy[args.choiceIndex].totalVotes += 1;
 
-    const { profileIcon } = await getProfileImages(
-      user.image,
-      user.headerImage,
-      ctx,
-    );
-
     const userActivity: PollActivity = {
-      user: { username: user.username, image: profileIcon ?? undefined },
+      user: { username: user.username, image: user.image },
       action: "voted for",
       choice: getChoiceItemName(newChoice)!,
       timestamp: Date.now(),
@@ -573,6 +561,172 @@ export const isFollowing = query({
       );
 
       return null;
+    }
+  },
+});
+
+export const getFollowers = query({
+  args: { username: v.string(), paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    try {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("username", (q) => q.eq("username", args.username))
+        .unique();
+
+      if (!user) {
+        return {
+          page: [] as {
+            name: string | undefined;
+            username: string;
+            image: string | undefined;
+          }[],
+          isDone: true,
+          continueCursor: "",
+        };
+      }
+
+      const followsPage = await ctx.db
+        .query("follows")
+        .withIndex("recipient", (q) => q.eq("recipient", user._id))
+        .paginate(args.paginationOpts);
+
+      const followers = (
+        await Promise.all(
+          followsPage.page.map((follow) => ctx.db.get(follow.sender)),
+        )
+      )
+        .filter((f) => f !== null)
+        .map(({ name, username, image }) => ({ name, username, image }));
+
+      return {
+        ...followsPage,
+        page: followers,
+      };
+    } catch (err: unknown) {
+      console.error(
+        `error getting followers for user ${args.username}: ${err}`,
+      );
+
+      return {
+        page: [] as {
+          name: string | undefined;
+          username: string;
+          image: string | undefined;
+        }[],
+        isDone: true,
+        continueCursor: "",
+      };
+    }
+  },
+});
+
+export const getFollowing = query({
+  args: { username: v.string(), paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    try {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("username", (q) => q.eq("username", args.username))
+        .unique();
+
+      if (!user) {
+        return {
+          page: [] as {
+            name: string | undefined;
+            username: string;
+            image: string | undefined;
+          }[],
+          isDone: true,
+          continueCursor: "",
+        };
+      }
+
+      const followingPage = await ctx.db
+        .query("follows")
+        .withIndex("sender", (q) => q.eq("sender", user._id))
+        .paginate(args.paginationOpts);
+
+      const following = (
+        await Promise.all(
+          followingPage.page.map((follow) => ctx.db.get(follow.recipient)),
+        )
+      )
+        .filter((f) => f !== null)
+        .map(({ name, username, image }) => ({ name, username, image }));
+
+      return {
+        ...followingPage,
+        page: following,
+      };
+    } catch (err: unknown) {
+      console.error(
+        `error getting following for user ${args.username}: ${err}`,
+      );
+
+      return {
+        page: [] as {
+          name: string | undefined;
+          username: string;
+          image: string | undefined;
+        }[],
+        isDone: true,
+        continueCursor: "",
+      };
+    }
+  },
+});
+
+export const getFollowersCount = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    try {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("username", (q) => q.eq("username", args.username))
+        .unique();
+
+      if (!user) return 0;
+
+      const followers = await ctx.db
+        .query("follows")
+        .withIndex("recipient", (q) => q.eq("recipient", user._id))
+        .collect();
+
+      return followers.length;
+    } catch (err: unknown) {
+      console.error(
+        `error getting followers count for user ${args.username}: ${err}`,
+      );
+
+      return 0;
+    }
+  },
+});
+
+export const getFollowingCount = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    try {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("username", (q) => q.eq("username", args.username))
+        .unique();
+
+      if (!user) return 0;
+
+      const following = await ctx.db
+        .query("follows")
+        .withIndex("sender", (q) => q.eq("sender", user._id))
+        .collect();
+
+      return following.length;
+    } catch (err: unknown) {
+      console.error(
+        `error getting following count for user ${args.username}: ${err}`,
+      );
+
+      return 0;
     }
   },
 });

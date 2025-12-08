@@ -37,7 +37,7 @@ export default function RootLayout({
           className={`${lexend.variable} antialiased`}
           suppressHydrationWarning
         >
-          <body className="min-h-svh">
+          <body className="flex min-h-svh flex-col">
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -46,7 +46,7 @@ export default function RootLayout({
             >
               <Toast.Provider toastManager={toastManager}>
                 <Nav />
-                {children}
+                <div className="flex-1">{children}</div>
                 <Footer />
                 <Toast.Viewport className="fixed top-auto right-4 bottom-4 left-auto z-100 mx-auto my-0 w-62.5 sm:right-8 sm:bottom-8 sm:w-75">
                   <ToastList />

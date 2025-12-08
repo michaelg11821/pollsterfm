@@ -28,12 +28,8 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
   const profile = useQuery(api.user.getProfile, { username });
   const user = useQuery(api.user.currentUser);
   const isFollowing = useQuery(api.user.isFollowing, { username });
-
-  // const { followers, status, loadMore } = usePaginatedQuery(
-  //   api.user.getFollowers,
-  //   { username },
-  //   { initialNumItems: 10 },
-  // );
+  const followersCount = useQuery(api.user.getFollowersCount, { username });
+  const followingCount = useQuery(api.user.getFollowingCount, { username });
 
   const followUser = useMutation(api.user.followUser);
   const unfollowUser = useMutation(api.user.unfollowUser);
@@ -230,17 +226,17 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
             </div>
             <div className="mt-4 flex gap-4 text-sm">
               <Link
-                href="#"
+                href={`/user/${username}/following`}
                 className="text-foreground/80 hover:text-foreground"
               >
-                <span className="font-bold">33</span>
+                <span className="font-bold">{followingCount ?? 0}</span>
                 <span className="text-muted-foreground ml-1">Following</span>
               </Link>
               <Link
-                href="#"
+                href={`/user/${username}/followers`}
                 className="text-foreground/80 hover:text-foreground"
               >
-                <span className="font-bold">33</span>
+                <span className="font-bold">{followersCount ?? 0}</span>
                 <span className="text-muted-foreground ml-1">Followers</span>
               </Link>
               <Link
