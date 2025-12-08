@@ -135,6 +135,24 @@ export const updateProfile = mutation({
       profileIcon = args.image;
     }
 
+    const existingUserImages = await ctx.db
+      .query("userImageIds")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .unique();
+
+    if (existingUserImages) {
+      await ctx.db.patch(existingUserImages._id, {
+        headerImageId: args.headerImage as Id<"_storage"> | undefined,
+        profileIconId: args.image as Id<"_storage"> | undefined,
+      });
+    } else {
+      await ctx.db.insert("userImageIds", {
+        userId,
+        headerImageId: args.headerImage as Id<"_storage"> | undefined,
+        profileIconId: args.image as Id<"_storage"> | undefined,
+      });
+    }
+
     const newArgs: UpdateProfileArgs = {
       aboutMe: args.aboutMe,
       image: profileIcon,
