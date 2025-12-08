@@ -141,7 +141,8 @@ function Footer() {
             </Link>
 
             <Link
-              href="#"
+              href="https://github.com/michaelg11821/pollsterfm"
+              target="_blank"
               className="text-muted-foreground hover:text-foreground text-center transition-[color]"
             >
               <svg
