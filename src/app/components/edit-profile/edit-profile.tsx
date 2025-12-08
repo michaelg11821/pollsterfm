@@ -25,7 +25,6 @@ import { toastManager } from "@/lib/toast";
 
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
-import type { Id } from "@/lib/convex/_generated/dataModel";
 import { UpdateProfileArgs } from "@/lib/convex/user";
 import { editProfileSchema, editProfileSchemaType } from "@/lib/zod/forms";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -107,6 +106,8 @@ function EditProfile({
 
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const deleteImage = useMutation(api.files.deleteById);
+  const profileIconId = useQuery(api.files.getProfileIconStorageId);
+  const headerImageId = useQuery(api.files.getHeaderImageStorageId);
   const currentUser = useQuery(api.user.currentUser);
   const existingUser = useQuery(api.user.checkForExisting, {
     username: newUsername,
@@ -170,23 +171,27 @@ function EditProfile({
         aboutMe: newAboutMe,
       };
 
-      if (deleteHeaderImg && currentUser.headerImage) {
-        await deleteImage({ storageId: currentUser.headerImage });
+      if (deleteHeaderImg && currentUser.headerImage && headerImageId) {
+        await deleteImage({ storageId: headerImageId });
 
         args.headerImage = undefined;
       }
 
-      if (deleteProfileIcon && currentUser.image) {
+      if (deleteProfileIcon && currentUser.image && profileIconId) {
         if (!currentUser.image.startsWith("https://")) {
-          await deleteImage({ storageId: currentUser.image as Id<"_storage"> });
+          await deleteImage({ storageId: profileIconId });
         }
 
         args.image = undefined;
       }
 
       if (newProfileIcon) {
-        if (currentUser.image && !currentUser.image.startsWith("https://")) {
-          await deleteImage({ storageId: currentUser.image as Id<"_storage"> });
+        if (
+          currentUser.image &&
+          profileIconId &&
+          !currentUser.image.startsWith("https://")
+        ) {
+          await deleteImage({ storageId: profileIconId });
         }
 
         const uploadUrl = await generateUploadUrl();
@@ -203,8 +208,8 @@ function EditProfile({
       }
 
       if (newHeaderImg) {
-        if (currentUser.headerImage) {
-          await deleteImage({ storageId: currentUser.headerImage });
+        if (currentUser.headerImage && headerImageId) {
+          await deleteImage({ storageId: headerImageId });
         }
 
         const uploadUrl = await generateUploadUrl();
