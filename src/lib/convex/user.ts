@@ -120,19 +120,30 @@ export const updateProfile = mutation({
       return null;
     }
 
+    let headerImageStorageId: Id<"_storage"> | undefined;
+
     if (!args.headerImage) {
       headerImage = undefined;
+      headerImageStorageId = undefined;
+    } else if (args.headerImage.startsWith("https://")) {
+      headerImage = args.headerImage;
+      headerImageStorageId = undefined;
     } else {
       headerImage =
         (await ctx.storage.getUrl(args.headerImage as Id<"_storage">)) ??
         undefined;
+      headerImageStorageId = args.headerImage as Id<"_storage">;
     }
+
+    let profileIconStorageId: Id<"_storage"> | undefined;
 
     if (args.image && !args.image?.startsWith("https://")) {
       profileIcon =
         (await ctx.storage.getUrl(args.image as Id<"_storage">)) ?? undefined;
+      profileIconStorageId = args.image as Id<"_storage">;
     } else {
       profileIcon = args.image;
+      profileIconStorageId = undefined;
     }
 
     const existingUserImages = await ctx.db
@@ -141,27 +152,48 @@ export const updateProfile = mutation({
       .unique();
 
     if (existingUserImages) {
-      await ctx.db.patch(existingUserImages._id, {
-        headerImageId: args.headerImage as Id<"_storage"> | undefined,
-        profileIconId: args.image as Id<"_storage"> | undefined,
-      });
+      const imagePatch: {
+        headerImageId?: Id<"_storage"> | undefined;
+        profileIconId?: Id<"_storage"> | undefined;
+      } = {};
+
+      if (args.headerImage !== undefined) {
+        imagePatch.headerImageId = headerImageStorageId;
+      }
+
+      if (args.image !== undefined) {
+        imagePatch.profileIconId = profileIconStorageId;
+      }
+
+      if (Object.keys(imagePatch).length > 0) {
+        await ctx.db.patch(existingUserImages._id, imagePatch);
+      }
     } else {
       await ctx.db.insert("userImageIds", {
         userId,
-        headerImageId: args.headerImage as Id<"_storage"> | undefined,
-        profileIconId: args.image as Id<"_storage"> | undefined,
+        headerImageId: headerImageStorageId,
+        profileIconId: profileIconStorageId,
       });
     }
 
-    const newArgs: UpdateProfileArgs = {
-      aboutMe: args.aboutMe,
-      image: profileIcon,
-      headerImage,
+    const userPatch: Partial<UpdateProfileArgs> = {
       name: args.name,
       username: args.username,
     };
 
-    await ctx.db.patch(userId, newArgs);
+    if (args.aboutMe !== undefined) {
+      userPatch.aboutMe = args.aboutMe;
+    }
+
+    if (args.image !== undefined) {
+      userPatch.image = profileIcon;
+    }
+
+    if (args.headerImage !== undefined) {
+      userPatch.headerImage = headerImage;
+    }
+
+    await ctx.db.patch(userId, userPatch);
   },
 });
 
