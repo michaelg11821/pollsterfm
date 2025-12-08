@@ -62,6 +62,11 @@ const schema = defineSchema({
     link: v.string(),
     userId: v.id("users"),
   }),
+  userImageIds: defineTable({
+    userId: v.id("users"),
+    profileIconId: v.optional(v.id("_storage")),
+    headerImageId: v.optional(v.id("_storage")),
+  }).index("by_userId", ["userId"]),
 });
 
 export default schema;
