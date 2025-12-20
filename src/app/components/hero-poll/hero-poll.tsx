@@ -28,7 +28,7 @@ function HeroPoll() {
 
   if (poll === null) {
     return (
-      <div className="bg-card border-border flex flex-col items-center justify-center rounded-xl border p-12 text-center shadow-xl">
+      <div className="bg-card border-border flex flex-col items-center justify-center rounded-xl border p-8 text-center shadow-xl sm:p-12">
         <div className="bg-accent mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
           <Users className="text-muted-foreground h-8 w-8" />
         </div>
@@ -52,35 +52,35 @@ function HeroPoll() {
   }));
 
   return (
-    <div className="relative">
-      <div className="from-primary/20 via-primary/5 absolute -top-8 -right-8 h-64 w-64 rounded-full bg-gradient-to-br to-transparent blur-3xl" />
+    <div className="relative w-full overflow-hidden">
+      <div className="from-primary/20 via-primary/5 pointer-events-none absolute -top-8 right-0 h-64 w-64 rounded-full bg-gradient-to-br to-transparent opacity-50 blur-3xl" />
 
-      <div className="bg-card border-border relative overflow-hidden rounded-xl border shadow-xl">
-        <div className="border-border flex items-center justify-between border-b px-5 py-4">
-          <div className="flex items-center gap-3">
+      <div className="bg-card border-border relative w-full overflow-hidden rounded-xl border shadow-xl">
+        <div className="border-border flex items-center gap-3 border-b px-4 py-4 sm:px-5">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             <PollAuthorImage username={poll.author} />
-            <div>
-              <h3 className="font-semibold">{poll.question}</h3>
-              <p className="text-muted-foreground text-xs">
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate font-semibold">{poll.question}</h3>
+              <p className="text-muted-foreground truncate text-xs">
                 by @{poll.author} • {poll.totalVotes.toLocaleString()} vote
                 {poll.totalVotes <= 0 || poll.totalVotes > 1 ? "s " : " "}
               </p>
             </div>
           </div>
-          <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-medium">
+          <span className="bg-primary/10 text-primary shrink-0 rounded-full px-2 py-0.5 text-xs font-medium">
             Live
           </span>
         </div>
 
-        <div className="space-y-3 p-5">
+        <div className="space-y-3 p-4 sm:p-5">
           {choicesWithPercentage.slice(0, 4).map((choice, i) => (
-            <div key={i} className="relative">
+            <div key={i} className="relative min-w-0">
               <div className="border-border relative overflow-hidden rounded-lg border p-3">
                 <div
                   className="bg-primary/10 absolute inset-y-0 left-0"
                   style={{ width: `${choice.pct}%` }}
                 />
-                <div className="relative flex items-center gap-3">
+                <div className="relative flex min-w-0 items-center gap-2 sm:gap-3">
                   <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-black/20">
                     <Image
                       src={choice.image}
@@ -108,25 +108,29 @@ function HeroPoll() {
         </div>
 
         {uniqueAffinities.length > 0 && (
-          <div className="border-border flex flex-wrap items-center gap-2 px-5 pt-0 pb-3">
-            <p className="text-muted-foreground text-center text-xs">
+          <div className="border-border flex flex-wrap items-center gap-2 overflow-hidden px-4 pt-0 pb-3 sm:px-5">
+            <p className="text-muted-foreground shrink-0 text-xs">
               Affinities:
             </p>
             {uniqueAffinities.slice(0, 5).map((affinity) => (
-              <Badge key={affinity} variant="secondary" className="text-xs">
+              <Badge
+                key={affinity}
+                variant="secondary"
+                className="max-w-[120px] truncate text-xs"
+              >
                 {affinity}
               </Badge>
             ))}
             {uniqueAffinities.length > 5 && (
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="shrink-0 text-xs">
                 +{uniqueAffinities.length - 5}
               </Badge>
             )}
           </div>
         )}
 
-        <div className="border-border bg-muted/30 flex items-center justify-between border-t px-5 py-3">
-          <div className="text-muted-foreground flex items-center gap-4 text-xs">
+        <div className="border-border bg-muted/30 flex flex-col gap-3 border-t px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs sm:gap-4">
             <span className="flex items-center gap-1">
               <Users className="h-3.5 w-3.5" />
               {poll.totalVotes.toLocaleString()} vote

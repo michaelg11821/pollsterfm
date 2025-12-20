@@ -16,18 +16,18 @@ export default async function Home() {
   const user = await fetchQuery(api.user.currentUser, {}, { token });
   return (
     <main>
-      <section className="border-border border-b py-16 md:py-24">
-        <div className="content-wrapper px-5">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
-            <div>
-              <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+      <section className="border-border overflow-hidden border-b py-16 md:py-24">
+        <div className="content-wrapper px-4 sm:px-5">
+          <div className="grid gap-8 md:gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+            <div className="min-w-0">
+              <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 Track music you&apos;ve heard.
                 <span className="text-muted-foreground">
                   {" "}
                   Find others who agree.
                 </span>
               </h1>
-              <p className="text-muted-foreground mb-8 max-w-md text-lg">
+              <p className="text-muted-foreground mb-8 max-w-md text-base sm:text-lg">
                 Vote on polls, build affinities, and connect with people who
                 share your taste in music.
               </p>
@@ -99,25 +99,35 @@ export default async function Home() {
                 )}
               </div>
 
-              <div className="mt-10 flex gap-8 text-sm">
+              <div className="mt-8 flex flex-wrap gap-6 text-sm sm:gap-8 md:mt-10">
                 <div>
-                  <div className="text-foreground text-2xl font-bold">
+                  <div className="text-foreground text-xl font-bold sm:text-2xl">
                     1,000+
                   </div>
-                  <div className="text-muted-foreground">Members</div>
+                  <div className="text-muted-foreground text-xs sm:text-sm">
+                    Members
+                  </div>
                 </div>
                 <div>
-                  <div className="text-foreground text-2xl font-bold">500+</div>
-                  <div className="text-muted-foreground">Polls created</div>
+                  <div className="text-foreground text-xl font-bold sm:text-2xl">
+                    500+
+                  </div>
+                  <div className="text-muted-foreground text-xs sm:text-sm">
+                    Polls created
+                  </div>
                 </div>
                 <div>
-                  <div className="text-foreground text-2xl font-bold">10k+</div>
-                  <div className="text-muted-foreground">Votes cast</div>
+                  <div className="text-foreground text-xl font-bold sm:text-2xl">
+                    10k+
+                  </div>
+                  <div className="text-muted-foreground text-xs sm:text-sm">
+                    Votes cast
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="lg:pl-8">
+            <div className="min-w-0 overflow-hidden lg:pl-8">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-muted-foreground text-sm font-medium">
                   Most popular poll
@@ -150,11 +160,13 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="content-wrapper px-5 py-12">
-        <div className="grid gap-12 lg:grid-cols-3">
+      <div className="content-wrapper px-4 py-8 sm:px-5 sm:py-12">
+        <div className="grid gap-8 sm:gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Popular this week</h2>
+              <h2 className="text-xl font-bold sm:text-2xl">
+                Popular this week
+              </h2>
               <Link
                 href="/polls"
                 className="text-muted-foreground hover:text-foreground group flex items-center gap-1 text-sm transition-colors"
@@ -178,10 +190,12 @@ export default async function Home() {
             <PopularPolls />
           </div>
 
-          <aside className="space-y-10">
+          <aside className="space-y-8 sm:space-y-10">
             <div>
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg font-bold">Popular affinities</h3>
+                <h3 className="text-base font-bold sm:text-lg">
+                  Popular affinities
+                </h3>
                 <Link
                   href="/affinities"
                   className="text-muted-foreground hover:text-foreground text-sm transition-colors"
@@ -232,18 +246,23 @@ export default async function Home() {
         </div>
       </div>
 
-      <section className="border-border border-t py-12">
-        <div className="content-wrapper px-5">
-          <div className="mb-6 flex items-center justify-between">
+      <section className="border-border border-t py-8 sm:py-12">
+        <div className="content-wrapper px-4 sm:px-5">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-bold">Discover by affinity</h2>
+              <h2 className="text-xl font-bold sm:text-2xl">
+                Discover by affinity
+              </h2>
               <p className="text-muted-foreground mt-1 text-sm">
                 Find polls and people through shared musical traits
               </p>
             </div>
             <Link
               href="/affinities"
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "w-fit",
+              )}
             >
               Browse all
             </Link>
@@ -254,14 +273,14 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-border border-t py-16">
-        <div className="content-wrapper px-5 text-center">
+      <section className="border-border border-t py-12 sm:py-16">
+        <div className="content-wrapper px-4 text-center sm:px-5">
           {user ? (
             <>
-              <h2 className="mb-3 text-3xl font-bold">
+              <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
                 Got an opinion to share?
               </h2>
-              <p className="text-muted-foreground mx-auto mb-6 max-w-md">
+              <p className="text-muted-foreground mx-auto mb-6 max-w-md text-sm sm:text-base">
                 Create a poll and see how others vote on the music you care
                 about.
               </p>
@@ -286,10 +305,10 @@ export default async function Home() {
             </>
           ) : (
             <>
-              <h2 className="mb-3 text-3xl font-bold">
+              <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
                 Ready to share your opinion?
               </h2>
-              <p className="text-muted-foreground mx-auto mb-6 max-w-md">
+              <p className="text-muted-foreground mx-auto mb-6 max-w-md text-sm sm:text-base">
                 Join the community and start voting on polls about the music you
                 love.
               </p>
