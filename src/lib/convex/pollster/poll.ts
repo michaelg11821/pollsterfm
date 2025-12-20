@@ -153,6 +153,31 @@ export const getPopularPolls = query({
   },
 });
 
+export const getMostPopularPoll = query({
+  handler: async (ctx) => {
+    const now = Date.now();
+
+    const activePolls = await ctx.db
+      .query("polls")
+      .filter((q) => q.gt(q.field("expiresAt"), now))
+      .collect();
+
+    if (activePolls.length > 0) {
+      return activePolls.reduce((mostPopular, current) =>
+        current.totalVotes > mostPopular.totalVotes ? current : mostPopular,
+      );
+    }
+
+    const allPolls = await ctx.db.query("polls").collect();
+
+    if (allPolls.length === 0) return null;
+
+    return allPolls.reduce((mostPopular, current) =>
+      current.totalVotes > mostPopular.totalVotes ? current : mostPopular,
+    );
+  },
+});
+
 export const getMyPolls = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);

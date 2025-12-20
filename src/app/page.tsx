@@ -1,115 +1,324 @@
+import { api } from "@/lib/convex/_generated/api";
 import { cn } from "@/lib/next-utils";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { fetchQuery } from "convex/nextjs";
 import Link from "next/link";
 import { Suspense } from "react";
-import HomepageSearch from "./components/homepage-search/homepage-search";
+import HeroPoll from "./components/hero-poll/hero-poll";
+import HeroPollSkeleton from "./components/hero-poll/skeleton";
 import PopularPolls from "./components/popular-polls/popular-polls";
 import RandomAffinities from "./components/random-affinities/random-affinities";
 import RandomAffinitiesSkeleton from "./components/random-affinities/skeleton";
-import { Button, buttonVariants } from "./components/ui/button";
+import { buttonVariants } from "./components/ui/button";
 
-type HomeProps = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
-
-async function Home({ searchParams }: HomeProps) {
-  const { query } = await searchParams;
-
-  const searchQuery = query && typeof query !== "string" ? query[0] : query;
-
+export default async function Home() {
+  const token = await convexAuthNextjsToken();
+  const user = await fetchQuery(api.user.currentUser, {}, { token });
   return (
     <main>
-      <section className="relative overflow-x-clip pt-24 pb-20">
-        <div className="absolute inset-0 will-change-transform">
-          <div className="bg-primary/5 absolute top-1/4 left-1/4 h-[500px] w-[500px] rounded-full blur-[100px]"></div>
-          <div className="bg-primary/5 absolute right-1/4 bottom-1/4 h-[600px] w-[600px] rounded-full blur-[100px]"></div>
-        </div>
+      <section className="border-border border-b py-16 md:py-24">
+        <div className="content-wrapper px-5">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+            <div>
+              <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+                Track music you&apos;ve heard.
+                <span className="text-muted-foreground">
+                  {" "}
+                  Find others who agree.
+                </span>
+              </h1>
+              <p className="text-muted-foreground mb-8 max-w-md text-lg">
+                Vote on polls, build affinities, and connect with people who
+                share your taste in music.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {user ? (
+                  <>
+                    <Link
+                      href="/create-poll"
+                      className={cn(
+                        buttonVariants({ variant: "default", size: "lg" }),
+                        "bg-primary hover:bg-primary/90 group font-semibold",
+                      )}
+                    >
+                      Create a poll
+                      <svg
+                        className="relative ml-2 h-4 w-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                    </Link>
+                    <Link
+                      href="/polls"
+                      className={cn(
+                        buttonVariants({ variant: "outline", size: "lg" }),
+                        "font-semibold",
+                      )}
+                    >
+                      Browse polls
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/sign-in"
+                      className={cn(
+                        buttonVariants({ variant: "default", size: "lg" }),
+                        "bg-primary hover:bg-primary/90 group font-semibold",
+                      )}
+                    >
+                      Get started — it&apos;s free
+                      <svg
+                        className="relative ml-2 h-2.5 w-2.5 overflow-visible transition-transform duration-150 ease-out group-hover:translate-x-1"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      >
+                        <path
+                          className="opacity-0 transition-opacity duration-0 ease-out group-hover:opacity-100"
+                          d="M-6 5h10"
+                        />
+                        <path d="M1 1l4 4-4 4" />
+                      </svg>
+                    </Link>
+                    <Link
+                      href="/polls"
+                      className={cn(
+                        buttonVariants({ variant: "outline", size: "lg" }),
+                        "font-semibold",
+                      )}
+                    >
+                      Browse polls
+                    </Link>
+                  </>
+                )}
+              </div>
 
-        <div className="content-wrapper relative mx-auto px-5 lg:mt-0 xl:p-0">
-          <div className="mx-auto mb-16 max-w-5xl text-center">
-            <p className="mt-2.5 mb-8 cursor-default text-5xl font-bold md:text-7xl">
-              Your <span className="text-primary">opinion</span> matters.
-            </p>
-            <p className="text-foreground mx-auto mb-10 max-w-3xl text-xl md:text-2xl">
-              Vote in polls, create reviews, and discover people who experience
-              music like you do.
-            </p>
-            <div className="flex flex-col justify-center gap-4 md:flex-row">
+              <div className="mt-10 flex gap-8 text-sm">
+                <div>
+                  <div className="text-foreground text-2xl font-bold">
+                    1,000+
+                  </div>
+                  <div className="text-muted-foreground">Members</div>
+                </div>
+                <div>
+                  <div className="text-foreground text-2xl font-bold">500+</div>
+                  <div className="text-muted-foreground">Polls created</div>
+                </div>
+                <div>
+                  <div className="text-foreground text-2xl font-bold">10k+</div>
+                  <div className="text-muted-foreground">Votes cast</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:pl-8">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-muted-foreground text-sm font-medium">
+                  Most popular poll
+                </h2>
+                <Link
+                  href="/polls"
+                  className="text-muted-foreground hover:text-foreground group flex items-center gap-1 text-sm transition-colors"
+                >
+                  See all
+                  <svg
+                    className="relative ml-1 h-2.5 w-2.5 overflow-visible transition-transform duration-150 ease-out group-hover:translate-x-1"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <path
+                      className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
+                      d="M-6 5h10"
+                    />
+                    <path d="M1 1l4 4-4 4" />
+                  </svg>
+                </Link>
+              </div>
+              <Suspense fallback={<HeroPollSkeleton />}>
+                <HeroPoll />
+              </Suspense>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="content-wrapper px-5 py-12">
+        <div className="grid gap-12 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Popular this week</h2>
               <Link
                 href="/polls"
-                className={buttonVariants({
-                  variant: "default",
-                  size: "lg",
-                  className: "bg-primary cursor-pointer px-8 py-5.5",
-                })}
+                className="text-muted-foreground hover:text-foreground group flex items-center gap-1 text-sm transition-colors"
               >
-                Get started
-                <ArrowRight className="ml-1 h-5 w-5" />
+                More
+                <svg
+                  className="relative h-2.5 w-2.5 overflow-visible transition-transform duration-150 ease-out group-hover:translate-x-1"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path
+                    className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
+                    d="M-6 5h10"
+                  />
+                  <path d="M1 1l4 4-4 4" />
+                </svg>
               </Link>
-              <Button
-                variant="outline"
-                size="lg"
-                className="cursor-pointer bg-transparent px-8 py-5.5"
-              >
-                How it works
-              </Button>
             </div>
+            <PopularPolls />
           </div>
 
-          <HomepageSearch initialQuery={searchQuery} />
-        </div>
-      </section>
-
-      <section>
-        <div className="content-wrapper px-5">
-          <div className="mb-12 flex flex-col items-start justify-between md:flex-row md:items-center">
+          <aside className="space-y-10">
             <div>
-              <p className="mb-4 text-3xl font-bold md:text-4xl">
-                Popular Polls
-              </p>
-              <p className="text-muted-foreground max-w-lg">
-                Discover what the community is voting on and add your voice to
-                the conversation.
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-bold">Popular affinities</h3>
+                <Link
+                  href="/affinities"
+                  className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                >
+                  See all
+                </Link>
+              </div>
+              <Suspense fallback={<RandomAffinitiesSkeleton />}>
+                <RandomAffinities amount={6} />
+              </Suspense>
+            </div>
+
+            {user ? (
+              <div className="bg-card border-border rounded-lg border p-6">
+                <h3 className="mb-2 font-bold">Your profile</h3>
+                <p className="text-muted-foreground mb-4 text-sm">
+                  View your polls, votes, and affinities.
+                </p>
+                <Link
+                  href={`/user/${user.username}`}
+                  className={cn(
+                    buttonVariants({ variant: "default", size: "sm" }),
+                    "w-full",
+                  )}
+                >
+                  Go to profile
+                </Link>
+              </div>
+            ) : (
+              <div className="bg-card border-border rounded-lg border p-6">
+                <h3 className="mb-2 font-bold">Join Pollster.fm</h3>
+                <p className="text-muted-foreground mb-4 text-sm">
+                  Create polls, vote on music, and discover people with similar
+                  taste.
+                </p>
+                <Link
+                  href="/sign-in"
+                  className={cn(
+                    buttonVariants({ variant: "default", size: "sm" }),
+                    "w-full",
+                  )}
+                >
+                  Sign up free
+                </Link>
+              </div>
+            )}
+          </aside>
+        </div>
+      </div>
+
+      <section className="border-border border-t py-12">
+        <div className="content-wrapper px-5">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">Discover by affinity</h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Find polls and people through shared musical traits
               </p>
             </div>
             <Link
-              href="/polls"
-              className={buttonVariants({ variant: "secondary" })}
+              href="/affinities"
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
             >
-              View All Polls <ChevronRight className="h-5 w-5" />
-            </Link>
-          </div>
-
-          <PopularPolls />
-        </div>
-      </section>
-
-      <section className="py-20">
-        <div className="content-wrapper px-5">
-          <div className="mb-12 flex flex-col items-start justify-between md:flex-row md:items-center">
-            <div>
-              <p className="mb-4 text-3xl font-bold md:text-4xl">
-                Discover through affinities
-              </p>
-              <p className="text-muted-foreground max-w-lg">
-                Affinities connect you with people who feel the same way about
-                music.
-              </p>
-            </div>
-            <Link
-              href="affinities"
-              className={cn(buttonVariants({ variant: "secondary" }), "mt-2")}
-            >
-              View all affinities <ChevronRight className="h-5 w-5" />
+              Browse all
             </Link>
           </div>
           <Suspense fallback={<RandomAffinitiesSkeleton />}>
-            <RandomAffinities />
+            <RandomAffinities amount={12} />
           </Suspense>
+        </div>
+      </section>
+
+      <section className="border-border border-t py-16">
+        <div className="content-wrapper px-5 text-center">
+          {user ? (
+            <>
+              <h2 className="mb-3 text-3xl font-bold">
+                Got an opinion to share?
+              </h2>
+              <p className="text-muted-foreground mx-auto mb-6 max-w-md">
+                Create a poll and see how others vote on the music you care
+                about.
+              </p>
+              <Link
+                href="/polls/create"
+                className={cn(
+                  buttonVariants({ variant: "default", size: "lg" }),
+                  "group font-semibold",
+                )}
+              >
+                Create a poll
+                <svg
+                  className="relative ml-2 h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </Link>
+            </>
+          ) : (
+            <>
+              <h2 className="mb-3 text-3xl font-bold">
+                Ready to share your opinion?
+              </h2>
+              <p className="text-muted-foreground mx-auto mb-6 max-w-md">
+                Join the community and start voting on polls about the music you
+                love.
+              </p>
+              <Link
+                href="/sign-in"
+                className={cn(
+                  buttonVariants({ variant: "default", size: "lg" }),
+                  "group font-semibold",
+                )}
+              >
+                Create your free account
+                <svg
+                  className="relative ml-2 h-2.5 w-2.5 overflow-visible transition-transform duration-150 ease-out group-hover:translate-x-1"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path
+                    className="opacity-0 transition-opacity duration-0 ease-out group-hover:opacity-100"
+                    d="M-6 5h10"
+                  />
+                  <path d="M1 1l4 4-4 4" />
+                </svg>
+              </Link>
+            </>
+          )}
         </div>
       </section>
     </main>
   );
 }
-
-export default Home;

@@ -15,7 +15,7 @@ function PollAuthorImage({ username }: PollAuthorImageProps) {
   if (profile === null) return null;
 
   return (
-    <div className="bg-background relative m-0 flex h-10 w-10 cursor-pointer items-center justify-center gap-1.5 rounded-full border-none outline-0 focus:outline-2 focus:outline-offset-2">
+    <div className="bg-background relative m-0 flex h-10 w-10 items-center justify-center gap-1.5 rounded-full border-none outline-0 focus:outline-2 focus:outline-offset-2">
       {profile.image && (
         <Image
           src={profile.image}

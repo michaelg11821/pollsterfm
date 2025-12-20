@@ -8,14 +8,14 @@ import MobileMenu from "./mobile-menu/mobile-menu";
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { useQuery } from "convex/react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import DesktopSearch from "./desktop-search/desktop-search";
 import MobileSearch from "./mobile-search/mobile-search";
 import NavSkeleton from "./skeleton";
 
 function Nav() {
   const currentUserProfile = useQuery(api.user.getProfile, {});
-  const pathname = usePathname();
+
   const searchParams = useSearchParams();
 
   const searchQuery = searchParams.get("query");
@@ -59,7 +59,7 @@ function Nav() {
               </li>
             </ul>
           </div>
-          {pathname !== "/" && <DesktopSearch initialQuery={searchQuery} />}
+          <DesktopSearch initialQuery={searchQuery} />
           <div className="md:hidden">
             <MobileSearch initialQuery={searchQuery} />
           </div>
