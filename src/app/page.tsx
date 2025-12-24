@@ -145,7 +145,7 @@ export default async function Home() {
                     strokeWidth="1.5"
                   >
                     <path
-                      className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
+                      className="opacity-0 transition-opacity duration-0 ease-out group-hover:opacity-100"
                       d="M-6 5h10"
                     />
                     <path d="M1 1l4 4-4 4" />
