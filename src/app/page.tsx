@@ -17,7 +17,7 @@ export default async function Home() {
   return (
     <main>
       <section className="border-border overflow-hidden border-b py-16 md:py-24">
-        <div className="content-wrapper px-4 sm:px-5">
+        <div className="content-wrapper px-5">
           <div className="grid gap-8 md:gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
             <div className="min-w-0">
               <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
@@ -38,7 +38,7 @@ export default async function Home() {
                       href="/create-poll"
                       className={cn(
                         buttonVariants({ variant: "default", size: "lg" }),
-                        "bg-primary hover:bg-primary/90 group font-semibold",
+                        "bg-primary hover:bg-primary/90 group w-full font-semibold sm:w-auto",
                       )}
                     >
                       Create a poll
@@ -56,7 +56,7 @@ export default async function Home() {
                       href="/polls"
                       className={cn(
                         buttonVariants({ variant: "outline", size: "lg" }),
-                        "font-semibold",
+                        "w-full font-semibold sm:w-auto",
                       )}
                     >
                       Browse polls
@@ -68,7 +68,7 @@ export default async function Home() {
                       href="/sign-in"
                       className={cn(
                         buttonVariants({ variant: "default", size: "lg" }),
-                        "bg-primary hover:bg-primary/90 group font-semibold",
+                        "bg-primary hover:bg-primary/90 group w-full font-semibold sm:w-auto",
                       )}
                     >
                       Get started — it&apos;s free
@@ -90,7 +90,7 @@ export default async function Home() {
                       href="/polls"
                       className={cn(
                         buttonVariants({ variant: "outline", size: "lg" }),
-                        "font-semibold",
+                        "w-full font-semibold sm:w-auto",
                       )}
                     >
                       Browse polls
@@ -128,30 +128,6 @@ export default async function Home() {
             </div>
 
             <div className="min-w-0 overflow-hidden lg:pl-8">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-muted-foreground text-sm font-medium">
-                  Most popular poll
-                </h2>
-                <Link
-                  href="/polls"
-                  className="text-muted-foreground hover:text-foreground group flex items-center gap-1 text-sm transition-colors"
-                >
-                  See all
-                  <svg
-                    className="relative ml-1 h-2.5 w-2.5 overflow-visible transition-transform duration-150 ease-out group-hover:translate-x-1"
-                    viewBox="0 0 10 10"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  >
-                    <path
-                      className="opacity-0 transition-opacity duration-0 ease-out group-hover:opacity-100"
-                      d="M-6 5h10"
-                    />
-                    <path d="M1 1l4 4-4 4" />
-                  </svg>
-                </Link>
-              </div>
               <Suspense fallback={<HeroPollSkeleton />}>
                 <HeroPoll />
               </Suspense>
@@ -160,7 +136,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="content-wrapper px-4 py-8 sm:px-5 sm:py-12">
+      <div className="content-wrapper px-5 py-8 sm:py-12">
         <div className="grid gap-8 sm:gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <div className="mb-6 flex items-center justify-between">
@@ -169,7 +145,7 @@ export default async function Home() {
               </h2>
               <Link
                 href="/polls"
-                className="text-muted-foreground hover:text-foreground group flex items-center gap-1 text-sm transition-colors"
+                className="text-muted-foreground hover:text-foreground group flex items-center gap-2 text-sm transition-colors"
               >
                 More
                 <svg
@@ -180,7 +156,7 @@ export default async function Home() {
                   strokeWidth="1.5"
                 >
                   <path
-                    className="opacity-0 transition-opacity duration-150 ease-out group-hover:opacity-100"
+                    className="opacity-0 transition-opacity duration-0 ease-out group-hover:opacity-100"
                     d="M-6 5h10"
                   />
                   <path d="M1 1l4 4-4 4" />
@@ -247,7 +223,7 @@ export default async function Home() {
       </div>
 
       <section className="border-border border-t py-8 sm:py-12">
-        <div className="content-wrapper px-4 sm:px-5">
+        <div className="content-wrapper px-5">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-bold sm:text-2xl">
@@ -274,7 +250,7 @@ export default async function Home() {
       </section>
 
       <section className="border-border border-t py-12 sm:py-16">
-        <div className="content-wrapper px-4 text-center sm:px-5">
+        <div className="content-wrapper px-5 text-center">
           {user ? (
             <>
               <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
