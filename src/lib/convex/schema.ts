@@ -23,6 +23,7 @@ const schema = defineSchema({
     spotifyExpiresAt: v.optional(v.number()),
     lastfmUsername: v.optional(v.string()),
     lastfmSessionKey: v.optional(v.string()),
+    stripeCustomerId: v.optional(v.string()),
     choices: v.optional(
       v.array(
         v.object({
