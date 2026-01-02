@@ -1,4 +1,4 @@
-import { ActionCtx, httpAction } from "./_generated/server";
+import { type ActionCtx, httpAction } from "./_generated/server";
 
 import { v } from "convex/values";
 import { after } from "next/server";
