@@ -6,7 +6,11 @@ import {
   lastfmToken,
   lastfmUserinfo,
 } from "./lastfm/oauth";
-import { generateStripeCheckout, syncStripePaymentData } from "./stripe";
+import {
+  generateStripeCheckout,
+  stripeWebhook,
+  syncStripePaymentData,
+} from "./stripe";
 
 const http = httpRouter();
 
@@ -37,15 +41,21 @@ http.route({
 });
 
 http.route({
-  path: "/api/generate-stripe-checkout",
+  path: "/generate-stripe-checkout",
   method: "GET",
   handler: generateStripeCheckout,
 });
 
 http.route({
-  path: "/api/success",
+  path: "/success",
   method: "GET",
   handler: syncStripePaymentData,
+});
+
+http.route({
+  path: "/api/stripe",
+  method: "POST",
+  handler: stripeWebhook,
 });
 
 export default http;
