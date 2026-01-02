@@ -6,7 +6,7 @@ import {
   lastfmToken,
   lastfmUserinfo,
 } from "./lastfm/oauth";
-import { generateStripeCheckout, syncStripeData } from "./stripe";
+import { generateStripeCheckout, syncStripePaymentData } from "./stripe";
 
 const http = httpRouter();
 
@@ -45,7 +45,7 @@ http.route({
 http.route({
   path: "/api/success",
   method: "GET",
-  handler: syncStripeData,
+  handler: syncStripePaymentData,
 });
 
 export default http;

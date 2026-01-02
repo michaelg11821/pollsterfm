@@ -1,8 +1,10 @@
-import { httpAction } from "./_generated/server";
+import { ActionCtx, httpAction } from "./_generated/server";
 
 import { v } from "convex/values";
+import { after } from "next/server";
 import Stripe from "stripe";
 import { NO_STRIPE_CUSTOMER, USER_NOT_FOUND } from "../constants/errors";
+import { allowedEvents } from "../constants/stripe";
 import type { Payment } from "../types/stripe";
 import { api, internal } from "./_generated/api";
 import { authedInternalMutation, authedInternalQuery } from "./helpers";
@@ -116,7 +118,7 @@ export const generateStripeCheckout = httpAction(async (ctx) => {
   }
 });
 
-export const syncStripeData = httpAction(async (ctx) => {
+const stripePaymentDataSyncer = async (ctx: ActionCtx) => {
   try {
     const customerId = await ctx.runQuery(internal.stripe.getStripeCustomerId);
 
@@ -171,21 +173,59 @@ export const syncStripeData = httpAction(async (ctx) => {
     await ctx.runMutation(internal.stripe.setPaymentData, {
       payment: paymentData,
     });
-
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: "/",
-      },
-    });
   } catch (err: unknown) {
     console.error("error syncing Stripe data:", err);
-
+  } finally {
     return new Response(null, {
       status: 302,
       headers: {
         Location: "/",
       },
     });
+  }
+};
+
+export const syncStripePaymentData = httpAction(stripePaymentDataSyncer);
+
+async function processEvent(ctx: ActionCtx, event: Stripe.Event) {
+  if (!allowedEvents.includes(event.type)) return;
+
+  const { customer: stripeCustomerId } = event?.data?.object as {
+    customer: string;
+  };
+
+  if (typeof stripeCustomerId !== "string") {
+    throw new Error(`id isn't string.\nevent type: ${event.type}`);
+  }
+
+  return await stripePaymentDataSyncer(ctx);
+}
+
+export const stripeWebhook = httpAction(async (ctx, req) => {
+  try {
+    const body = await req.text();
+    const signature = req.headers.get("Stripe-Signature");
+
+    if (!signature) return Response.json({}, { status: 400 });
+
+    async function doEventProcessing() {
+      if (typeof signature !== "string") {
+        throw new Error("stripe header is not a string");
+      }
+
+      const event = stripe.webhooks.constructEvent(
+        body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!,
+      );
+
+      after(processEvent(ctx, event));
+    }
+
+    await doEventProcessing();
+  } catch (err: unknown) {
+    console.error("error processing events:", err);
+  } finally {
+    return Response.json({ recieved: true });
   }
 });
