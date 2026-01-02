@@ -1,31 +1,73 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
-import { httpAction, internalMutation } from "./_generated/server";
+import { httpAction } from "./_generated/server";
 
 import { v } from "convex/values";
 import Stripe from "stripe";
+import { NO_STRIPE_CUSTOMER, USER_NOT_FOUND } from "../constants/errors";
+import type { Payment } from "../types/stripe";
 import { api, internal } from "./_generated/api";
+import { authedInternalMutation, authedInternalQuery } from "./helpers";
+import { stripePaymentValidator } from "./validators";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET!);
 
-export const setStripeCustomerId = internalMutation({
+export const getStripeCustomerId = authedInternalQuery({
+  handler: async (ctx) => {
+    const stripeData = await ctx.db
+      .query("stripeCustomerData")
+      .withIndex("by_userId", (q) => q.eq("userId", ctx.userId))
+      .unique();
+
+    if (!stripeData) return undefined;
+
+    return stripeData.stripeCustomerId;
+  },
+});
+
+export const createStripeCustomer = authedInternalMutation({
   args: {
-    userId: v.id("users"),
     stripeCustomerId: v.string(),
   },
-  handler: async (ctx, { userId, stripeCustomerId }) => {
-    await ctx.db.patch(userId, { stripeCustomerId });
+  handler: async (ctx, args) => {
+    const { userId } = ctx;
+    const { stripeCustomerId } = args;
+
+    const stripeCustomerData = await ctx.db
+      .query("stripeCustomerData")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .unique();
+
+    if (stripeCustomerData) {
+      throw new Error("user attempting to pay twice");
+    }
+
+    await ctx.db.insert("stripeCustomerData", { userId, stripeCustomerId });
+  },
+});
+
+export const setPaymentData = authedInternalMutation({
+  args: {
+    payment: stripePaymentValidator,
+  },
+  handler: async (ctx, args) => {
+    const { userId } = ctx;
+    const { payment } = args;
+
+    const stripeCustomerData = await ctx.db
+      .query("stripeCustomerData")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .unique();
+
+    if (!stripeCustomerData) throw new Error(NO_STRIPE_CUSTOMER);
+
+    await ctx.db.patch(stripeCustomerData._id, { payment });
   },
 });
 
 export const generateStripeCheckout = httpAction(async (ctx) => {
   try {
-    const userId = await getAuthUserId(ctx);
-
-    if (!userId) throw new Error("no user logged in");
-
     const user = await ctx.runQuery(api.user.currentUser);
 
-    if (!user) throw new Error("user not found");
+    if (!user) throw new Error(USER_NOT_FOUND);
 
     let stripeCustomerId = user.stripeCustomerId;
 
@@ -33,12 +75,11 @@ export const generateStripeCheckout = httpAction(async (ctx) => {
       const newCustomer = await stripe.customers.create({
         email: user.email,
         metadata: {
-          userId,
+          userId: user._id,
         },
       });
 
-      await ctx.runMutation(internal.stripe.setStripeCustomerId, {
-        userId,
+      await ctx.runMutation(internal.stripe.createStripeCustomer, {
         stripeCustomerId: newCustomer.id,
       });
 
@@ -47,14 +88,18 @@ export const generateStripeCheckout = httpAction(async (ctx) => {
 
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
-
       line_items: [
         {
-          price: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID,
+          price: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID!,
           quantity: 1,
         },
       ],
       mode: "payment",
+      payment_intent_data: {
+        metadata: {
+          priceId: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID!,
+        },
+      },
       success_url: `${process.env.SITE_URL}/success`,
     });
 
@@ -68,5 +113,79 @@ export const generateStripeCheckout = httpAction(async (ctx) => {
       { error: "Error generating Stripe checkout." },
       { status: 500 },
     );
+  }
+});
+
+export const syncStripeData = httpAction(async (ctx) => {
+  try {
+    const customerId = await ctx.runQuery(internal.stripe.getStripeCustomerId);
+
+    if (!customerId)
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: "/",
+        },
+      });
+
+    const paymentIntents = await stripe.paymentIntents.list({
+      customer: customerId,
+      limit: 10,
+      expand: ["data.payment_method"],
+    });
+
+    const successfulPayments = paymentIntents.data
+      .filter((pi) => pi.status === "succeeded")
+      .sort((a, b) => b.created - a.created);
+
+    if (successfulPayments.length === 0) {
+      await ctx.runMutation(internal.stripe.setPaymentData, {
+        payment: { status: "none" },
+      });
+
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: "/",
+        },
+      });
+    }
+
+    const payment = successfulPayments[0];
+    const priceId = payment.metadata.priceId;
+
+    const paymentData: Payment = {
+      paymentId: payment.id,
+      status: payment.status,
+      created: payment.created,
+      priceId,
+      paymentMethod:
+        payment.payment_method && typeof payment.payment_method !== "string"
+          ? {
+              brand: payment.payment_method.card?.brand ?? null,
+              last4: payment.payment_method.card?.last4 ?? null,
+            }
+          : null,
+    };
+
+    await ctx.runMutation(internal.stripe.setPaymentData, {
+      payment: paymentData,
+    });
+
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: "/",
+      },
+    });
+  } catch (err: unknown) {
+    console.error("error syncing Stripe data:", err);
+
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: "/",
+      },
+    });
   }
 });

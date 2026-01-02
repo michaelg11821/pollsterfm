@@ -1,7 +1,7 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { pollValidator } from "./validators";
+import { pollValidator, stripePaymentValidator } from "./validators";
 
 const schema = defineSchema({
   ...authTables,
@@ -67,6 +67,11 @@ const schema = defineSchema({
     userId: v.id("users"),
     profileIconId: v.optional(v.id("_storage")),
     headerImageId: v.optional(v.id("_storage")),
+  }).index("by_userId", ["userId"]),
+  stripeCustomerData: defineTable({
+    userId: v.id("users"),
+    stripeCustomerId: v.optional(v.string()),
+    payment: v.optional(v.union(stripePaymentValidator, v.null())),
   }).index("by_userId", ["userId"]),
 });
 

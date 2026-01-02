@@ -34,3 +34,20 @@ export const pollValidator = v.object({
   recentActivity: v.optional(v.array(activityValidator)),
   expiresAt: v.number(),
 });
+
+export const stripePaymentValidator = v.union(
+  v.object({
+    paymentId: v.string(),
+    status: v.string(),
+    created: v.number(),
+    priceId: v.string(),
+    paymentMethod: v.union(
+      v.object({
+        brand: v.union(v.string(), v.null()),
+        last4: v.union(v.string(), v.null()),
+      }),
+      v.null(),
+    ),
+  }),
+  v.object({ status: v.literal("none") }),
+);
