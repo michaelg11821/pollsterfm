@@ -24,6 +24,7 @@ const schema = defineSchema({
     lastfmUsername: v.optional(v.string()),
     lastfmSessionKey: v.optional(v.string()),
     stripeCustomerId: v.optional(v.string()),
+    listeningHistoryPrivate: v.optional(v.boolean()),
     choices: v.optional(
       v.array(
         v.object({
