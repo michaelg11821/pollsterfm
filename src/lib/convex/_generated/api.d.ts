@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as files from "../files.js";
+import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as lastfm_album from "../lastfm/album.js";
 import type * as lastfm_oauth from "../lastfm/oauth.js";
@@ -36,6 +37,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   files: typeof files;
+  helpers: typeof helpers;
   http: typeof http;
   "lastfm/album": typeof lastfm_album;
   "lastfm/oauth": typeof lastfm_oauth;
