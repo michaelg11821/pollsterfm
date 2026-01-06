@@ -3,7 +3,7 @@ import {
   customMutation,
   customQuery,
 } from "convex-helpers/server/customFunctions";
-import { UNAUTHORIZED, USER_NOT_FOUND } from "../constants/errors";
+import { UNAUTHORIZED } from "../constants/errors";
 import {
   internalMutation,
   internalQuery,
@@ -20,14 +20,8 @@ export const authedQuery = customQuery(query, {
       throw new Error(UNAUTHORIZED);
     }
 
-    const user = await ctx.db.get(userId);
-
-    if (user === null) {
-      throw new Error(USER_NOT_FOUND);
-    }
-
     return {
-      ctx: { ...ctx, user, userId },
+      ctx: { ...ctx, userId },
       args,
     };
   },
@@ -42,14 +36,8 @@ export const authedInternalQuery = customQuery(internalQuery, {
       throw new Error(UNAUTHORIZED);
     }
 
-    const user = await ctx.db.get(userId);
-
-    if (user === null) {
-      throw new Error(USER_NOT_FOUND);
-    }
-
     return {
-      ctx: { ...ctx, user, userId },
+      ctx: { ...ctx, userId },
       args,
     };
   },
@@ -64,14 +52,8 @@ export const authedMutation = customMutation(mutation, {
       throw new Error(UNAUTHORIZED);
     }
 
-    const user = await ctx.db.get(userId);
-
-    if (user === null) {
-      throw new Error(USER_NOT_FOUND);
-    }
-
     return {
-      ctx: { ...ctx, user, userId },
+      ctx: { ...ctx, userId },
       args,
     };
   },
@@ -86,14 +68,8 @@ export const authedInternalMutation = customMutation(internalMutation, {
       throw new Error(UNAUTHORIZED);
     }
 
-    const user = await ctx.db.get(userId);
-
-    if (user === null) {
-      throw new Error(USER_NOT_FOUND);
-    }
-
     return {
-      ctx: { ...ctx, user, userId },
+      ctx: { ...ctx, userId },
       args,
     };
   },
