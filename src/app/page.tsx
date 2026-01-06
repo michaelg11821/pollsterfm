@@ -17,7 +17,7 @@ export default async function Home() {
   return (
     <main>
       <section className="border-border overflow-hidden border-b py-16 md:py-24">
-        <div className="content-wrapper px-5">
+        <div className="content-wrapper px-5 lg:px-0">
           <div className="grid gap-8 md:gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
             <div className="min-w-0">
               <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
@@ -136,7 +136,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="content-wrapper px-5 py-8 sm:py-12">
+      <div className="content-wrapper px-5 py-8 sm:py-12 lg:px-0">
         <div className="grid gap-8 sm:gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <div className="mb-6 flex items-center justify-between">
@@ -223,7 +223,7 @@ export default async function Home() {
       </div>
 
       <section className="border-border border-t py-8 sm:py-12">
-        <div className="content-wrapper px-5">
+        <div className="content-wrapper px-5 lg:px-0">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-bold sm:text-2xl">
@@ -250,7 +250,7 @@ export default async function Home() {
       </section>
 
       <section className="border-border border-t py-12 sm:py-16">
-        <div className="content-wrapper px-5 text-center">
+        <div className="content-wrapper px-5 text-center lg:px-0">
           {user ? (
             <>
               <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
