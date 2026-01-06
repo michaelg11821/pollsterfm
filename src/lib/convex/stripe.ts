@@ -1,7 +1,10 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import {
+  action,
   type ActionCtx,
   httpAction,
   internalAction,
+  query,
 } from "./_generated/server";
 
 import { v } from "convex/values";
@@ -15,6 +18,9 @@ import { stripePaymentValidator } from "./validators";
 
 export const getStripeCustomerId = authedInternalQuery({
   handler: async (ctx) => {
+    const user = await ctx.db.get(ctx.userId);
+    if (user?.stripeCustomerId) return user.stripeCustomerId;
+
     const stripeData = await ctx.db
       .query("stripeCustomerData")
       .withIndex("by_userId", (q) => q.eq("userId", ctx.userId))
@@ -23,6 +29,30 @@ export const getStripeCustomerId = authedInternalQuery({
     if (!stripeData) return undefined;
 
     return stripeData.stripeCustomerId;
+  },
+});
+
+export const getPaymentStatus = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) return { hasPaid: false };
+
+    const stripeData = await ctx.db
+      .query("stripeCustomerData")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .unique();
+
+    if (!stripeData || !stripeData.payment) return { hasPaid: false };
+
+    const payment = stripeData.payment;
+
+    if ("status" in payment && payment.status === "succeeded") {
+      return { hasPaid: true };
+    }
+
+    return { hasPaid: false };
   },
 });
 
@@ -39,11 +69,21 @@ export const createStripeCustomer = authedInternalMutation({
       .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
 
-    if (stripeCustomerData) {
-      throw new Error("user attempting to pay twice");
+    await ctx.db.patch(userId, { stripeCustomerId });
+
+    if (!stripeCustomerData) {
+      await ctx.db.insert("stripeCustomerData", { userId, stripeCustomerId });
+      return;
     }
 
-    await ctx.db.insert("stripeCustomerData", { userId, stripeCustomerId });
+    if (
+      stripeCustomerData.stripeCustomerId &&
+      stripeCustomerData.stripeCustomerId !== stripeCustomerId
+    ) {
+      throw new Error("stripe customer id mismatch for user");
+    }
+
+    await ctx.db.patch(stripeCustomerData._id, { stripeCustomerId });
   },
 });
 
@@ -66,58 +106,57 @@ export const setPaymentData = authedInternalMutation({
   },
 });
 
-export const generateStripeCheckout = httpAction(async (ctx) => {
-  try {
-    const user = await ctx.runQuery(api.user.currentUser);
+export const generateStripeCheckout = action({
+  handler: async (ctx): Promise<{ url: string | null }> => {
+    try {
+      const user = await ctx.runQuery(api.user.currentUser);
 
-    if (!user) throw new Error(USER_NOT_FOUND);
+      if (!user) throw new Error(USER_NOT_FOUND);
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET!);
-    let stripeCustomerId = user.stripeCustomerId;
+      const stripe = new Stripe(process.env.STRIPE_SECRET!);
+      let stripeCustomerId = user.stripeCustomerId;
 
-    if (!stripeCustomerId) {
-      const newCustomer = await stripe.customers.create({
-        email: user.email,
-        metadata: {
-          userId: user._id,
+      if (!stripeCustomerId) {
+        const newCustomer = await stripe.customers.create({
+          email: user.email,
+          metadata: {
+            userId: user._id,
+          },
+        });
+
+        await ctx.runMutation(internal.stripe.createStripeCustomer, {
+          stripeCustomerId: newCustomer.id,
+        });
+
+        stripeCustomerId = newCustomer.id;
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        customer: stripeCustomerId,
+        line_items: [
+          {
+            price: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID!,
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        payment_intent_data: {
+          metadata: {
+            priceId: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID!,
+          },
         },
+        success_url: `${process.env.SITE_URL}/success`,
       });
 
-      await ctx.runMutation(internal.stripe.createStripeCustomer, {
-        stripeCustomerId: newCustomer.id,
-      });
+      if (!session.url) throw new Error("failed to create session");
 
-      stripeCustomerId = newCustomer.id;
+      return { url: session.url };
+    } catch (err) {
+      console.error("error generating stripe checkout:", err);
+
+      return { url: null };
     }
-
-    const session = await stripe.checkout.sessions.create({
-      customer: stripeCustomerId,
-      line_items: [
-        {
-          price: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID!,
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      payment_intent_data: {
-        metadata: {
-          priceId: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID!,
-        },
-      },
-      success_url: `${process.env.SITE_URL}/success`,
-    });
-
-    if (!session.url) throw new Error("failed to create session");
-
-    return Response.redirect(session.url, 303);
-  } catch (err: unknown) {
-    console.error("error generating stripe checkout:", err);
-
-    return Response.json(
-      { error: "Error generating Stripe checkout." },
-      { status: 500 },
-    );
-  }
+  },
 });
 
 const stripePaymentDataSyncer = async (ctx: ActionCtx) => {
