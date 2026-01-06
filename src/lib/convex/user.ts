@@ -26,6 +26,7 @@ import {
   query,
   QueryCtx,
 } from "./_generated/server";
+import { authedMutation } from "./helpers";
 import {
   getCurrentlyPlayingLastfmTrack,
   getRecentlyPlayedLastfmTracks,
@@ -194,6 +195,81 @@ export const updateProfile = mutation({
     }
 
     await ctx.db.patch(userId, userPatch);
+  },
+});
+
+export const updateListeningHistoryPrivacy = authedMutation({
+  args: {
+    isPrivate: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const { userId } = ctx;
+
+    await ctx.db.patch(userId, { listeningHistoryPrivate: args.isPrivate });
+  },
+});
+
+export const deleteAccount = authedMutation({
+  args: {},
+  handler: async (ctx) => {
+    const { userId } = ctx;
+
+    const sentFollows = await ctx.db
+      .query("follows")
+      .withIndex("sender", (q) => q.eq("sender", userId))
+      .collect();
+
+    for (const follow of sentFollows) {
+      await ctx.db.delete(follow._id);
+    }
+
+    const receivedFollows = await ctx.db
+      .query("follows")
+      .withIndex("recipient", (q) => q.eq("recipient", userId))
+      .collect();
+
+    for (const follow of receivedFollows) {
+      await ctx.db.delete(follow._id);
+    }
+
+    const notifications = await ctx.db
+      .query("notifications")
+      .filter((q) => q.eq(q.field("userId"), userId))
+      .collect();
+
+    for (const notification of notifications) {
+      await ctx.db.delete(notification._id);
+    }
+
+    const userImages = await ctx.db
+      .query("userImageIds")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .unique();
+
+    if (userImages) {
+      if (userImages.profileIconId) {
+        await ctx.storage.delete(userImages.profileIconId);
+      }
+
+      if (userImages.headerImageId) {
+        await ctx.storage.delete(userImages.headerImageId);
+      }
+
+      await ctx.db.delete(userImages._id);
+    }
+
+    const stripeData = await ctx.db
+      .query("stripeCustomerData")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .unique();
+
+    if (stripeData) {
+      await ctx.db.delete(stripeData._id);
+    }
+
+    await ctx.db.delete(userId);
+
+    return { success: true };
   },
 });
 
