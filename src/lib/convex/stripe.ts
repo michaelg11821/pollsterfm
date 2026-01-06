@@ -1,7 +1,10 @@
-import { type ActionCtx, httpAction } from "./_generated/server";
+import {
+  type ActionCtx,
+  httpAction,
+  internalAction,
+} from "./_generated/server";
 
 import { v } from "convex/values";
-import { after } from "next/server";
 import Stripe from "stripe";
 import { NO_STRIPE_CUSTOMER, USER_NOT_FOUND } from "../constants/errors";
 import { allowedEvents } from "../constants/stripe";
@@ -9,8 +12,6 @@ import type { Payment } from "../types/stripe";
 import { api, internal } from "./_generated/api";
 import { authedInternalMutation, authedInternalQuery } from "./helpers";
 import { stripePaymentValidator } from "./validators";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET!);
 
 export const getStripeCustomerId = authedInternalQuery({
   handler: async (ctx) => {
@@ -71,6 +72,7 @@ export const generateStripeCheckout = httpAction(async (ctx) => {
 
     if (!user) throw new Error(USER_NOT_FOUND);
 
+    const stripe = new Stripe(process.env.STRIPE_SECRET!);
     let stripeCustomerId = user.stripeCustomerId;
 
     if (!stripeCustomerId) {
@@ -121,6 +123,7 @@ export const generateStripeCheckout = httpAction(async (ctx) => {
 const stripePaymentDataSyncer = async (ctx: ActionCtx) => {
   try {
     const customerId = await ctx.runQuery(internal.stripe.getStripeCustomerId);
+    const stripe = new Stripe(process.env.STRIPE_SECRET!);
 
     if (!customerId)
       return new Response(null, {
@@ -187,19 +190,30 @@ const stripePaymentDataSyncer = async (ctx: ActionCtx) => {
 
 export const syncStripePaymentData = httpAction(stripePaymentDataSyncer);
 
-async function processEvent(ctx: ActionCtx, event: Stripe.Event) {
-  if (!allowedEvents.includes(event.type)) return;
+export const processEvent = internalAction({
+  args: { payload: v.string(), signature: v.string() },
+  handler: async (ctx, { payload, signature }) => {
+    const stripe = new Stripe(process.env.STRIPE_SECRET!);
 
-  const { customer: stripeCustomerId } = event?.data?.object as {
-    customer: string;
-  };
+    const event = stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!,
+    );
 
-  if (typeof stripeCustomerId !== "string") {
-    throw new Error(`id isn't string.\nevent type: ${event.type}`);
-  }
+    if (!allowedEvents.includes(event.type)) return;
 
-  return await stripePaymentDataSyncer(ctx);
-}
+    const { customer: stripeCustomerId } = event?.data?.object as {
+      customer: string;
+    };
+
+    if (typeof stripeCustomerId !== "string") {
+      throw new Error(`id isn't string.\nevent type: ${event.type}`);
+    }
+
+    return await stripePaymentDataSyncer(ctx);
+  },
+});
 
 export const stripeWebhook = httpAction(async (ctx, req) => {
   try {
@@ -213,13 +227,10 @@ export const stripeWebhook = httpAction(async (ctx, req) => {
         throw new Error("stripe header is not a string");
       }
 
-      const event = stripe.webhooks.constructEvent(
-        body,
+      await ctx.scheduler.runAfter(0, internal.stripe.processEvent, {
+        payload: body,
         signature,
-        process.env.STRIPE_WEBHOOK_SECRET!,
-      );
-
-      after(processEvent(ctx, event));
+      });
     }
 
     await doEventProcessing();
