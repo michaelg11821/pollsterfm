@@ -1,3 +1,4 @@
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { cn } from "@/lib/next-utils";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
@@ -202,7 +203,7 @@ export default async function Home() {
               </div>
             ) : (
               <div className="bg-card border-border rounded-lg border p-6">
-                <h3 className="mb-2 font-bold">Join Pollster.fm</h3>
+                <h3 className="mb-2 font-bold">Join {SITE_NAME}</h3>
                 <p className="text-muted-foreground mb-4 text-sm">
                   Create polls, vote on music, and discover people with similar
                   taste.
