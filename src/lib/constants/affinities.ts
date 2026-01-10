@@ -26,4 +26,9 @@ export const affinities = [
   "determined",
   "unique",
   "defiant",
+  "intense",
+  "righteous",
+  "moralistic",
+  "quiet",
+  "dominant",
 ] as const;
