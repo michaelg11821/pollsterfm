@@ -39,7 +39,6 @@ function Choice({
       }`}
       onClick={() => isInteractive && handleVote(index)}
     >
-      {/* Background progress bar for results */}
       {showResults && (
         <div
           className="bg-primary/10 absolute inset-y-0 left-0 transition-all duration-500 ease-out"
@@ -49,7 +48,6 @@ function Choice({
 
       <div className="relative p-4">
         <div className="flex items-center gap-4">
-          {/* Selection indicator or Album Art */}
           <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg md:h-18 md:w-18">
             <Image
               src={choice.image}
@@ -65,10 +63,8 @@ function Choice({
             )}
           </div>
 
-          {/* Content */}
           <div className="min-w-0 flex-1">
             <div className="mb-1.5 space-y-0.5">
-              {/* Artist only */}
               {choice.artist && !choice.album && !choice.track && (
                 <Link
                   href={`/catalog/${encodeURIComponent(choice.artist)}`}
@@ -80,7 +76,6 @@ function Choice({
                 </Link>
               )}
 
-              {/* Album (with artist) */}
               {choice.artist && choice.album && !choice.track && (
                 <>
                   <Link
@@ -101,7 +96,6 @@ function Choice({
                 </>
               )}
 
-              {/* Track (with album and artist) */}
               {choice.artist && choice.album && choice.track && (
                 <>
                   <Link
@@ -133,7 +127,6 @@ function Choice({
               )}
             </div>
 
-            {/* Affinities */}
             <div className="flex flex-wrap gap-1">
               {choice.affinities.slice(0, 3).map((affinity, idx) => (
                 <Badge
@@ -152,7 +145,6 @@ function Choice({
             </div>
           </div>
 
-          {/* Results Display */}
           {showResults && (
             <div className="shrink-0 text-right">
               <span className="text-2xl font-bold tabular-nums md:text-3xl">
@@ -166,7 +158,6 @@ function Choice({
           )}
         </div>
 
-        {/* Progress bar at bottom for results */}
         {showResults && (
           <div className="bg-border/50 mt-3 h-1 overflow-hidden rounded-full">
             <div
