@@ -33,12 +33,12 @@ async function PollPage({ params }: PollPageProps) {
   if (!poll) return redirect("/not-found");
 
   return (
-    <main className="content-wrapper px-5 py-6 xl:px-0">
+    <main className="content-wrapper px-5 py-8 xl:px-0">
       <Link
         href="/polls"
-        className="text-primary hover:text-ring/50 mb-6 inline-flex items-center text-sm no-underline transition-[color]"
+        className="text-muted-foreground hover:text-foreground mb-8 inline-flex items-center text-sm transition-colors"
       >
-        <ChevronLeft className="mr-2 h-4 w-4" />
+        <ChevronLeft className="mr-1.5 h-4 w-4" />
         Back to polls
       </Link>
       <Poll id={poll} />

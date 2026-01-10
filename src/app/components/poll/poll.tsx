@@ -17,7 +17,7 @@ import { toastManager } from "@/lib/toast";
 import type { Affinity } from "@/lib/types/pollster";
 import { useMutation, useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
-import { Clock, ExternalLink, TrendingUp, Users } from "lucide-react";
+import { Clock, ExternalLink, TrendingUp, Users, Vote } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -152,6 +152,8 @@ function Poll({ id }: PollProps) {
   };
 
   const calculatePercentage = (votes: number) => {
+    if (pollData.totalVotes === 0) return 0;
+
     return Math.round((votes / pollData.totalVotes) * 100);
   };
 
@@ -172,52 +174,76 @@ function Poll({ id }: PollProps) {
       : false;
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-      <div className="space-y-6 lg:col-span-2">
-        <div>
-          <div className="mb-3 flex items-center gap-2">
-            <Badge variant="default">{pollData.pollType}</Badge>
-            <span className="text-foreground/60 flex items-center gap-1 text-sm">
-              <Clock className="h-3 w-3" />
-              {isExpired ? "Poll ended" : `Ends in ${timeRemainingString}`}
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+      <div className="space-y-8 lg:col-span-2">
+        <header>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <Badge variant="secondary" className="font-medium">
+              {pollData.pollType}
+            </Badge>
+            {!isExpired && (
+              <Badge
+                variant="outline"
+                className="border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
+              >
+                <span className="mr-1.5 h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
+                Live
+              </Badge>
+            )}
+            <span className="text-muted-foreground flex items-center gap-1.5 text-sm">
+              <Clock className="h-3.5 w-3.5" />
+              {isExpired ? (
+                <span className="text-destructive">Ended</span>
+              ) : (
+                timeRemainingString
+              )}
             </span>
           </div>
-          <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
+
+          <h1 className="mb-3 text-3xl font-bold tracking-tight lg:text-4xl">
             {pollData.question}
-          </h2>
-          <p className="text-muted-foreground mb-4 text-lg">
-            {pollData.description}
-          </p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <PollAuthorImage username={pollData.author} />
-              <div>
-                <Link
-                  href={`/user/${pollData.author}`}
-                  className="text-foreground/80 hover:text-foreground"
-                >
-                  {pollData.author}
-                </Link>
-                <p className="text-muted-foreground text-sm">
-                  {getDateFromCreatedAt(pollData._creationTime)}
-                </p>
-              </div>
+          </h1>
+
+          {pollData.description && (
+            <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
+              {pollData.description}
+            </p>
+          )}
+
+          <div className="flex items-center gap-3">
+            <PollAuthorImage username={pollData.author} />
+            <div className="text-sm">
+              <Link
+                href={`/user/${pollData.author}`}
+                className="hover:text-primary font-medium transition-colors"
+              >
+                {pollData.author}
+              </Link>
+              <p className="text-muted-foreground">
+                {getDateFromCreatedAt(pollData._creationTime)}
+              </p>
             </div>
           </div>
-        </div>
+        </header>
+
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="text-lg">Cast Your Vote</span>
-              <Badge variant="default" className="flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                {pollData.totalVotes.toLocaleString()} vote
-                {(pollData.totalVotes <= 0 || pollData.totalVotes > 1) && "s"}
-                <div className="bg-primary/90 ml-1 h-1 w-1 animate-pulse rounded-full" />
-              </Badge>
-            </CardTitle>
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Vote className="h-5 w-5" />
+                {hasVoted ? "Results" : "Cast Your Vote"}
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="font-normal">
+                  <Users className="mr-1.5 h-3.5 w-3.5" />
+                  {pollData.totalVotes.toLocaleString()} vote
+                  {pollData.totalVotes !== 1 && "s"}
+                </Badge>
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+
+          <CardContent className="space-y-3">
             {pollData.choices.map((choice, index) => (
               <Choice
                 key={index}
@@ -233,7 +259,7 @@ function Poll({ id }: PollProps) {
 
             {!hasVoted && (
               <Button
-                className="w-full cursor-pointer transition-opacity select-none"
+                className="mt-4 h-11 w-full cursor-pointer text-base font-medium"
                 variant="default"
                 disabled={
                   selectedOption === null || currentUser === null || isExpired
@@ -249,112 +275,123 @@ function Poll({ id }: PollProps) {
                   );
                 }}
               >
-                {isExpired ? "Poll ended" : "Submit Vote"}
+                {isExpired
+                  ? "Poll Ended"
+                  : currentUser === null
+                    ? "Sign in to vote"
+                    : "Submit Vote"}
               </Button>
             )}
           </CardContent>
         </Card>
       </div>
-      <div className="space-y-6">
+
+      <aside className="space-y-6">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <TrendingUp className="h-4 w-4" />
               Poll Stats
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-muted-foreground mb-1 text-xs">
+                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
                   Total Votes
                 </p>
-                <p className="text-xl font-bold">
+                <p className="text-2xl font-bold tabular-nums">
                   {pollData.totalVotes.toLocaleString()}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground mb-1 text-xs">Time Left</p>
+                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
+                  Time Left
+                </p>
                 <p
-                  className={`text-xl font-bold ${isExpired ? "text-red-400" : ""}`}
+                  className={`text-2xl font-bold tabular-nums ${isExpired ? "text-destructive" : ""}`}
                 >
-                  {isExpired ? "Expired" : timeRemainingString}
+                  {isExpired ? "Ended" : timeRemainingString}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
+
         {!isExpired && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center justify-between text-base">
                 <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
-                  <span>Live Activity</span>
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+                  Live Activity
                 </div>
                 <Badge
-                  variant="default"
-                  className="border-transparent bg-green-500/10 text-green-300"
+                  variant="outline"
+                  className="border-emerald-500/40 bg-emerald-500/10 text-xs font-normal text-emerald-500"
                 >
                   {pollData.liveStats?.currentViewers.length ?? 0} viewing
                 </Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="mb-4 grid grid-cols-2 gap-3">
-                <div className="bg-accent/80 rounded-lg p-2 text-center">
-                  <p className="text-lg font-bold">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
+                  <p className="text-xl font-bold tabular-nums">
                     {pollData.liveStats?.votesInLastHour ?? 0}
                   </p>
                   <p className="text-muted-foreground text-xs">votes/hour</p>
                 </div>
-
-                <div className="bg-accent/80 rounded-lg p-2 text-center">
-                  {pollData.liveStats && (
-                    <p className="text-lg font-bold">{peakVotingTime}</p>
-                  )}
-
+                <div className="bg-muted/50 rounded-lg p-3 text-center">
+                  <p className="text-xl font-bold tabular-nums">
+                    {peakVotingTime ?? "—"}
+                  </p>
                   <p className="text-muted-foreground text-xs">peak time</p>
                 </div>
               </div>
 
-              <Separator className="text-muted-foreground/10" />
+              <Separator />
 
-              <div className="space-y-2">
-                <h4 className="text-muted-foreground mb-2 text-sm font-medium">
+              <div>
+                <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
                   Recent Activity
                 </h4>
 
-                {pollData.recentActivity && pollData.recentActivity.length >= 1
-                  ? pollData.recentActivity.map((activity, index) => (
+                {pollData.recentActivity &&
+                pollData.recentActivity.length >= 1 ? (
+                  <div className="space-y-2.5">
+                    {pollData.recentActivity.map((activity, index) => (
                       <div
                         key={`activity-${index}`}
-                        className="flex items-center gap-1 text-sm"
+                        className="flex items-center gap-2.5 text-sm"
                       >
-                        <Avatar className="h-6 w-6">
+                        <Avatar className="h-7 w-7">
                           <AvatarImage src={activity.user.image} alt="" />
-                          <AvatarFallback className="text-xs">
+                          <AvatarFallback className="text-[10px]">
                             {activity.user.username
                               .substring(0, 2)
                               .toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                          <Link
-                            href={`/user/${activity.user.username}`}
-                            className="inline-flex items-center gap-1 font-medium"
-                          >
-                            {activity.user.username}
-                            <ExternalLink className="h-3 w-3" />
-                          </Link>
-                          <span className="text-muted-foreground mx-1.5">
+                          <div className="flex items-center gap-1">
+                            <Link
+                              href={`/user/${activity.user.username}`}
+                              className="hover:text-primary truncate font-medium transition-colors"
+                            >
+                              {activity.user.username}
+                            </Link>
+                            <ExternalLink className="text-muted-foreground h-3 w-3 shrink-0" />
+                          </div>
+                          <p className="text-muted-foreground truncate text-xs">
                             {activity.action}
-                          </span>
-                          {activity.choice && (
-                            <span className="truncate font-medium select-none">
-                              {activity.choice}
-                            </span>
-                          )}
+                            {activity.choice && (
+                              <span className="text-foreground font-medium">
+                                {" "}
+                                {activity.choice}
+                              </span>
+                            )}
+                          </p>
                         </div>
                         <span className="text-muted-foreground shrink-0 text-xs">
                           {formatDistanceToNow(activity.timestamp, {
@@ -362,24 +399,18 @@ function Poll({ id }: PollProps) {
                           })}
                         </span>
                       </div>
-                    ))
-                  : "None yet"}
-
-                {pollData.recentActivity &&
-                  pollData.recentActivity.length >= 1 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2 w-full cursor-pointer bg-transparent py-4.5 text-xs"
-                    >
-                      View All Activity
-                    </Button>
-                  )}
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    No activity yet
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
         )}
-      </div>
+      </aside>
     </div>
   );
 }
