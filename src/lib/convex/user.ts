@@ -115,13 +115,14 @@ export const updateProfile = mutation({
     const userId = await getAuthUserId(ctx);
 
     let headerImage: string | undefined;
+    let headerImageStorageId: Id<"_storage"> | undefined;
+
     let profileIcon: string | undefined;
+    let profileIconStorageId: Id<"_storage"> | undefined;
 
     if (userId === null) {
       return null;
     }
-
-    let headerImageStorageId: Id<"_storage"> | undefined;
 
     if (!args.headerImage) {
       headerImage = undefined;
@@ -133,14 +134,14 @@ export const updateProfile = mutation({
       headerImage =
         (await ctx.storage.getUrl(args.headerImage as Id<"_storage">)) ??
         undefined;
+
       headerImageStorageId = args.headerImage as Id<"_storage">;
     }
-
-    let profileIconStorageId: Id<"_storage"> | undefined;
 
     if (args.image && !args.image?.startsWith("https://")) {
       profileIcon =
         (await ctx.storage.getUrl(args.image as Id<"_storage">)) ?? undefined;
+
       profileIconStorageId = args.image as Id<"_storage">;
     } else {
       profileIcon = args.image;
@@ -152,29 +153,43 @@ export const updateProfile = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
 
-    if (existingUserImages) {
+    if (!existingUserImages) {
+      await ctx.db.insert("userImageIds", {
+        userId,
+        headerImageId: headerImageStorageId,
+        profileIconId: profileIconStorageId,
+      });
+    } else {
       const imagePatch: {
         headerImageId?: Id<"_storage"> | undefined;
         profileIconId?: Id<"_storage"> | undefined;
       } = {};
 
       if (args.headerImage !== undefined) {
+        if (
+          existingUserImages.headerImageId &&
+          existingUserImages.headerImageId !== headerImageStorageId
+        ) {
+          await ctx.storage.delete(existingUserImages.headerImageId);
+        }
+
         imagePatch.headerImageId = headerImageStorageId;
       }
 
       if (args.image !== undefined) {
+        if (
+          existingUserImages.profileIconId &&
+          existingUserImages.profileIconId !== profileIconStorageId
+        ) {
+          await ctx.storage.delete(existingUserImages.profileIconId);
+        }
+
         imagePatch.profileIconId = profileIconStorageId;
       }
 
       if (Object.keys(imagePatch).length > 0) {
         await ctx.db.patch(existingUserImages._id, imagePatch);
       }
-    } else {
-      await ctx.db.insert("userImageIds", {
-        userId,
-        headerImageId: headerImageStorageId,
-        profileIconId: profileIconStorageId,
-      });
     }
 
     const userPatch: Partial<UpdateProfileArgs> = {

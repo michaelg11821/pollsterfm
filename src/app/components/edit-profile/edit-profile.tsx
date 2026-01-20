@@ -105,7 +105,6 @@ function EditProfile({
   });
 
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-  const deleteImage = useMutation(api.files.deleteById);
   const profileIconId = useQuery(api.files.getProfileIconStorageId);
   const headerImageId = useQuery(api.files.getHeaderImageStorageId);
   const currentUser = useQuery(api.user.currentUser);
@@ -172,28 +171,14 @@ function EditProfile({
       };
 
       if (deleteHeaderImg && currentUser.headerImage && headerImageId) {
-        await deleteImage({ storageId: headerImageId });
-
         args.headerImage = undefined;
       }
 
       if (deleteProfileIcon && currentUser.image && profileIconId) {
-        if (!currentUser.image.startsWith("https://")) {
-          await deleteImage({ storageId: profileIconId });
-        }
-
         args.image = undefined;
       }
 
       if (newProfileIcon) {
-        if (
-          currentUser.image &&
-          profileIconId &&
-          !currentUser.image.startsWith("https://")
-        ) {
-          await deleteImage({ storageId: profileIconId });
-        }
-
         const uploadUrl = await generateUploadUrl();
 
         const result = await fetch(uploadUrl, {
@@ -208,10 +193,6 @@ function EditProfile({
       }
 
       if (newHeaderImg) {
-        if (currentUser.headerImage && headerImageId) {
-          await deleteImage({ storageId: headerImageId });
-        }
-
         const uploadUrl = await generateUploadUrl();
 
         const result = await fetch(uploadUrl, {
