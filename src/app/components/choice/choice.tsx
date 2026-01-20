@@ -1,5 +1,5 @@
 import type { Choice } from "@/lib/types/pollster";
-import { Check, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
@@ -56,11 +56,6 @@ function Choice({
               height={72}
               className="h-full w-full object-cover"
             />
-            {isSelected && !showResults && (
-              <div className="bg-primary absolute inset-0 flex items-center justify-center">
-                <Check className="h-6 w-6 text-white" strokeWidth={3} />
-              </div>
-            )}
           </div>
 
           <div className="min-w-0 flex-1">

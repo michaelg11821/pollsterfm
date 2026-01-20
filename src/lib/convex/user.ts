@@ -6,13 +6,14 @@ import {
   NO_PLATFORM,
   NOT_FOUND,
   UNAUTHORIZED,
+  USER_NOT_FOUND,
 } from "../constants/errors";
 import { capitalize, getChoiceItemName, utsToIsoString } from "../convex-utils";
 import {
   LastfmCurrentlyPlayingResponse,
   LastfmRecentlyPlayedResponse,
 } from "../types/lastfmResponses";
-import type { Platform, PollActivity } from "../types/pollster";
+import type { Platform } from "../types/pollster";
 import {
   SpotifyCurrentlyPlayingResponse,
   SpotifyRecentlyPlayedResponse,
@@ -26,7 +27,7 @@ import {
   query,
   QueryCtx,
 } from "./_generated/server";
-import { authedMutation } from "./helpers";
+import { authedMutation, authedQuery } from "./helpers";
 import {
   getCurrentlyPlayingLastfmTrack,
   getRecentlyPlayedLastfmTracks,
@@ -302,67 +303,53 @@ export const getName = query({
   },
 });
 
-export const addVote = mutation({
+export const addVote = authedMutation({
   args: {
     artist: v.string(),
     album: v.union(v.string(), v.null()),
     track: v.union(v.string(), v.null()),
     pollId: v.id("polls"),
     affinities: v.array(v.string()),
-    choiceIndex: v.number(),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUser(ctx);
+    const existingChoice = await ctx.db
+      .query("pollChoices")
+      .withIndex("by_userId_pollId", (q) =>
+        q.eq("userId", ctx.userId).eq("pollId", args.pollId),
+      )
+      .unique();
 
-    if (user === null) {
-      throw new Error("user not found");
+    if (existingChoice) {
+      throw new Error("user has already voted in this poll");
     }
 
-    const hasVoted = user.choices?.some(
-      (choice) => choice.pollId === args.pollId,
-    );
+    await ctx.db.insert("pollChoices", { ...args, userId: ctx.userId });
 
-    if (hasVoted) {
-      throw new Error("user has already voted on this poll");
+    const user = await ctx.db.get(ctx.userId);
+
+    if (!user) {
+      throw new Error(USER_NOT_FOUND);
     }
 
-    const newChoice = {
-      artist: args.artist,
-      album: args.album,
-      track: args.track,
+    const choice = args;
+
+    await ctx.db.insert("pollActivity", {
+      user: { username: user.username, image: user.image },
+      action: "voted for",
+      choice: getChoiceItemName(choice)!,
+      timestamp: Date.now(),
+      userId: ctx.userId,
       pollId: args.pollId,
-      affinities: args.affinities,
-    };
-
-    const newChoices = user.choices
-      ? [...user.choices, newChoice]
-      : [newChoice];
-
-    await ctx.db.patch(user._id, { choices: newChoices });
+    });
 
     const poll = await ctx.db.get(args.pollId);
 
-    if (poll === null) {
-      throw new Error("poll not found");
+    if (!poll) {
+      throw new Error(NOT_FOUND);
     }
-
-    const pollChoicesCopy = [...poll.choices];
-    pollChoicesCopy[args.choiceIndex].totalVotes += 1;
-
-    const userActivity: PollActivity = {
-      user: { username: user.username, image: user.image },
-      action: "voted for",
-      choice: getChoiceItemName(newChoice)!,
-      timestamp: Date.now(),
-    };
-    const newRecentActivity = poll.recentActivity
-      ? [userActivity, ...poll.recentActivity]
-      : [userActivity];
 
     await ctx.db.patch(args.pollId, {
       totalVotes: poll.totalVotes + 1,
-      choices: pollChoicesCopy,
-      recentActivity: newRecentActivity,
     });
 
     return null;
@@ -384,13 +371,18 @@ export const getAffinities = query({
       return null;
     }
 
-    if (!user.choices || user.choices.length === 0) {
+    const choices = await ctx.db
+      .query("pollChoices")
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .collect();
+
+    if (!choices || choices.length === 0) {
       return [];
     }
 
     const affinityCounts = new Map<string, number>();
 
-    user.choices.forEach((choice) => {
+    choices.forEach((choice) => {
       choice.affinities.forEach((affinity) => {
         const currentCount = affinityCounts.get(affinity) || 0;
 
@@ -398,7 +390,7 @@ export const getAffinities = query({
       });
     });
 
-    const totalChoices = user.choices.length;
+    const totalChoices = choices.length;
 
     const affinityScores = Array.from(affinityCounts.entries())
       .map(([name, count]) => {
@@ -869,5 +861,25 @@ export const getFollowingCount = query({
 
       return 0;
     }
+  },
+});
+
+export const hasVotedInPoll = authedQuery({
+  args: {
+    pollId: v.id("polls"),
+  },
+  handler: async (ctx, args) => {
+    const existingChoice = await ctx.db
+      .query("pollChoices")
+      .withIndex("by_userId_pollId", (q) =>
+        q.eq("userId", ctx.userId).eq("pollId", args.pollId),
+      )
+      .unique();
+
+    if (!existingChoice) {
+      return false;
+    }
+
+    return true;
   },
 });

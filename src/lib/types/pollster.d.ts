@@ -3,7 +3,7 @@ import { affinities } from "../constants/affinities";
 import { platforms } from "../constants/platforms";
 import { pollTypes } from "../constants/polls";
 import type { Doc } from "../convex/_generated/dataModel";
-import { activityValidator, choiceValidator } from "../convex/validators";
+import { activityValidator, pollChoiceValidator } from "../convex/validators";
 
 type TopAlbumImage = {
   url: string;
@@ -28,7 +28,7 @@ export type CatalogItemType = PollType;
 
 export type Affinity = (typeof affinities)[number];
 
-export type Choice = Infer<typeof choiceValidator>;
+export type Choice = Infer<typeof pollChoiceValidator>;
 export type ChoiceInfo = Pick<Choice, PollType>;
 
 export type Poll = Doc<"polls">;

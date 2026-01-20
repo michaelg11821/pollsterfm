@@ -38,11 +38,15 @@ function Poll({ id }: PollProps) {
   const router = useRouter();
 
   const pollData = useQuery(api.pollster.poll.getById, { id });
-  const currentUser = useQuery(api.user.currentUser);
-  const addVote = useMutation(api.user.addVote);
-
+  const recentActivity = useQuery(api.pollster.poll.getRecentActivity, {
+    pollId: id,
+  });
   const viewPoll = useMutation(api.pollster.poll.view);
   const unviewPoll = useMutation(api.pollster.poll.unview);
+
+  const currentUser = useQuery(api.user.currentUser);
+  const hasVoted = useQuery(api.user.hasVotedInPoll, { pollId: id }) ?? false;
+  const addVote = useMutation(api.user.addVote);
 
   const endTime = pollData ? pollData.expiresAt : 0;
   const { timeLeft, isExpired } = useCountdown(endTime);
@@ -135,7 +139,6 @@ function Poll({ id }: PollProps) {
       track,
       affinities,
       pollId: id,
-      choiceIndex: selectedOption,
     });
 
     if (vote === null) {
@@ -167,11 +170,6 @@ function Poll({ id }: PollProps) {
     : null;
 
   const timeRemainingString = formatTimeRemaining(timeLeft);
-
-  const hasVoted =
-    currentUser && currentUser.choices
-      ? currentUser.choices.some((choice) => choice.pollId === id)
-      : false;
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
@@ -357,10 +355,9 @@ function Poll({ id }: PollProps) {
                   Recent Activity
                 </h4>
 
-                {pollData.recentActivity &&
-                pollData.recentActivity.length >= 1 ? (
+                {recentActivity && recentActivity.length >= 1 ? (
                   <div className="space-y-2.5">
-                    {pollData.recentActivity.map((activity, index) => (
+                    {recentActivity.map((activity, index) => (
                       <div
                         key={`activity-${index}`}
                         className="flex items-center gap-2.5 text-sm"

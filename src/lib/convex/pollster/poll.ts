@@ -210,3 +210,14 @@ export const getUserPolls = query({
       .collect();
   },
 });
+
+export const getRecentActivity = query({
+  args: { pollId: v.id("polls") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("pollActivity")
+      .withIndex("by_pollId", (q) => q.eq("pollId", args.pollId))
+      .order("desc")
+      .collect();
+  },
+});

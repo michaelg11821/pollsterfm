@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 
-export const choiceValidator = v.object({
+export const pollChoiceValidator = v.object({
   image: v.string(),
   artist: v.string(),
   album: v.union(v.string(), v.null()),
@@ -22,7 +22,7 @@ export const pollValidator = v.object({
   description: v.optional(v.string()),
   duration: v.number(),
   pollType: v.string(),
-  choices: v.array(choiceValidator),
+  choices: v.array(pollChoiceValidator),
   totalVotes: v.number(),
   liveStats: v.optional(
     v.object({
@@ -31,7 +31,6 @@ export const pollValidator = v.object({
       peakVotingTime: v.number(),
     }),
   ),
-  recentActivity: v.optional(v.array(activityValidator)),
   expiresAt: v.number(),
 });
 

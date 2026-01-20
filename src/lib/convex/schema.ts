@@ -25,17 +25,6 @@ const schema = defineSchema({
     lastfmSessionKey: v.optional(v.string()),
     stripeCustomerId: v.optional(v.string()),
     listeningHistoryPrivate: v.optional(v.boolean()),
-    choices: v.optional(
-      v.array(
-        v.object({
-          artist: v.string(),
-          album: v.union(v.string(), v.null()),
-          track: v.union(v.string(), v.null()),
-          pollId: v.id("polls"),
-          affinities: v.array(v.string()),
-        }),
-      ),
-    ),
     createdPolls: v.optional(v.array(pollValidator)),
   })
     .index("email", ["email"])
@@ -74,6 +63,27 @@ const schema = defineSchema({
     stripeCustomerId: v.optional(v.string()),
     payment: v.optional(v.union(stripePaymentValidator, v.null())),
   }).index("by_userId", ["userId"]),
+  pollChoices: defineTable({
+    userId: v.id("users"),
+    affinities: v.array(v.string()),
+    artist: v.string(),
+    album: v.union(v.string(), v.null()),
+    track: v.union(v.string(), v.null()),
+    pollId: v.id("polls"),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_pollId", ["pollId"])
+    .index("by_userId_pollId", ["userId", "pollId"]),
+  pollActivity: defineTable({
+    user: v.object({ username: v.string(), image: v.optional(v.string()) }),
+    userId: v.id("users"),
+    pollId: v.id("polls"),
+    action: v.string(),
+    choice: v.string(),
+    timestamp: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_pollId", ["pollId"]),
 });
 
 export default schema;
