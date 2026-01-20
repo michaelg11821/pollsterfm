@@ -43,7 +43,9 @@ function LastfmAlbumTracks({ artistName, albumName }: LastfmAlbumTracksProps) {
       }
 
       setTracks((prevTracks) => {
-        const newTracks = [...prevTracks, ...response.track];
+        const newTracks = Array.isArray(response.track)
+          ? [...prevTracks, ...response.track]
+          : [...prevTracks, response.track];
 
         return newTracks;
       });
