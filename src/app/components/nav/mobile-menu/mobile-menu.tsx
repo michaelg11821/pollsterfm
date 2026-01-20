@@ -96,6 +96,14 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
             <ul className="flex list-none flex-col gap-2.5 border-t py-5">
               <li>
                 <Link
+                  href="/discover"
+                  className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
+                >
+                  Discover
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/polls"
                   className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                 >
@@ -108,14 +116,6 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
                   className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                 >
                   Reviews
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href=""
-                  className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
-                >
-                  Community
                 </Link>
               </li>
             </ul>

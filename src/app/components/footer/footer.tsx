@@ -42,14 +42,6 @@ function Footer() {
                   Reviews
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-muted-foreground hover:text-foreground text-center transition-[color]"
-                >
-                  Affinities
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -106,14 +98,6 @@ function Footer() {
                   className="text-muted-foreground hover:text-foreground text-center transition-[color]"
                 >
                   Cookies
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-muted-foreground hover:text-foreground text-center transition-[color]"
-                >
-                  Licenses
                 </Link>
               </li>
             </ul>
