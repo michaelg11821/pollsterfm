@@ -63,12 +63,13 @@ const schema = defineSchema({
     stripeCustomerId: v.optional(v.string()),
     payment: v.optional(v.union(stripePaymentValidator, v.null())),
   }).index("by_userId", ["userId"]),
-  pollChoices: defineTable({
+  userChoices: defineTable({
     userId: v.id("users"),
     affinities: v.array(v.string()),
     artist: v.string(),
     album: v.union(v.string(), v.null()),
     track: v.union(v.string(), v.null()),
+    choiceIndex: v.number(),
     pollId: v.id("polls"),
   })
     .index("by_userId", ["userId"])

@@ -310,10 +310,11 @@ export const addVote = authedMutation({
     track: v.union(v.string(), v.null()),
     pollId: v.id("polls"),
     affinities: v.array(v.string()),
+    choiceIndex: v.number(),
   },
   handler: async (ctx, args) => {
     const existingChoice = await ctx.db
-      .query("pollChoices")
+      .query("userChoices")
       .withIndex("by_userId_pollId", (q) =>
         q.eq("userId", ctx.userId).eq("pollId", args.pollId),
       )
@@ -323,7 +324,7 @@ export const addVote = authedMutation({
       throw new Error("user has already voted in this poll");
     }
 
-    await ctx.db.insert("pollChoices", { ...args, userId: ctx.userId });
+    await ctx.db.insert("userChoices", { ...args, userId: ctx.userId });
 
     const user = await ctx.db.get(ctx.userId);
 
@@ -348,8 +349,12 @@ export const addVote = authedMutation({
       throw new Error(NOT_FOUND);
     }
 
+    const choicesCopy = [...poll.choices];
+    choicesCopy[args.choiceIndex].totalVotes += 1;
+
     await ctx.db.patch(args.pollId, {
       totalVotes: poll.totalVotes + 1,
+      choices: choicesCopy,
     });
 
     return null;
@@ -372,7 +377,7 @@ export const getAffinities = query({
     }
 
     const choices = await ctx.db
-      .query("pollChoices")
+      .query("userChoices")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .collect();
 
@@ -870,7 +875,7 @@ export const hasVotedInPoll = authedQuery({
   },
   handler: async (ctx, args) => {
     const existingChoice = await ctx.db
-      .query("pollChoices")
+      .query("userChoices")
       .withIndex("by_userId_pollId", (q) =>
         q.eq("userId", ctx.userId).eq("pollId", args.pollId),
       )

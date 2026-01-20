@@ -118,6 +118,7 @@ function Poll({ id }: PollProps) {
     album: string | null,
     track: string | null,
     affinities: Affinity[],
+    choiceIndex: number,
   ) => {
     if (currentUser === null) {
       return toastManager.add({
@@ -139,6 +140,7 @@ function Poll({ id }: PollProps) {
       track,
       affinities,
       pollId: id,
+      choiceIndex,
     });
 
     if (vote === null) {
@@ -264,12 +266,14 @@ function Poll({ id }: PollProps) {
                 }
                 onClick={() => {
                   if (!selectedChoiceData) return;
+                  if (selectedOption === null) return;
 
                   submitVote(
                     selectedChoiceData.artist,
                     selectedChoiceData.album,
                     selectedChoiceData.track,
                     selectedChoiceData.affinities as Affinity[],
+                    selectedOption,
                   );
                 }}
               >
