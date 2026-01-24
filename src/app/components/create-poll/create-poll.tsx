@@ -293,7 +293,7 @@ function CreatePoll({
       const result = await createPoll({
         ...values,
         duration: Number(values.duration),
-        author: currentUser.username,
+        authorId: currentUser._id,
         expiresAt: Date.now() + Number(values.duration),
       });
 

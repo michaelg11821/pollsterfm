@@ -25,11 +25,14 @@ type ProfileHeaderProps = {
 function ProfileHeader({ username }: ProfileHeaderProps) {
   const [followLoading, setFollowLoading] = useState<boolean>(false);
 
-  const profile = useQuery(api.user.getProfile, { username });
+  const profile = useQuery(api.user.getProfileByUsername, { username });
   const user = useQuery(api.user.currentUser);
   const isFollowing = useQuery(api.user.isFollowing, { username });
   const followersCount = useQuery(api.user.getFollowersCount, { username });
   const followingCount = useQuery(api.user.getFollowingCount, { username });
+  const createdPollsCount = useQuery(api.user.getCreatedPollsCount, {
+    username,
+  });
 
   const followUser = useMutation(api.user.followUser);
   const unfollowUser = useMutation(api.user.unfollowUser);
@@ -243,13 +246,11 @@ function ProfileHeader({ username }: ProfileHeaderProps) {
                 href={`/user/${username}/polls`}
                 className="text-foreground/80 hover:text-foreground"
               >
-                <span className="font-bold">
-                  {profile.createdPolls?.length ?? 0}
-                </span>
+                <span className="font-bold">{createdPollsCount ?? 0}</span>
                 <span className="text-muted-foreground ml-1">
                   Poll
-                  {profile.createdPolls
-                    ? profile.createdPolls.length > 1
+                  {createdPollsCount
+                    ? createdPollsCount > 1
                       ? "s "
                       : " "
                     : "s "}

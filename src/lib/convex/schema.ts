@@ -25,12 +25,11 @@ const schema = defineSchema({
     lastfmSessionKey: v.optional(v.string()),
     stripeCustomerId: v.optional(v.string()),
     listeningHistoryPrivate: v.optional(v.boolean()),
-    createdPolls: v.optional(v.array(pollValidator)),
   })
     .index("email", ["email"])
     .index("username", ["username"]),
   polls: defineTable(pollValidator)
-    .index("author", ["author"])
+    .index("authorId", ["authorId"])
     .index("pollType", ["pollType"])
     .index("expiresAt", ["expiresAt"]),
   lastfmOAuthState: defineTable({

@@ -8,12 +8,14 @@ import { TrendingUp, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
-import PollAuthorImage from "../poll/author-image/author-image";
 import { Badge } from "../ui/badge";
 import HeroPollSkeleton from "./skeleton";
 
 function HeroPoll() {
   const poll = useQuery(api.pollster.poll.getMostPopularPoll);
+  const authorData = useQuery(api.user.getProfileById, {
+    userId: poll?.authorId,
+  });
 
   const uniqueAffinities = useMemo(() => {
     if (!poll) return [];
@@ -24,9 +26,10 @@ function HeroPoll() {
     );
   }, [poll]);
 
-  if (poll === undefined) return <HeroPollSkeleton />;
+  if (poll === undefined || authorData === undefined)
+    return <HeroPollSkeleton />;
 
-  if (poll === null) {
+  if (poll === null || authorData === null) {
     return (
       <div className="bg-card border-border flex flex-col items-center justify-center rounded-xl border p-8 text-center shadow-xl sm:p-12">
         <div className="bg-accent mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
@@ -83,11 +86,21 @@ function HeroPoll() {
         <div className="bg-card border-border relative w-full overflow-hidden rounded-xl border shadow-xl">
           <div className="border-border flex items-center gap-3 border-b px-4 py-4 sm:px-5">
             <div className="flex min-w-0 flex-1 items-center gap-3">
-              <PollAuthorImage username={poll.author} />
+              <div className="bg-background relative m-0 flex h-10 w-10 items-center justify-center gap-1.5 rounded-full border-none outline-0 focus:outline-2 focus:outline-offset-2">
+                {authorData.image && (
+                  <Image
+                    src={authorData.image}
+                    alt=""
+                    fill
+                    className="rounded-full object-cover"
+                  />
+                )}
+              </div>
               <div className="min-w-0 flex-1">
                 <h3 className="truncate font-semibold">{poll.question}</h3>
                 <p className="text-muted-foreground truncate text-xs">
-                  by @{poll.author} • {poll.totalVotes.toLocaleString()} vote
+                  by @{authorData.username} • {poll.totalVotes.toLocaleString()}{" "}
+                  vote
                   {poll.totalVotes <= 0 || poll.totalVotes > 1 ? "s " : " "}
                 </p>
               </div>

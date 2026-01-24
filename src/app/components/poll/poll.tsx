@@ -23,10 +23,10 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Choice from "../choice/choice";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import PollAuthorImage from "./author-image/author-image";
 import PollSkeleton from "./skeleton";
 
 import * as Sentry from "@sentry/nextjs";
+import Image from "next/image";
 
 type PollProps = {
   id: Id<"polls">;
@@ -47,6 +47,10 @@ function Poll({ id }: PollProps) {
   const currentUser = useQuery(api.user.currentUser);
   const hasVoted = useQuery(api.user.hasVotedInPoll, { pollId: id }) ?? false;
   const addVote = useMutation(api.user.addVote);
+
+  const authorData = useQuery(api.user.getProfileById, {
+    userId: pollData?.authorId,
+  });
 
   const endTime = pollData ? pollData.expiresAt : 0;
   const { timeLeft, isExpired } = useCountdown(endTime);
@@ -87,11 +91,15 @@ function Poll({ id }: PollProps) {
     return { artist, album, track, affinities };
   }, [selectedOption, pollData]);
 
-  if (pollData === undefined || currentUser === undefined) {
+  if (
+    pollData === undefined ||
+    currentUser === undefined ||
+    authorData === undefined
+  ) {
     return <PollSkeleton />;
   }
 
-  if (pollData === null) {
+  if (pollData === null || authorData === null) {
     router.push("/not-found");
 
     return null;
@@ -211,13 +219,22 @@ function Poll({ id }: PollProps) {
           )}
 
           <div className="flex items-center gap-3">
-            <PollAuthorImage username={pollData.author} />
+            <div className="bg-background relative m-0 flex h-10 w-10 items-center justify-center gap-1.5 rounded-full border-none outline-0 focus:outline-2 focus:outline-offset-2">
+              {authorData.image && (
+                <Image
+                  src={authorData.image}
+                  alt=""
+                  fill
+                  className="rounded-full object-cover"
+                />
+              )}
+            </div>
             <div className="text-sm">
               <Link
-                href={`/user/${pollData.author}`}
+                href={`/user/${authorData.username}`}
                 className="hover:text-primary font-medium transition-colors"
               >
-                {pollData.author}
+                {authorData.username}
               </Link>
               <p className="text-muted-foreground">
                 {getDateFromCreatedAt(pollData._creationTime)}

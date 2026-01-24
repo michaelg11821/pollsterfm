@@ -1,29 +1,15 @@
+import { USER_NOT_FOUND } from "@/lib/constants/errors";
 import { TRENDING_VOTE_COUNT } from "@/lib/constants/polls";
 import { oneDayMs } from "@/lib/constants/time";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "../_generated/server";
+import { authedMutation } from "../helpers";
 import { pollValidator } from "../validators";
 
-export const create = mutation({
+export const create = authedMutation({
   args: pollValidator,
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-
-    if (userId === null) {
-      throw new Error("user not logged in");
-    }
-
-    const user = await ctx.db.get(userId);
-
-    if (user === null) {
-      throw new Error("user not found");
-    }
-
-    const createdPollsCopy = user.createdPolls ? [...user.createdPolls] : [];
-
-    await ctx.db.patch(userId, { createdPolls: [...createdPollsCopy, args] });
-
     return await ctx.db.insert("polls", args);
   },
 });
@@ -178,34 +164,19 @@ export const getMostPopularPoll = query({
   },
 });
 
-export const getMyPolls = query({
-  handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-
-    if (userId === null) {
-      return null;
-    }
-
-    const user = await ctx.db.get(userId);
-
-    if (user === null) {
-      return null;
-    }
-
-    return await ctx.db
-      .query("polls")
-      .withIndex("author", (q) => q.eq("author", user.username))
-      .order("desc")
-      .collect();
-  },
-});
-
 export const getUserPolls = query({
   args: { username: v.string() },
   handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (!user) throw new Error(USER_NOT_FOUND);
+
     return await ctx.db
       .query("polls")
-      .withIndex("author", (q) => q.eq("author", args.username))
+      .withIndex("authorId", (q) => q.eq("authorId", user._id))
       .order("desc")
       .collect();
   },

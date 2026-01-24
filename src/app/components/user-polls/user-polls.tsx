@@ -21,29 +21,18 @@ function UserPolls({ username }: UserPollsProps) {
 
   const isOwnProfile = currentUser?.username === username;
 
-  if (userPolls === undefined) {
-    return (
-      <>
-        <UserPollsHeader
-          username={username}
-          isOwnProfile={isOwnProfile}
-          userPolls={userPolls}
-        />
+  return (
+    <>
+      <UserPollsHeader
+        username={username}
+        isOwnProfile={isOwnProfile}
+        userPolls={userPolls}
+      />
+      {userPolls === undefined ? (
         <div className="space-y-4">
           <LoadingIndicator loading={true} />
         </div>
-      </>
-    );
-  }
-
-  if (userPolls === null || userPolls.length === 0) {
-    return (
-      <>
-        <UserPollsHeader
-          username={username}
-          isOwnProfile={isOwnProfile}
-          userPolls={userPolls}
-        />
+      ) : userPolls === null || userPolls.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <AlertCircle className="text-muted-foreground mb-4 h-12 w-12" />
@@ -63,22 +52,13 @@ function UserPolls({ username }: UserPollsProps) {
             )}
           </CardContent>
         </Card>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <UserPollsHeader
-        username={username}
-        isOwnProfile={isOwnProfile}
-        userPolls={userPolls}
-      />
-      <div className="flex flex-col gap-5">
-        {userPolls.map((poll) => (
-          <PollPreview key={poll._id} poll={poll} />
-        ))}
-      </div>
+      ) : (
+        <div className="flex flex-col gap-5">
+          {userPolls.map((poll) => (
+            <PollPreview key={poll._id} poll={poll} />
+          ))}
+        </div>
+      )}
     </>
   );
 }

@@ -17,7 +17,7 @@ export const activityValidator = v.object({
 });
 
 export const pollValidator = v.object({
-  author: v.string(),
+  authorId: v.id("users"),
   question: v.string(),
   description: v.optional(v.string()),
   duration: v.number(),

@@ -14,13 +14,13 @@ import MobileSearch from "./mobile-search/mobile-search";
 import NavSkeleton from "./skeleton";
 
 function Nav() {
-  const currentUserProfile = useQuery(api.user.getProfile, {});
+  const currentUser = useQuery(api.user.currentUser);
 
   const searchParams = useSearchParams();
 
   const searchQuery = searchParams.get("query");
 
-  if (currentUserProfile === undefined) {
+  if (currentUser === undefined) {
     return <NavSkeleton />;
   }
 
@@ -65,12 +65,12 @@ function Nav() {
           </div>
         </nav>
         <DesktopMenu
-          profileIcon={currentUserProfile?.image}
-          username={currentUserProfile?.username}
+          profileIcon={currentUser?.image}
+          username={currentUser?.username}
         />
         <MobileMenu
-          profileIcon={currentUserProfile?.image}
-          username={currentUserProfile?.username}
+          profileIcon={currentUser?.image}
+          username={currentUser?.username}
         />
       </div>
     </header>

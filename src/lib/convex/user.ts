@@ -19,7 +19,7 @@ import {
   SpotifyRecentlyPlayedResponse,
 } from "../types/spotifyResponses";
 import { api } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import {
   action,
   mutation,
@@ -54,33 +54,45 @@ export const currentUser = query({
   },
 });
 
-export const getProfile = query({
-  args: { username: v.optional(v.string()) },
-  handler: async (ctx, args) => {
-    let user;
+function extractProfileDataFromUser(user: Doc<"users">) {
+  return {
+    aboutMe: user.aboutMe,
+    createdAt: user._creationTime,
+    image: user.image,
+    username: user.username,
+    headerImage: user.headerImage,
+    name: user.name,
+  };
+}
 
-    if (args.username !== undefined) {
-      user = await ctx.db
-        .query("users")
-        .withIndex("username", (q) => q.eq("username", args.username!))
-        .unique();
-    } else {
-      user = await getCurrentUser(ctx);
-    }
+export const getProfileById = query({
+  args: { userId: v.optional(v.id("users")) },
+  handler: async (ctx, args) => {
+    if (!args.userId) return undefined;
+
+    const user = await ctx.db.get(args.userId);
 
     if (user === null) {
       return null;
     }
 
-    return {
-      aboutMe: user.aboutMe,
-      createdAt: user._creationTime,
-      image: user.image,
-      username: user.username,
-      headerImage: user.headerImage,
-      name: user.name,
-      createdPolls: user.createdPolls,
-    };
+    return extractProfileDataFromUser(user);
+  },
+});
+
+export const getProfileByUsername = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (user === null) {
+      return null;
+    }
+
+    return extractProfileDataFromUser(user);
   },
 });
 
@@ -313,6 +325,12 @@ export const addVote = authedMutation({
     choiceIndex: v.number(),
   },
   handler: async (ctx, args) => {
+    const poll = await ctx.db.get(args.pollId);
+
+    if (!poll) {
+      throw new Error(NOT_FOUND);
+    }
+
     const existingChoice = await ctx.db
       .query("userChoices")
       .withIndex("by_userId_pollId", (q) =>
@@ -342,12 +360,6 @@ export const addVote = authedMutation({
       userId: ctx.userId,
       pollId: args.pollId,
     });
-
-    const poll = await ctx.db.get(args.pollId);
-
-    if (!poll) {
-      throw new Error(NOT_FOUND);
-    }
 
     const choicesCopy = [...poll.choices];
     choicesCopy[args.choiceIndex].totalVotes += 1;
@@ -886,5 +898,28 @@ export const hasVotedInPoll = authedQuery({
     }
 
     return true;
+  },
+});
+
+export const getCreatedPollsCount = query({
+  args: {
+    username: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (user === null) {
+      return null;
+    }
+
+    const createdPolls = await ctx.db
+      .query("polls")
+      .withIndex("authorId", (q) => q.eq("authorId", user._id))
+      .collect();
+
+    return createdPolls.length;
   },
 });
