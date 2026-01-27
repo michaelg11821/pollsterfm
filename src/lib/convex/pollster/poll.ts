@@ -45,6 +45,7 @@ export const view = mutation({
     if (userId === null) {
       throw new Error("user not logged in");
     }
+
     if (!poll.liveStats) {
       const newLiveStats = {
         currentViewers: [userId],

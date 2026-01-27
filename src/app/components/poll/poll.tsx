@@ -64,9 +64,11 @@ function Poll({ id }: PollProps) {
   }, [currentUser]);
 
   useEffect(() => {
-    if (isExpired || !currentUser) return;
+    if (isExpired) return;
 
     async function view() {
+      if (!currentUser) return;
+
       try {
         await viewPoll({ id });
       } catch (err: unknown) {
@@ -77,7 +79,9 @@ function Poll({ id }: PollProps) {
     view();
 
     const handleBeforeUnload = () => {
-      unviewPoll({ id, userId: currentUser._id }).catch((err) =>
+      if (previousUserIdRef.current === null) return;
+
+      unviewPoll({ id, userId: previousUserIdRef.current }).catch((err) =>
         Sentry.captureException(err),
       );
     };
@@ -87,7 +91,9 @@ function Poll({ id }: PollProps) {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
 
-      unviewPoll({ id, userId: currentUser._id }).catch((err) =>
+      if (previousUserIdRef.current === null) return;
+
+      unviewPoll({ id, userId: previousUserIdRef.current }).catch((err) =>
         Sentry.captureException(err),
       );
     };
