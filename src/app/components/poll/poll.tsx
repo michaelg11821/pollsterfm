@@ -20,7 +20,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Clock, ExternalLink, TrendingUp, Users, Vote } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Choice from "../choice/choice";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import PollSkeleton from "./skeleton";
@@ -55,6 +55,14 @@ function Poll({ id }: PollProps) {
   const endTime = pollData ? pollData.expiresAt : 0;
   const { timeLeft, isExpired } = useCountdown(endTime);
 
+  const previousUserIdRef = useRef<Id<"users"> | null>(null);
+
+  useEffect(() => {
+    if (currentUser?._id) {
+      previousUserIdRef.current = currentUser._id;
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     if (isExpired || !currentUser) return;
 
@@ -69,7 +77,9 @@ function Poll({ id }: PollProps) {
     view();
 
     const handleBeforeUnload = () => {
-      unviewPoll({ id }).catch((err) => Sentry.captureException(err));
+      unviewPoll({ id, userId: currentUser._id }).catch((err) =>
+        Sentry.captureException(err),
+      );
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -77,7 +87,9 @@ function Poll({ id }: PollProps) {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
 
-      unviewPoll({ id }).catch((err) => Sentry.captureException(err));
+      unviewPoll({ id, userId: currentUser._id }).catch((err) =>
+        Sentry.captureException(err),
+      );
     };
   }, [id, unviewPoll, viewPoll, isExpired, currentUser]);
 
@@ -105,6 +117,9 @@ function Poll({ id }: PollProps) {
     return null;
   }
 
+  const isAuthor = currentUser?._id === pollData.authorId;
+  const hasVotedOrIsAuthor = hasVoted || isAuthor;
+
   const handleVote = (optionIndex: number) => {
     if (currentUser === null) {
       return toastManager.add({
@@ -116,6 +131,8 @@ function Poll({ id }: PollProps) {
         title: "Error",
         description: "This poll has ended.",
       });
+    } else if (isAuthor) {
+      return;
     }
 
     setSelectedOption(optionIndex);
@@ -137,6 +154,11 @@ function Poll({ id }: PollProps) {
       return toastManager.add({
         title: "Error",
         description: "This poll has ended.",
+      });
+    } else if (pollData.authorId === currentUser._id) {
+      return toastManager.add({
+        title: "Error",
+        description: "You cannot vote in your own poll.",
       });
     }
 
@@ -248,7 +270,7 @@ function Poll({ id }: PollProps) {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Vote className="h-5 w-5" />
-                {hasVoted ? "Results" : "Cast Your Vote"}
+                {hasVotedOrIsAuthor ? "Results" : "Cast Your Vote"}
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="font-normal">
@@ -265,7 +287,7 @@ function Poll({ id }: PollProps) {
               <Choice
                 key={index}
                 choice={choice}
-                hasVoted={hasVoted}
+                hasVoted={hasVotedOrIsAuthor}
                 selectedOption={selectedOption}
                 index={index}
                 handleVote={handleVote}
@@ -274,7 +296,7 @@ function Poll({ id }: PollProps) {
               />
             ))}
 
-            {!hasVoted && (
+            {!hasVoted && !isAuthor && (
               <Button
                 className="mt-4 h-11 w-full cursor-pointer text-base font-medium"
                 variant="default"
