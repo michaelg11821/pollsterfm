@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { LogOut, Settings, User } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { buttonVariants } from "../../ui/button";
 import {
   DropdownMenu,
@@ -18,6 +19,8 @@ import type { MenuProps } from "../menuProps";
 
 function DesktopMenu({ profileIcon, username }: MenuProps) {
   const { signOut } = useAuthActions();
+
+  const pathname = usePathname();
 
   const handleSignOut = async () => {
     await signOut();
@@ -75,7 +78,7 @@ function DesktopMenu({ profileIcon, username }: MenuProps) {
         </DropdownMenu>
       ) : (
         <Link
-          href="/sign-in"
+          href={`/sign-in${pathname === "/" ? "" : "?redirectTo=" + encodeURIComponent(pathname)}`}
           className={buttonVariants({ variant: "outline" })}
         >
           Sign In

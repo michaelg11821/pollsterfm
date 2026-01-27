@@ -7,12 +7,15 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import type { MenuProps } from "../menuProps";
 
 function MobileMenu({ profileIcon, username }: MenuProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   const { signOut } = useAuthActions();
+
+  const pathname = usePathname();
 
   const handleSignOut = async () => {
     await signOut();
@@ -85,7 +88,7 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
               ) : (
                 <li className="py-2">
                   <Link
-                    href="sign-in"
+                    href={`/sign-in${pathname === "/" ? "" : "?redirectTo=" + encodeURIComponent(pathname)}`}
                     className="hover:bg-accent -mt-5 flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                   >
                     Sign In
