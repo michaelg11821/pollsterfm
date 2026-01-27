@@ -26,7 +26,7 @@ export const pollValidator = v.object({
   totalVotes: v.number(),
   liveStats: v.optional(
     v.object({
-      currentViewers: v.array(v.string()),
+      currentViewers: v.array(v.id("users")),
       votesInLastHour: v.number(),
       peakVotingTime: v.number(),
     }),
