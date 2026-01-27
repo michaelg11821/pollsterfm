@@ -27,7 +27,7 @@ import {
   query,
   QueryCtx,
 } from "./_generated/server";
-import { authedMutation, authedQuery } from "./helpers";
+import { authedMutation } from "./helpers";
 import {
   getCurrentlyPlayingLastfmTrack,
   getRecentlyPlayedLastfmTracks,
@@ -881,15 +881,19 @@ export const getFollowingCount = query({
   },
 });
 
-export const hasVotedInPoll = authedQuery({
+export const hasVotedInPoll = query({
   args: {
     pollId: v.id("polls"),
   },
   handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (userId === null) return false;
+
     const existingChoice = await ctx.db
       .query("userChoices")
       .withIndex("by_userId_pollId", (q) =>
-        q.eq("userId", ctx.userId).eq("pollId", args.pollId),
+        q.eq("userId", userId).eq("pollId", args.pollId),
       )
       .unique();
 
