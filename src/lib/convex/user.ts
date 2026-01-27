@@ -331,6 +331,10 @@ export const addVote = authedMutation({
       throw new Error(NOT_FOUND);
     }
 
+    if (ctx.userId === poll.authorId) {
+      throw new Error("user created this poll");
+    }
+
     const existingChoice = await ctx.db
       .query("userChoices")
       .withIndex("by_userId_pollId", (q) =>
