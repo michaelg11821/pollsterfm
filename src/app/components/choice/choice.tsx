@@ -83,7 +83,7 @@ function Choice({
                   </Link>
                   <Link
                     href={`/catalog/${encodeURIComponent(choice.artist)}`}
-                    className="text-muted-foreground hover:text-foreground block text-sm transition-colors"
+                    className="text-muted-foreground hover:text-foreground block w-fit text-sm transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {choice.artist}
