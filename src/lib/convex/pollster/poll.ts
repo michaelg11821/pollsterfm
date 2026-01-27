@@ -45,16 +45,9 @@ export const view = mutation({
     if (userId === null) {
       throw new Error("user not logged in");
     }
-
-    const user = await ctx.db.get(userId);
-
-    if (user === null) {
-      throw new Error("user not found");
-    }
-
     if (!poll.liveStats) {
       const newLiveStats = {
-        currentViewers: [user.username],
+        currentViewers: [userId],
         votesInLastHour: poll.totalVotes,
         peakVotingTime: poll.totalVotes >= 1 ? Date.now() : 0,
       };
@@ -62,9 +55,7 @@ export const view = mutation({
       return await ctx.db.patch(args.id, { liveStats: newLiveStats });
     } else {
       if (
-        poll.liveStats.currentViewers.find(
-          (username) => username === user.username,
-        )
+        poll.liveStats.currentViewers.find((username) => username === userId)
       ) {
         // user is already viewing poll
 
@@ -74,7 +65,7 @@ export const view = mutation({
       return await ctx.db.patch(args.id, {
         liveStats: {
           ...poll.liveStats,
-          currentViewers: [...poll.liveStats.currentViewers, user.username],
+          currentViewers: [...poll.liveStats.currentViewers, userId],
         },
       });
     }
@@ -84,24 +75,13 @@ export const view = mutation({
 export const unview = mutation({
   args: {
     id: v.id("polls"),
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     const poll = await ctx.db.get(args.id);
 
     if (poll === null) {
       throw new Error("poll not found");
-    }
-
-    const userId = await getAuthUserId(ctx);
-
-    if (userId === null) {
-      throw new Error("user not logged in");
-    }
-
-    const user = await ctx.db.get(userId);
-
-    if (user === null) {
-      throw new Error("user not found");
     }
 
     if (!poll.liveStats) {
@@ -117,7 +97,7 @@ export const unview = mutation({
         liveStats: {
           ...poll.liveStats,
           currentViewers: poll.liveStats.currentViewers.filter(
-            (username) => username !== user.username,
+            (userId) => userId !== args.userId,
           ),
         },
       });
