@@ -7,6 +7,7 @@ export const pollChoiceValidator = v.object({
   track: v.union(v.string(), v.null()),
   affinities: v.array(v.string()),
   totalVotes: v.number(),
+  pollId: v.id("polls"),
 });
 
 export const activityValidator = v.object({
@@ -16,14 +17,23 @@ export const activityValidator = v.object({
   timestamp: v.number(),
 });
 
-export const pollValidator = v.object({
+export const createPollValidator = v.object({
   authorId: v.id("users"),
   question: v.string(),
   description: v.optional(v.string()),
   duration: v.number(),
   pollType: v.string(),
-  choices: v.array(pollChoiceValidator),
   totalVotes: v.number(),
+  choices: v.array(
+    v.object({
+      image: v.string(),
+      artist: v.string(),
+      album: v.union(v.string(), v.null()),
+      track: v.union(v.string(), v.null()),
+      affinities: v.array(v.string()),
+      totalVotes: v.number(),
+    }),
+  ),
   liveStats: v.optional(
     v.object({
       currentViewers: v.array(v.id("users")),

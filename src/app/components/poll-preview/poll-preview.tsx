@@ -22,6 +22,10 @@ function PollPreview({ poll }: PollPreviewProps) {
     api.user.getProfileById,
     isVisible ? { userId: poll.authorId } : "skip",
   );
+  const choices = useQuery(
+    api.pollster.poll.getChoicesById,
+    isVisible ? { id: poll._id } : "skip",
+  );
 
   const cardRef = useRef<HTMLDivElement | null>(null);
 
@@ -44,12 +48,12 @@ function PollPreview({ poll }: PollPreviewProps) {
   }, [isVisible]);
 
   const uniqueAffinities = useMemo(() => {
+    if (!isVisible || !choices) return;
+
     return Array.from(
-      new Set(
-        poll.choices.flatMap((choice) => choice.affinities as Affinity[]),
-      ),
+      new Set(choices.flatMap((choice) => choice.affinities as Affinity[])),
     );
-  }, [poll]);
+  }, [isVisible, choices]);
 
   return (
     <div ref={cardRef}>
@@ -64,7 +68,7 @@ function PollPreview({ poll }: PollPreviewProps) {
               <div className="text-muted-foreground flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4" />
-                  <span>@{authorData?.username ?? "…"}</span>
+                  <span>@{authorData?.username ?? "..."}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
@@ -84,11 +88,11 @@ function PollPreview({ poll }: PollPreviewProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-muted-foreground mb-1 text-sm">
-                    {poll.choices.length} choices available
+                    {choices?.length ?? "..."} choices available
                   </div>
                   <div className="font-medium">
                     Currently leading:{" "}
-                    {getChoiceItemName(getTopChoice(poll.choices))}
+                    {choices ? getChoiceItemName(getTopChoice(choices)) : "..."}
                   </div>
                 </div>
                 <div className="text-right">
@@ -110,11 +114,11 @@ function PollPreview({ poll }: PollPreviewProps) {
               Affinities:
             </span>
             <div className="flex flex-wrap gap-2">
-              {uniqueAffinities.map((affinity) => (
+              {uniqueAffinities?.map((affinity) => (
                 <Badge key={affinity} variant="secondary">
                   {affinity}
                 </Badge>
-              ))}
+              )) ?? "..."}
             </div>
           </div>
         </Card>

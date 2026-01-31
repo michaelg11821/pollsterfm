@@ -1,3 +1,6 @@
+"use client";
+
+import type { PollType } from "@/lib/types/pollster";
 import { Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
@@ -56,12 +59,12 @@ const simplePollsData = [
 ];
 
 type FeaturedInProps = {
-  category: "artist" | "album" | "track";
+  category: PollType;
   itemName: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function FeaturedIn({ category, itemName }: FeaturedInProps) {
+function FeaturedIn({ category, itemName }: FeaturedInProps) {
   return (
     <section>
       <div className="mb-6 flex items-center justify-between">

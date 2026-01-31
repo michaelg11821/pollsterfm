@@ -7,7 +7,7 @@ import { Badge } from "../ui/badge";
 type ChoiceProps = {
   choice: Choice;
   hasVoted: boolean;
-  selectedOption: number | null;
+  selectedChoiceIndex: number | null;
   index: number;
   handleVote: (index: number) => void;
   calculatePercentage: (votes: number) => number;
@@ -17,13 +17,13 @@ type ChoiceProps = {
 function Choice({
   choice,
   hasVoted,
-  selectedOption,
+  selectedChoiceIndex,
   index,
   handleVote,
   calculatePercentage,
   pollEnded,
 }: ChoiceProps) {
-  const isSelected = selectedOption === index;
+  const isSelected = selectedChoiceIndex === index;
   const showResults = hasVoted || pollEnded;
   const percentage = calculatePercentage(choice.totalVotes);
   const isInteractive = !hasVoted && !pollEnded;

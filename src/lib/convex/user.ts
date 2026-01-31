@@ -322,7 +322,7 @@ export const addVote = authedMutation({
     track: v.union(v.string(), v.null()),
     pollId: v.id("polls"),
     affinities: v.array(v.string()),
-    choiceIndex: v.number(),
+    pollChoiceId: v.id("pollChoices"),
   },
   handler: async (ctx, args) => {
     const poll = await ctx.db.get(args.pollId);
@@ -365,12 +365,17 @@ export const addVote = authedMutation({
       pollId: args.pollId,
     });
 
-    const choicesCopy = [...poll.choices];
-    choicesCopy[args.choiceIndex].totalVotes += 1;
+    const choiceDoc = await ctx.db.get(args.pollChoiceId);
 
+    if (choiceDoc === null) {
+      throw new Error(NOT_FOUND);
+    }
+
+    await ctx.db.patch(args.pollChoiceId, {
+      totalVotes: choiceDoc.totalVotes + 1,
+    });
     await ctx.db.patch(args.pollId, {
       totalVotes: poll.totalVotes + 1,
-      choices: choicesCopy,
     });
 
     return null;

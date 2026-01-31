@@ -1,7 +1,7 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { pollValidator, stripePaymentValidator } from "./validators";
+import { pollChoiceValidator, stripePaymentValidator } from "./validators";
 
 const schema = defineSchema({
   ...authTables,
@@ -28,7 +28,22 @@ const schema = defineSchema({
   })
     .index("email", ["email"])
     .index("username", ["username"]),
-  polls: defineTable(pollValidator)
+  polls: defineTable({
+    authorId: v.id("users"),
+    question: v.string(),
+    description: v.optional(v.string()),
+    duration: v.number(),
+    pollType: v.string(),
+    totalVotes: v.number(),
+    liveStats: v.optional(
+      v.object({
+        currentViewers: v.array(v.id("users")),
+        votesInLastHour: v.number(),
+        peakVotingTime: v.number(),
+      }),
+    ),
+    expiresAt: v.number(),
+  })
     .index("authorId", ["authorId"])
     .index("pollType", ["pollType"])
     .index("expiresAt", ["expiresAt"]),
@@ -62,13 +77,18 @@ const schema = defineSchema({
     stripeCustomerId: v.optional(v.string()),
     payment: v.optional(v.union(stripePaymentValidator, v.null())),
   }).index("by_userId", ["userId"]),
+  pollChoices: defineTable(pollChoiceValidator)
+    .index("by_pollId", ["pollId"])
+    .index("by_artist", ["artist"])
+    .index("by_album", ["artist", "album"])
+    .index("by_track", ["artist", "album", "track"]),
   userChoices: defineTable({
     userId: v.id("users"),
     affinities: v.array(v.string()),
     artist: v.string(),
     album: v.union(v.string(), v.null()),
     track: v.union(v.string(), v.null()),
-    choiceIndex: v.number(),
+    pollChoiceId: v.id("pollChoices"),
     pollId: v.id("polls"),
   })
     .index("by_userId", ["userId"])

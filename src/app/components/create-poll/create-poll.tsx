@@ -297,6 +297,8 @@ function CreatePoll({
         expiresAt: Date.now() + Number(values.duration),
       });
 
+      if (result === null) throw new Error("Failed to create poll.");
+
       router.push(`/polls/${result}`);
 
       return toastManager.add({

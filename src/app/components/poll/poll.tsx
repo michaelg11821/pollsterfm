@@ -27,17 +27,21 @@ import PollSkeleton from "./skeleton";
 
 import * as Sentry from "@sentry/nextjs";
 import Image from "next/image";
+import LoadingIndicator from "../ui/loading-indicator";
 
 type PollProps = {
   id: Id<"polls">;
 };
 
 function Poll({ id }: PollProps) {
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [selectedChoiceIndex, setSelectedChoiceIndex] = useState<number | null>(
+    null,
+  );
 
   const router = useRouter();
 
   const pollData = useQuery(api.pollster.poll.getById, { id });
+  const choices = useQuery(api.pollster.poll.getChoicesById, { id });
   const recentActivity = useQuery(api.pollster.poll.getRecentActivity, {
     pollId: id,
   });
@@ -100,14 +104,18 @@ function Poll({ id }: PollProps) {
   }, [id, unviewPoll, viewPoll, isExpired, currentUser]);
 
   const getSelectedChoiceData = useCallback(() => {
-    if (selectedOption === null || pollData === null || pollData === undefined)
+    if (
+      selectedChoiceIndex === null ||
+      pollData === null ||
+      pollData === undefined ||
+      choices === undefined
+    )
       return null;
 
-    const { artist, album, track, affinities } =
-      pollData.choices[selectedOption];
+    const { artist, album, track, affinities } = choices[selectedChoiceIndex];
 
     return { artist, album, track, affinities };
-  }, [selectedOption, pollData]);
+  }, [selectedChoiceIndex, pollData, choices]);
 
   if (
     pollData === undefined ||
@@ -126,7 +134,7 @@ function Poll({ id }: PollProps) {
   const isAuthor = currentUser?._id === pollData.authorId;
   const hasVotedOrIsAuthor = hasVoted || isAuthor;
 
-  const handleVote = (optionIndex: number) => {
+  const handleVote = (choiceIndex: number) => {
     if (currentUser === null) {
       return toastManager.add({
         title: "Error",
@@ -141,7 +149,7 @@ function Poll({ id }: PollProps) {
       return;
     }
 
-    setSelectedOption(optionIndex);
+    setSelectedChoiceIndex(choiceIndex);
   };
 
   const submitVote = async (
@@ -149,8 +157,10 @@ function Poll({ id }: PollProps) {
     album: string | null,
     track: string | null,
     affinities: Affinity[],
-    choiceIndex: number,
+    selectedChoiceIndex: number,
   ) => {
+    if (!choices) return;
+
     if (currentUser === null) {
       return toastManager.add({
         title: "Error",
@@ -168,7 +178,9 @@ function Poll({ id }: PollProps) {
       });
     }
 
-    if (selectedOption === null) return;
+    if (selectedChoiceIndex === null) return;
+
+    const pollChoiceId = choices[selectedChoiceIndex]._id;
 
     const vote = await addVote({
       artist,
@@ -176,7 +188,7 @@ function Poll({ id }: PollProps) {
       track,
       affinities,
       pollId: id,
-      choiceIndex,
+      pollChoiceId,
     });
 
     if (vote === null) {
@@ -289,36 +301,42 @@ function Poll({ id }: PollProps) {
           </CardHeader>
 
           <CardContent className="space-y-3">
-            {pollData.choices.map((choice, index) => (
-              <Choice
-                key={index}
-                choice={choice}
-                hasVoted={hasVotedOrIsAuthor}
-                selectedOption={selectedOption}
-                index={index}
-                handleVote={handleVote}
-                calculatePercentage={calculatePercentage}
-                pollEnded={isExpired}
-              />
-            ))}
+            {choices ? (
+              choices.map((choice, index) => (
+                <Choice
+                  key={index}
+                  choice={choice}
+                  hasVoted={hasVotedOrIsAuthor}
+                  selectedChoiceIndex={selectedChoiceIndex}
+                  index={index}
+                  handleVote={handleVote}
+                  calculatePercentage={calculatePercentage}
+                  pollEnded={isExpired}
+                />
+              ))
+            ) : (
+              <LoadingIndicator loading={true} />
+            )}
 
             {!hasVoted && !isAuthor && (
               <Button
                 className="mt-4 h-11 w-full cursor-pointer text-base font-medium"
                 variant="default"
                 disabled={
-                  selectedOption === null || currentUser === null || isExpired
+                  selectedChoiceIndex === null ||
+                  currentUser === null ||
+                  isExpired
                 }
                 onClick={() => {
                   if (!selectedChoiceData) return;
-                  if (selectedOption === null) return;
+                  if (selectedChoiceIndex === null) return;
 
                   submitVote(
                     selectedChoiceData.artist,
                     selectedChoiceData.album,
                     selectedChoiceData.track,
                     selectedChoiceData.affinities as Affinity[],
-                    selectedOption,
+                    selectedChoiceIndex,
                   );
                 }}
               >

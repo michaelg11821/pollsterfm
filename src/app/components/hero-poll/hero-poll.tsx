@@ -13,20 +13,20 @@ import HeroPollSkeleton from "./skeleton";
 
 function HeroPoll() {
   const poll = useQuery(api.pollster.poll.getMostPopularPoll);
+  const choices = useQuery(api.pollster.poll.getChoicesById, { id: poll?._id });
   const authorData = useQuery(api.user.getProfileById, {
     userId: poll?.authorId,
   });
 
   const uniqueAffinities = useMemo(() => {
-    if (!poll) return [];
-    return Array.from(
-      new Set(
-        poll.choices.flatMap((choice) => choice.affinities as Affinity[]),
-      ),
-    );
-  }, [poll]);
+    if (!choices) return [];
 
-  if (poll === undefined || authorData === undefined)
+    return Array.from(
+      new Set(choices.flatMap((choice) => choice.affinities as Affinity[])),
+    );
+  }, [choices]);
+
+  if (poll === undefined || choices === undefined || authorData === undefined)
     return <HeroPollSkeleton />;
 
   if (poll === null || authorData === null) {
@@ -45,7 +45,7 @@ function HeroPoll() {
     );
   }
 
-  const choicesWithPercentage = poll.choices.map((choice) => ({
+  const choicesWithPercentage = choices.map((choice) => ({
     ...choice,
     name: getChoiceItemName(choice) || "Unknown",
     pct:
@@ -138,9 +138,9 @@ function HeroPoll() {
                 </div>
               </div>
             ))}
-            {poll.choices.length > 4 && (
+            {choices.length > 4 && (
               <p className="text-muted-foreground text-center text-xs">
-                +{poll.choices.length - 4} more options
+                +{choices.length - 4} more options
               </p>
             )}
           </div>

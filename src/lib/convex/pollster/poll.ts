@@ -3,14 +3,27 @@ import { TRENDING_VOTE_COUNT } from "@/lib/constants/polls";
 import { oneDayMs } from "@/lib/constants/time";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "../_generated/server";
+import type { Doc } from "../_generated/dataModel";
+import { mutation, query, type QueryCtx } from "../_generated/server";
 import { authedMutation } from "../helpers";
-import { pollValidator } from "../validators";
+import { createPollValidator } from "../validators";
 
 export const create = authedMutation({
-  args: pollValidator,
+  args: createPollValidator,
   handler: async (ctx, args) => {
-    return await ctx.db.insert("polls", args);
+    const { choices, ...poll } = args;
+
+    try {
+      const pollId = await ctx.db.insert("polls", poll);
+
+      for (const choice of choices) {
+        await ctx.db.insert("pollChoices", { ...choice, pollId });
+      }
+
+      return pollId;
+    } catch (err: unknown) {
+      console.error("error creating poll:", err);
+    }
   },
 });
 
@@ -20,6 +33,22 @@ export const getById = query({
   },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
+  },
+});
+
+export const getChoicesById = query({
+  args: {
+    id: v.optional(v.id("polls")),
+  },
+  handler: async (ctx, args) => {
+    const { id } = args;
+
+    if (id === undefined) return [];
+
+    return await ctx.db
+      .query("pollChoices")
+      .withIndex("by_pollId", (q) => q.eq("pollId", id))
+      .collect();
   },
 });
 
@@ -173,3 +202,16 @@ export const getRecentActivity = query({
       .collect();
   },
 });
+
+export async function getPollsFromChoices(
+  ctx: QueryCtx,
+  choices: Doc<"pollChoices">[],
+) {
+  const polls: (Doc<"polls"> | null)[] = [];
+  for (const choice of choices) {
+    const poll = await ctx.db.get(choice.pollId);
+    polls.push(poll);
+  }
+
+  return polls.filter((poll) => poll !== null);
+}
