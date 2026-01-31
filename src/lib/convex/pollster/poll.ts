@@ -137,7 +137,7 @@ export const unview = mutation({
 
 export const getPopularPolls = query({
   handler: async (ctx) => {
-    return await ctx.db
+    const pollDocs = await ctx.db
       .query("polls")
       .filter((q) =>
         q.and(
@@ -146,6 +146,21 @@ export const getPopularPolls = query({
         ),
       )
       .collect();
+
+    const popularPollsWithChoices: (Doc<"polls"> & {
+      choices: Doc<"pollChoices">[];
+    })[] = [];
+
+    for (const pollDoc of pollDocs) {
+      const choices = await ctx.db
+        .query("pollChoices")
+        .withIndex("by_pollId", (q) => q.eq("pollId", pollDoc._id))
+        .collect();
+
+      popularPollsWithChoices.push({ ...pollDoc, choices });
+    }
+
+    return popularPollsWithChoices;
   },
 });
 
