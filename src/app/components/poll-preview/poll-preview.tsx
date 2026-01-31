@@ -4,56 +4,36 @@ import { Badge } from "@/app/components/ui/badge";
 import { Card } from "@/app/components/ui/card";
 import { getChoiceItemName, getTopChoice } from "@/lib/convex-utils";
 import { api } from "@/lib/convex/_generated/api";
+import { useQueryWhenVisible } from "@/lib/hooks/useQueryWhenVisible";
 import type { Affinity, Poll } from "@/lib/types/pollster";
-import { useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
 import { Calendar, ChevronRight, User } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 
 type PollPreviewProps = {
   poll: Poll;
 };
 
 function PollPreview({ poll }: PollPreviewProps) {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-
-  const authorData = useQuery(
-    api.user.getProfileById,
-    isVisible ? { userId: poll.authorId } : "skip",
-  );
-  const choices = useQuery(
-    api.pollster.poll.getChoicesById,
-    isVisible ? { id: poll._id } : "skip",
-  );
-
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!cardRef.current || isVisible) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.5 },
-    );
-
-    observer.observe(cardRef.current);
-
-    return () => observer.disconnect();
-  }, [isVisible]);
+  const authorData = useQueryWhenVisible(api.user.getProfileById, cardRef, {
+    userId: poll.authorId,
+  });
+  const choices = useQueryWhenVisible(
+    api.pollster.poll.getChoicesById,
+    cardRef,
+    { id: poll._id },
+  );
 
   const uniqueAffinities = useMemo(() => {
-    if (!isVisible || !choices) return;
+    if (!choices) return;
 
     return Array.from(
       new Set(choices.flatMap((choice) => choice.affinities as Affinity[])),
     );
-  }, [isVisible, choices]);
+  }, [choices]);
 
   return (
     <div ref={cardRef}>

@@ -2,22 +2,33 @@
 
 import { TRENDING_VOTE_COUNT } from "@/lib/constants/polls";
 import { api } from "@/lib/convex/_generated/api";
+import { useQueryWhenVisible } from "@/lib/hooks/useQueryWhenVisible";
 import { cn } from "@/lib/next-utils";
-import { useQuery } from "convex/react";
 import { Flame, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
+import { useRef } from "react";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import PopularPollsSkeleton from "./skeleton";
 
 function PopularPolls() {
-  const popularPolls = useQuery(api.pollster.poll.getPopularPolls);
+  const ref = useRef<HTMLDivElement | null>(null);
 
-  if (popularPolls === undefined) return <PopularPollsSkeleton />;
+  const popularPolls = useQueryWhenVisible(
+    api.pollster.poll.getPopularPolls,
+    ref,
+  );
 
-  if (popularPolls === null || popularPolls.length === 0) {
+  if (popularPolls === undefined)
     return (
-      <div className="py-16 text-center">
+      <div ref={ref}>
+        <PopularPollsSkeleton />
+      </div>
+    );
+
+  if (popularPolls.length === 0) {
+    return (
+      <div className="py-16 text-center" ref={ref}>
         <div className="text-muted-foreground">
           <div className="bg-accent mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
             <TrendingUp className="h-10 w-10" />
@@ -30,7 +41,7 @@ function PopularPolls() {
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2" ref={ref}>
       {popularPolls?.map((poll, i) => {
         const affinities = Array.from(
           new Set(poll.choices.flatMap((choice) => choice.affinities)),
