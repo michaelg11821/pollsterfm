@@ -9,7 +9,8 @@ import { getFirstSpotifyAlbumFromQuery } from "@/lib/spotify/album";
 import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
-import { action, internalAction } from "../_generated/server";
+import { action, internalAction, query } from "../_generated/server";
+import { getPollsFromChoices } from "./poll";
 
 const albumCache = new ActionCache(components.actionCache, {
   action: internal.pollster.album.findFirstByName,
@@ -117,5 +118,21 @@ export const search = action({
 
       return null;
     }
+  },
+});
+
+export const getPollsFeaturedIn = query({
+  args: { artist: v.string(), album: v.string() },
+  handler: async (ctx, args) => {
+    const choices = await ctx.db
+      .query("pollChoices")
+      .withIndex("by_album", (q) =>
+        q
+          .eq("artist", decodeURIComponent(args.artist))
+          .eq("album", decodeURIComponent(args.album)),
+      )
+      .collect();
+
+    return await getPollsFromChoices(ctx, choices);
   },
 });

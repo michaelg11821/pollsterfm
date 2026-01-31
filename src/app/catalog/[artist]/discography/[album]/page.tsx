@@ -58,7 +58,11 @@ async function AlbumPage({ params }: AlbumPageProps) {
               <AlbumTracks artistName={artist} albumName={album} />
             </Suspense>
             <TopListeners category="album" itemName={album} />
-            <FeaturedIn category="album" itemName={album} />
+            <FeaturedIn
+              category="album"
+              artistName={artist}
+              albumName={album}
+            />
             {/* make into component "album-reviews" */}
             {/* <section>
               <div className="flex justify-between items-center mb-6">

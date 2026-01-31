@@ -48,7 +48,7 @@ async function Artist({ params }: ArtistProps) {
       <div className="content-wrapper mt-10 px-5 py-0 xl:p-0">
         <div className="flex flex-col gap-8 lg:grid lg:grid-cols-4">
           <div className="flex flex-col gap-10 lg:col-span-3">
-            <FeaturedIn category="artist" itemName={artist} />
+            <FeaturedIn category="artist" artistName={artist} />
             <TopListeners category="artist" itemName={artist} />
             <Suspense fallback={<TopAlbumsSkeleton />}>
               <TopAlbums artistName={artist} />

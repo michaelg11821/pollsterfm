@@ -24,7 +24,8 @@ import type { Artist as SpotifyArtist } from "@/lib/types/spotify";
 import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
 import { components, internal } from "../_generated/api";
-import { action, internalAction } from "../_generated/server";
+import { action, internalAction, query } from "../_generated/server";
+import { getPollsFromChoices } from "./poll";
 
 const artistCache = new ActionCache(components.actionCache, {
   action: internal.pollster.artist.findFirstByName,
@@ -295,5 +296,19 @@ export const search = action({
 
       return null;
     }
+  },
+});
+
+export const getPollsFeaturedIn = query({
+  args: { artist: v.string() },
+  handler: async (ctx, args) => {
+    const choices = await ctx.db
+      .query("pollChoices")
+      .withIndex("by_artist", (q) =>
+        q.eq("artist", decodeURIComponent(args.artist)),
+      )
+      .collect();
+
+    return await getPollsFromChoices(ctx, choices);
   },
 });
