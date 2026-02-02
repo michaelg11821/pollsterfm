@@ -3,7 +3,7 @@ import { TRENDING_VOTE_COUNT } from "@/lib/constants/polls";
 import { oneDayMs } from "@/lib/constants/time";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import type { Doc } from "../_generated/dataModel";
+import type { Doc, Id } from "../_generated/dataModel";
 import { mutation, query, type QueryCtx } from "../_generated/server";
 import { authedMutation } from "../helpers";
 import { createPollValidator } from "../validators";
@@ -222,11 +222,19 @@ export async function getPollsFromChoices(
   ctx: QueryCtx,
   choices: Doc<"pollChoices">[],
 ) {
-  const polls: (Doc<"polls"> | null)[] = [];
+  const pollIds = new Set<Id<"polls">>();
+  const polls: Doc<"polls">[] = [];
+
   for (const choice of choices) {
+    if (pollIds.has(choice.pollId)) continue;
+
     const poll = await ctx.db.get(choice.pollId);
+
+    if (!poll) continue;
+
+    pollIds.add(choice.pollId);
     polls.push(poll);
   }
 
-  return polls.filter((poll) => poll !== null);
+  return polls;
 }
