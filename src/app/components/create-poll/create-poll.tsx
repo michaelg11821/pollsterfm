@@ -530,6 +530,15 @@ function CreatePoll({
                                   <ArtistResults
                                     results={musicSearchResults as Artist[]}
                                     selectResult={(artist, image) => {
+                                      for (const field of fields) {
+                                        if (field.artist === artist)
+                                          return toastManager.add({
+                                            title: "Error",
+                                            description:
+                                              "Duplicates are not allowed.",
+                                          });
+                                      }
+
                                       update(index, {
                                         ...choice,
                                         artist,
@@ -549,6 +558,18 @@ function CreatePoll({
                                   <AlbumResults
                                     results={musicSearchResults as Album[]}
                                     selectResult={(artist, album, image) => {
+                                      for (const field of fields) {
+                                        if (
+                                          field.artist === artist &&
+                                          field.album === album
+                                        )
+                                          return toastManager.add({
+                                            title: "Error",
+                                            description:
+                                              "Duplicates are not allowed.",
+                                          });
+                                      }
+
                                       update(index, {
                                         ...choice,
                                         artist,
@@ -573,6 +594,19 @@ function CreatePoll({
                                       track,
                                       image,
                                     ) => {
+                                      for (const field of fields) {
+                                        if (
+                                          field.artist === artist &&
+                                          field.album === album &&
+                                          field.track === track
+                                        )
+                                          return toastManager.add({
+                                            title: "Error",
+                                            description:
+                                              "Duplicates are not allowed.",
+                                          });
+                                      }
+
                                       update(index, {
                                         ...choice,
                                         artist,
