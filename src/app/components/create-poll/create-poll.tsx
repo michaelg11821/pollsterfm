@@ -93,10 +93,10 @@ const createTrackChoice = (
 
 type CreatePollProps = {
   initPollType: PollType;
-  initArtist: string | undefined;
-  initAlbum: string | undefined;
-  initTrack: string | undefined;
-  initImage: string | undefined;
+  initArtist?: string | undefined;
+  initAlbum?: string | undefined;
+  initTrack?: string | undefined;
+  initImage?: string | undefined;
 };
 
 function CreatePoll({
