@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_CHOICE_COUNT, MIN_CHOICE_COUNT } from "../constants/polls";
 import { getImageHostnamesRegex } from "../next-utils";
 import { Affinity, PollType } from "./pollster";
 import { headerImageSchema, profileIconSchema } from "./user";
@@ -107,22 +108,34 @@ export const createPollSchema = z.discriminatedUnion("pollType", [
     pollType: z.literal("artist"),
     choices: z
       .array(artistChoice)
-      .min(2, { error: "Polls must have at least 2 choices." })
-      .max(5, { error: "Polls cannot have more than 5 choices." }),
+      .min(MIN_CHOICE_COUNT, {
+        error: `Polls must have at least ${MIN_CHOICE_COUNT} choices.`,
+      })
+      .max(MAX_CHOICE_COUNT, {
+        error: `Polls cannot have more than ${MAX_CHOICE_COUNT} choices.`,
+      }),
   }),
   pollSchema.extend({
     pollType: z.literal("album"),
     choices: z
       .array(albumChoice)
-      .min(2, { error: "Polls must have at least 2 choices." })
-      .max(5, { error: "Polls cannot have more than 5 choices." }),
+      .min(MIN_CHOICE_COUNT, {
+        error: `Polls must have at least ${MIN_CHOICE_COUNT} choices.`,
+      })
+      .max(MAX_CHOICE_COUNT, {
+        error: `Polls cannot have more than ${MAX_CHOICE_COUNT} choices.`,
+      }),
   }),
   pollSchema.extend({
     pollType: z.literal("track"),
     choices: z
       .array(trackChoice)
-      .min(2, { error: "Polls must have at least 2 choices." })
-      .max(5, { error: "Polls cannot have more than 5 choices." }),
+      .min(MIN_CHOICE_COUNT, {
+        error: `Polls must have at least ${MIN_CHOICE_COUNT} choices.`,
+      })
+      .max(MAX_CHOICE_COUNT, {
+        error: `Polls cannot have more than ${MAX_CHOICE_COUNT} choices.`,
+      }),
   }),
 ]);
 

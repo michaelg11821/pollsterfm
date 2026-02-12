@@ -15,9 +15,13 @@ function TrackResults({ results, selectResult }: TrackResultsProps) {
   return (
     <>
       {results.map((result, index) => (
-        <div
+        <button
+          type="button"
           key={`result-${index}`}
-          className="hover:bg-accent/50 hover:text-accent-foreground flex cursor-pointer items-center gap-3 border-b p-3 transition-colors last:border-b-0"
+          role="option"
+          aria-selected={false}
+          aria-label={`Select track ${result.name} from ${result.album.name} by ${result.album.artists[0].name}`}
+          className="hover:bg-accent/50 hover:text-accent-foreground focus-visible:ring-ring flex w-full cursor-pointer items-center gap-3 border-b p-3 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2"
           onClick={() =>
             selectResult(
               result.album.artists[0].name,
@@ -44,7 +48,7 @@ function TrackResults({ results, selectResult }: TrackResultsProps) {
               {`${result.album.name} • ${result.album.artists[0].name}`}
             </p>
           </div>
-        </div>
+        </button>
       ))}
     </>
   );

@@ -10,9 +10,13 @@ function AlbumResults({ results, selectResult }: AlbumResultsProps) {
   return (
     <>
       {results.map((result, index) => (
-        <div
+        <button
+          type="button"
           key={`result-${index}`}
-          className="hover:bg-accent/50 hover:text-accent-foreground flex cursor-pointer items-center gap-3 border-b p-3 transition-colors last:border-b-0"
+          role="option"
+          aria-selected={false}
+          aria-label={`Select album ${result.name} by ${result.artist}`}
+          className="hover:bg-accent/50 hover:text-accent-foreground focus-visible:ring-ring flex w-full cursor-pointer items-center gap-3 border-b p-3 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2"
           onClick={() =>
             selectResult(result.artist, result.name, result.image[2]["#text"])
           }
@@ -34,7 +38,7 @@ function AlbumResults({ results, selectResult }: AlbumResultsProps) {
               {result.artist}
             </p>
           </div>
-        </div>
+        </button>
       ))}
     </>
   );

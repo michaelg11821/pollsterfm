@@ -53,6 +53,7 @@ import { getChoiceItemName } from "@/lib/convex-utils";
 import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
 
+import { MAX_CHOICE_COUNT, MIN_CHOICE_COUNT } from "@/lib/constants/polls";
 import * as Sentry from "@sentry/nextjs";
 
 const createArtistChoice = (initArtist?: string, initImage?: string) => ({
@@ -166,7 +167,7 @@ function CreatePoll({
   const { fields, append, remove, update, replace } = useFieldArray({
     control: form.control,
     name: "choices",
-    rules: { minLength: 2, maxLength: 5 },
+    rules: { minLength: MIN_CHOICE_COUNT, maxLength: MAX_CHOICE_COUNT },
   });
 
   const artistSearch = useAction(api.pollster.artist.search);
@@ -282,10 +283,11 @@ function CreatePoll({
   };
 
   const onSubmit = async (values: createPollSchemaType) => {
-    if (!currentUser)
+    if (!currentUser) {
       return router.push(
         `/sign-in?redirectTo=${encodeURIComponent("/create-poll")}`,
       );
+    }
 
     try {
       setCreatingPoll(true);
@@ -422,7 +424,7 @@ function CreatePoll({
                 </TabsList>
               </Tabs>
               <Badge variant="default" className="border-primary/30">
-                {fields.length}/5 choices
+                {fields.length}/{MAX_CHOICE_COUNT} choices
               </Badge>
             </div>
           </div>
@@ -438,7 +440,8 @@ function CreatePoll({
                   <Button
                     size="icon"
                     variant="ghost"
-                    className={`hover:text-accent-foreground hover:bg-foreground/10 h-8 w-8 cursor-pointer ${fields.length <= 2 ? "invisible" : ""}`}
+                    aria-label={`Remove choice ${index + 1}`}
+                    className={`hover:text-accent-foreground hover:bg-foreground/10 h-8 w-8 cursor-pointer ${fields.length <= MIN_CHOICE_COUNT ? "invisible" : ""}`}
                     onClick={() => remove(index)}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -481,6 +484,7 @@ function CreatePoll({
                               <input
                                 type="text"
                                 value={getChoiceItemName(choice)}
+                                aria-label={`Search ${pollType} for choice ${index + 1}...`}
                                 placeholder={`Search for ${pollType === "track" ? "a" : "an"} ${pollType}...`}
                                 className="placeholder:text-muted-foreground h-full flex-1 border-none bg-transparent p-1.5 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:p-0"
                                 onChange={(e) => {
@@ -525,7 +529,11 @@ function CreatePoll({
 
                           {musicSearchResults.length > 0 &&
                             activeMusicSearchOption === index && (
-                              <div className="bg-popover text-popover-foreground absolute top-full z-10 mt-2 max-h-60 w-full overflow-y-auto rounded-md border shadow-md backdrop-blur-md">
+                              <div
+                                role="listbox"
+                                aria-label={`${pollType} search results for choice ${index + 1}`}
+                                className="bg-popover text-popover-foreground absolute top-full z-10 mt-2 max-h-60 w-full overflow-y-auto rounded-md border shadow-md backdrop-blur-md"
+                              >
                                 {pollType === "artist" && (
                                   <ArtistResults
                                     results={musicSearchResults as Artist[]}
@@ -674,6 +682,7 @@ function CreatePoll({
                               <FormControl>
                                 <input
                                   className="placeholder:text-muted-foreground flex-1 bg-transparent p-1 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:p-1.5"
+                                  aria-label={`Search affinities for choice ${index + 1}...`}
                                   placeholder="Search affinities..."
                                   onFocus={() => {
                                     if (activeMusicSearchOption !== null)
@@ -701,11 +710,19 @@ function CreatePoll({
                             {affinitySearchResults.length > 0 &&
                               activeAffinitySearchOption === index &&
                               activeMusicSearchOption === null && (
-                                <div className="bg-popover text-popover-foreground absolute top-full z-10 mt-2 max-h-60 w-full overflow-y-auto rounded-md border shadow-md backdrop-blur-md">
+                                <div
+                                  role="listbox"
+                                  aria-label={`Affinity search results for choice ${index + 1}`}
+                                  className="bg-popover text-popover-foreground absolute top-full z-10 mt-2 max-h-60 w-full overflow-y-auto rounded-md border shadow-md backdrop-blur-md"
+                                >
                                   {affinitySearchResults.map((affinity) => (
-                                    <div
+                                    <button
+                                      type="button"
                                       key={affinity}
-                                      className="border-border hover:bg-accent hover:text-accent-foreground cursor-pointer border-b p-3 text-sm last:border-b-0"
+                                      role="option"
+                                      aria-selected={false}
+                                      aria-label={`Add affinity ${affinity}`}
+                                      className="border-border hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring w-full cursor-pointer border-b p-3 text-left text-sm last:border-b-0 focus-visible:ring-2 focus-visible:outline-none"
                                       onClick={() => {
                                         field.onChange([
                                           ...field.value,
@@ -717,7 +734,7 @@ function CreatePoll({
                                       }}
                                     >
                                       {affinity}
-                                    </div>
+                                    </button>
                                   ))}
                                 </div>
                               )}

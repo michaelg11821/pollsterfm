@@ -10,9 +10,13 @@ function ArtistResults({ results, selectResult }: ArtistResultsProps) {
   return (
     <>
       {results.map((result, index) => (
-        <div
+        <button
+          type="button"
           key={`result-${index}`}
-          className="hover:bg-accent/50 hover:text-accent-foreground flex cursor-pointer items-center gap-3 border-b p-3 transition-colors last:border-b-0"
+          role="option"
+          aria-selected={false}
+          aria-label={`Select artist ${result.name}`}
+          className="hover:bg-accent/50 hover:text-accent-foreground focus-visible:ring-ring flex w-full cursor-pointer items-center gap-3 border-b p-3 text-left transition-colors last:border-b-0 focus-visible:ring-2 focus-visible:outline-none"
           onClick={() =>
             selectResult(
               result.name,
@@ -34,7 +38,7 @@ function ArtistResults({ results, selectResult }: ArtistResultsProps) {
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm">{result.name}</p>
           </div>
-        </div>
+        </button>
       ))}
     </>
   );

@@ -1,13 +1,20 @@
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import { ChevronLeft } from "lucide-react";
+import { type Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import CreatePoll from "../components/create-poll/create-poll";
 
 type CreatePollPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export const metadata: Metadata = {
+  title: `Create Poll | ${SITE_NAME}`,
+  description: `Log in to create a poll on ${SITE_NAME}!`,
 };
 
 async function CreatePollPage({ searchParams }: CreatePollPageProps) {
