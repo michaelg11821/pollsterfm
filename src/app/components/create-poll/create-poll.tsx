@@ -45,9 +45,9 @@ import {
 } from "../ui/select";
 import { Tabs, TabsIndicator, TabsList, TabsTrigger } from "../ui/tabs";
 import { Textarea } from "../ui/textarea";
-import AlbumResults from "./album-results/album-results";
-import ArtistResults from "./artist-results/artist-results";
-import TrackResults from "./track-results/track-results";
+import AlbumResults from "./album-results";
+import ArtistResults from "./artist-results";
+import TrackResults from "./track-results";
 
 import { getChoiceItemName } from "@/lib/convex-utils";
 import Fuse from "fuse.js";
