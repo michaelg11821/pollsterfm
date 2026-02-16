@@ -55,6 +55,16 @@ type SetupProps = {
   initImage?: string;
 };
 
+type PollTypeSelectionCase = {
+  pollType: PollType;
+  searchQuery: string;
+  firstOptionLabel: RegExp;
+  secondOptionLabel: RegExp;
+  selectedValue: string;
+  switchTabName: RegExp;
+  clearedInputLabel: RegExp;
+};
+
 const setup = ({
   pollType,
   initArtist,
@@ -75,6 +85,36 @@ const setup = ({
       </TestToastWrapper>
     </ConvexProvider>,
   );
+
+const pollTypeSelectionCases: PollTypeSelectionCase[] = [
+  {
+    pollType: "artist",
+    searchQuery: "elliott",
+    firstOptionLabel: /select artist elliott smith/i,
+    secondOptionLabel: /select artist heatmiser/i,
+    selectedValue: "Elliott Smith",
+    switchTabName: /albums/i,
+    clearedInputLabel: /search album for choice/i,
+  },
+  {
+    pollType: "album",
+    searchQuery: "ok",
+    firstOptionLabel: /select album ok computer by radiohead/i,
+    secondOptionLabel: /select album selected ambient works by aphex twin/i,
+    selectedValue: "OK Computer — Radiohead",
+    switchTabName: /tracks/i,
+    clearedInputLabel: /search track for choice/i,
+  },
+  {
+    pollType: "track",
+    searchQuery: "paranoid",
+    firstOptionLabel: /select track paranoid android from ok computer by radiohead/i,
+    secondOptionLabel: /select track xtal from selected ambient works by aphex twin/i,
+    selectedValue: "Paranoid Android — Radiohead",
+    switchTabName: /artists/i,
+    clearedInputLabel: /search artist for choice/i,
+  },
+];
 
 describe("CreatePoll", () => {
   beforeEach(() => {
@@ -115,51 +155,60 @@ describe("CreatePoll", () => {
     ).toBeInTheDocument();
   });
 
-  it("add a choice", async () => {
-    const { getByRole } = setup({ pollType: "album" });
-    const user = userEvent.setup();
+  it.each(["artist", "album", "track"] as const)(
+    "add a choice for %s polls",
+    async (pollType) => {
+      const { getByRole } = setup({ pollType });
+      const user = userEvent.setup();
 
-    const addChoiceBtn = getByRole("button", { name: /add choice/i });
-    await user.click(addChoiceBtn);
-
-    const newChoiceItemInput = getByRole("textbox", {
-      name: new RegExp(`search album for choice ${MIN_CHOICE_COUNT + 1}`, "i"),
-    });
-    expect(newChoiceItemInput).toBeInTheDocument();
-  });
-
-  it("remove a choice", async () => {
-    const { getByRole } = setup({ pollType: "track" });
-    const user = userEvent.setup();
-
-    const addChoiceBtn = getByRole("button", { name: /add choice/i });
-    await user.click(addChoiceBtn);
-
-    const newChoiceItemInput = getByRole("textbox", {
-      name: new RegExp(`search track for choice ${MIN_CHOICE_COUNT + 1}`, "i"),
-    });
-    expect(newChoiceItemInput).toBeInTheDocument();
-
-    const removeNewChoiceBtn = getByRole("button", {
-      name: new RegExp(`remove choice ${MIN_CHOICE_COUNT + 1}`, "i"),
-    });
-    await user.click(removeNewChoiceBtn);
-
-    expect(newChoiceItemInput).not.toBeInTheDocument();
-  });
-
-  it(`add choice btn disappears at ${MAX_CHOICE_COUNT} choices`, async () => {
-    const { getByRole } = setup({ pollType: "album" });
-    const user = userEvent.setup();
-
-    const addChoiceBtn = getByRole("button", { name: /add choice/i });
-
-    for (let i = 0; i < MAX_CHOICE_COUNT - MIN_CHOICE_COUNT; i++) {
+      const addChoiceBtn = getByRole("button", { name: /add choice/i });
       await user.click(addChoiceBtn);
-    }
 
-    expect(addChoiceBtn).not.toBeInTheDocument();
-  });
+      const newChoiceItemInput = getByRole("textbox", {
+        name: new RegExp(`search ${pollType} for choice ${MIN_CHOICE_COUNT + 1}`, "i"),
+      });
+      expect(newChoiceItemInput).toBeInTheDocument();
+    },
+  );
+
+  it.each(["artist", "album", "track"] as const)(
+    "remove a choice for %s polls",
+    async (pollType) => {
+      const { getByRole } = setup({ pollType });
+      const user = userEvent.setup();
+
+      const addChoiceBtn = getByRole("button", { name: /add choice/i });
+      await user.click(addChoiceBtn);
+
+      const newChoiceItemInput = getByRole("textbox", {
+        name: new RegExp(`search ${pollType} for choice ${MIN_CHOICE_COUNT + 1}`, "i"),
+      });
+      expect(newChoiceItemInput).toBeInTheDocument();
+
+      const removeNewChoiceBtn = getByRole("button", {
+        name: new RegExp(`remove choice ${MIN_CHOICE_COUNT + 1}`, "i"),
+      });
+      await user.click(removeNewChoiceBtn);
+
+      expect(newChoiceItemInput).not.toBeInTheDocument();
+    },
+  );
+
+  it.each(["artist", "album", "track"] as const)(
+    `add choice btn disappears at ${MAX_CHOICE_COUNT} choices for %s polls`,
+    async (pollType) => {
+      const { getByRole } = setup({ pollType });
+      const user = userEvent.setup();
+
+      const addChoiceBtn = getByRole("button", { name: /add choice/i });
+
+      for (let i = 0; i < MAX_CHOICE_COUNT - MIN_CHOICE_COUNT; i++) {
+        await user.click(addChoiceBtn);
+      }
+
+      expect(addChoiceBtn).not.toBeInTheDocument();
+    },
+  );
 
   it("creates a poll", async () => {
     const { getByLabelText, getByRole, findByRole, findByText } = setup({
@@ -249,60 +298,78 @@ describe("CreatePoll", () => {
     },
   );
 
-  it("poll type switch clears existing selected choices", async () => {
-    const { getByRole, findByRole } = setup({ pollType: "artist" });
-    const user = userEvent.setup();
+  it.each(pollTypeSelectionCases)(
+    "poll type switch clears existing selected choices for $pollType polls",
+    async ({
+      pollType,
+      searchQuery,
+      firstOptionLabel,
+      selectedValue,
+      switchTabName,
+      clearedInputLabel,
+    }) => {
+      const { getByRole, findByRole } = setup({ pollType });
+      const user = userEvent.setup();
 
-    const choiceOneArtistInput = getByRole("textbox", {
-      name: /search artist for choice 1/i,
-    });
-    await user.type(choiceOneArtistInput, "elliott");
-    const artistOption = await findByRole("option", {
-      name: /select artist elliott smith/i,
-    });
+      const firstChoiceInput = getByRole("textbox", {
+        name: new RegExp(`search ${pollType} for choice 1`, "i"),
+      });
+      await user.type(firstChoiceInput, searchQuery);
+      const firstOption = await findByRole("option", {
+        name: firstOptionLabel,
+      });
+      await user.click(firstOption);
 
-    await user.click(artistOption);
+      expect(
+        await findByRole("textbox", {
+          name: new RegExp(`search ${pollType} for choice 1`, "i"),
+        }),
+      ).toHaveValue(selectedValue);
 
-    expect(
-      await findByRole("textbox", { name: /search artist for choice 1/i }),
-    ).toHaveValue("Elliott Smith");
+      await user.click(getByRole("tab", { name: switchTabName }));
 
-    await user.click(getByRole("tab", { name: /albums/i }));
+      expect(
+        getByRole("textbox", {
+          name: new RegExp(`${clearedInputLabel.source} 1`, "i"),
+        }),
+      ).toHaveValue("");
+      expect(
+        getByRole("textbox", {
+          name: new RegExp(`${clearedInputLabel.source} 2`, "i"),
+        }),
+      ).toHaveValue("");
+    },
+  );
 
-    expect(
-      getByRole("textbox", { name: /search album for choice 1/i }),
-    ).toHaveValue("");
-    expect(
-      getByRole("textbox", { name: /search album for choice 2/i }),
-    ).toHaveValue("");
-  });
+  it.each(pollTypeSelectionCases)(
+    "shows duplicate error when selecting an existing option for $pollType polls",
+    async ({ pollType, searchQuery, firstOptionLabel }) => {
+      const { getByRole, findByRole, findByText } = setup({ pollType });
+      const user = userEvent.setup();
 
-  it("shows duplicate error when selecting an existing option", async () => {
-    const { getByRole, findByRole, findByText } = setup({ pollType: "artist" });
-    const user = userEvent.setup();
+      const firstChoiceInput = getByRole("textbox", {
+        name: new RegExp(`search ${pollType} for choice 1`, "i"),
+      });
+      await user.type(firstChoiceInput, searchQuery);
+      const firstChoiceOption = await findByRole("option", {
+        name: firstOptionLabel,
+      });
+      await user.click(firstChoiceOption);
 
-    const firstChoiceInput = getByRole("textbox", {
-      name: /search artist for choice 1/i,
-    });
-    await user.type(firstChoiceInput, "elliott");
-    const firstChoiceOption = await findByRole("option", {
-      name: /select artist elliott smith/i,
-    });
-    await user.click(firstChoiceOption);
+      const secondChoiceInput = getByRole("textbox", {
+        name: new RegExp(`search ${pollType} for choice 2`, "i"),
+      });
+      await user.type(secondChoiceInput, searchQuery);
+      const duplicateOption = await findByRole("option", {
+        name: firstOptionLabel,
+      });
+      await user.click(duplicateOption);
 
-    const secondChoiceInput = getByRole("textbox", {
-      name: /search artist for choice 2/i,
-    });
-    await user.type(secondChoiceInput, "elliott");
-    const duplicateOption = await findByRole("option", {
-      name: /select artist elliott smith/i,
-    });
-    await user.click(duplicateOption);
-
-    expect(
-      await findByText(/duplicates are not allowed\./i),
-    ).toBeInTheDocument();
-  });
+      expect(
+        await findByText(/duplicates are not allowed\./i),
+      ).toBeInTheDocument();
+    },
+  );
 });
 
 describe("CreatePoll fails", () => {
@@ -333,62 +400,68 @@ describe("CreatePoll fails", () => {
     expect(createPollBtn).toBeInTheDocument();
   });
 
-  it("does not create a poll when question and affinities are set but choices are missing", async () => {
-    const { getByLabelText, getByRole, findByRole, queryByText } = setup({
-      pollType: "artist",
-    });
-    const user = userEvent.setup();
-
-    await user.type(getByLabelText(/question/i), "which one is best?");
-
-    for (let i = 0; i < MIN_CHOICE_COUNT; i++) {
-      const choiceAffinityInput = getByRole("textbox", {
-        name: new RegExp(`search affinities for choice ${i + 1}`, "i"),
+  it.each(["artist", "album", "track"] as const)(
+    "does not create a poll when question and affinities are set but choices are missing for %s polls",
+    async (pollType) => {
+      const { getByLabelText, getByRole, findByRole, queryByText } = setup({
+        pollType,
       });
-      await user.type(choiceAffinityInput, affinities[0]);
-      const affinityOption = await findByRole("option", {
-        name: new RegExp(`add affinity ${affinities[0]}`, "i"),
-      });
-      await user.click(affinityOption);
-    }
+      const user = userEvent.setup();
 
-    await user.click(getByRole("button", { name: /create poll/i }));
+      await user.type(getByLabelText(/question/i), "which one is best?");
 
-    expect(mockCreatePollMutation).not.toHaveBeenCalled();
-    expect(queryByText(/poll created successfully\./i)).not.toBeInTheDocument();
-  });
+      for (let i = 0; i < MIN_CHOICE_COUNT; i++) {
+        const choiceAffinityInput = getByRole("textbox", {
+          name: new RegExp(`search affinities for choice ${i + 1}`, "i"),
+        });
+        await user.type(choiceAffinityInput, affinities[0]);
+        const affinityOption = await findByRole("option", {
+          name: new RegExp(`add affinity ${affinities[0]}`, "i"),
+        });
+        await user.click(affinityOption);
+      }
 
-  it("does not create a poll when question and choices are set but affinities are missing", async () => {
-    const {
-      getByLabelText,
-      getByRole,
-      findByRole,
-      findAllByText,
-      queryByText,
-    } = setup({ pollType: "artist" });
-    const user = userEvent.setup();
+      await user.click(getByRole("button", { name: /create poll/i }));
 
-    await user.type(getByLabelText(/question/i), "which one is best?");
+      expect(mockCreatePollMutation).not.toHaveBeenCalled();
+      expect(queryByText(/poll created successfully\./i)).not.toBeInTheDocument();
+    },
+  );
 
-    const artistsToPick = ["Elliott Smith", "Heatmiser"];
-    for (let i = 0; i < MIN_CHOICE_COUNT; i++) {
-      const choiceItemInput = getByRole("textbox", {
-        name: new RegExp(`search artist for choice ${i + 1}`, "i"),
-      });
-      await user.type(choiceItemInput, `artist ${i + 1}`);
-      const artistOption = await findByRole("option", {
-        name: new RegExp(`select artist ${artistsToPick[i]}`, "i"),
-      });
-      await user.click(artistOption);
-    }
+  it.each(pollTypeSelectionCases)(
+    "does not create a poll when question and choices are set but affinities are missing for $pollType polls",
+    async ({ pollType, searchQuery, firstOptionLabel, secondOptionLabel }) => {
+      const {
+        getByLabelText,
+        getByRole,
+        findByRole,
+        findAllByText,
+        queryByText,
+      } = setup({ pollType });
+      const user = userEvent.setup();
 
-    await user.click(getByRole("button", { name: /create poll/i }));
+      await user.type(getByLabelText(/question/i), "which one is best?");
 
-    const affinityErrors = await findAllByText(
-      /at least 1 affinity is required\./i,
-    );
-    expect(affinityErrors.length).toBeGreaterThanOrEqual(MIN_CHOICE_COUNT);
-    expect(mockCreatePollMutation).not.toHaveBeenCalled();
-    expect(queryByText(/poll created successfully\./i)).not.toBeInTheDocument();
-  });
+      const choiceOptionLabels = [firstOptionLabel, secondOptionLabel];
+      for (let i = 0; i < MIN_CHOICE_COUNT; i++) {
+        const choiceItemInput = getByRole("textbox", {
+          name: new RegExp(`search ${pollType} for choice ${i + 1}`, "i"),
+        });
+        await user.type(choiceItemInput, searchQuery);
+        const choiceOption = await findByRole("option", {
+          name: choiceOptionLabels[i],
+        });
+        await user.click(choiceOption);
+      }
+
+      await user.click(getByRole("button", { name: /create poll/i }));
+
+      const affinityErrors = await findAllByText(
+        /at least 1 affinity is required\./i,
+      );
+      expect(affinityErrors.length).toBeGreaterThanOrEqual(MIN_CHOICE_COUNT);
+      expect(mockCreatePollMutation).not.toHaveBeenCalled();
+      expect(queryByText(/poll created successfully\./i)).not.toBeInTheDocument();
+    },
+  );
 });
