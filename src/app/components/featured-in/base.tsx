@@ -14,6 +14,8 @@ function FeaturedInBase({ featuredPolls }: FeaturedInBaseProps) {
   if (featuredPolls === undefined)
     return <LoadingIndicator loading={true} message="Loading..." />;
 
+  if (featuredPolls === null || featuredPolls.length === 0) return null;
+
   return (
     <section>
       <div className="mb-6 flex items-center justify-between">
