@@ -13,7 +13,7 @@ function AlbumFeaturedIn({ artistName, albumName }: AlbumFeaturedInProps) {
     album: albumName,
   });
 
-  return <FeaturedInBase featuredPolls={featuredPolls} />;
+  return <FeaturedInBase featuredPolls={featuredPolls} featuredType="album" />;
 }
 
 export default AlbumFeaturedIn;

@@ -1,30 +1,31 @@
 "use client";
 
+import { api } from "@/lib/convex/_generated/api";
+import { useQuery } from "convex/react";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import TopAffinitiesSkeleton from "./skeleton";
 
 type TopTrackAffinitiesProps = {
+  artist: string;
+  album: string;
   track: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function TopTrackAffinities({ track }: TopTrackAffinitiesProps) {
-  const temporaryAffinities = [
-    { name: "Nostalgic", score: 92 },
-    { name: "Atmospheric", score: 87 },
-    { name: "Melancholic", score: 83 },
-    { name: "Introspective", score: 78 },
-    { name: "Ethereal", score: 76 },
-    { name: "Warm", score: 71 },
-  ];
+function TopTrackAffinities({ artist, album, track }: TopTrackAffinitiesProps) {
+  const trackAffinities = useQuery(api.pollster.track.getAffinities, {
+    amount: 6,
+    artist,
+    album,
+    track,
+  });
 
-  if (temporaryAffinities === undefined) {
+  if (trackAffinities === undefined) {
     return <TopAffinitiesSkeleton />;
   }
 
-  if (temporaryAffinities === null) {
+  if (trackAffinities === null) {
     return null;
   }
 
@@ -41,7 +42,7 @@ function TopTrackAffinities({ track }: TopTrackAffinitiesProps) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-3">
-          {temporaryAffinities.map((affinity, i) => (
+          {trackAffinities.map((affinity, i) => (
             <div key={i} className="flex flex-col gap-1">
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-muted-foreground">{affinity.name}</span>

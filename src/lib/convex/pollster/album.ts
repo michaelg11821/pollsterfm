@@ -5,6 +5,7 @@ import {
   getFirstLastfmAlbumFromQuery,
   lastfmAlbumSearch,
 } from "@/lib/lastfm/album";
+import { capitalize } from "@/lib/convex-utils";
 import { getFirstSpotifyAlbumFromQuery } from "@/lib/spotify/album";
 import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
@@ -118,6 +119,53 @@ export const search = action({
 
       return null;
     }
+  },
+});
+
+export const getAffinities = query({
+  args: { artist: v.string(), album: v.string(), amount: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const choices = await ctx.db
+      .query("pollChoices")
+      .withIndex("by_album", (q) =>
+        q
+          .eq("artist", decodeURIComponent(args.artist))
+          .eq("album", decodeURIComponent(args.album)),
+      )
+      .collect();
+
+    if (!choices || choices.length === 0) {
+      return [];
+    }
+
+    const affinityCounts = new Map<string, number>();
+
+    choices.forEach((choice) => {
+      choice.affinities.forEach((affinity) => {
+        const currentCount = affinityCounts.get(affinity) || 0;
+
+        affinityCounts.set(affinity, currentCount + 1);
+      });
+    });
+
+    const totalChoices = choices.length;
+
+    const affinityScores = Array.from(affinityCounts.entries())
+      .map(([name, count]) => {
+        const frequencyScore = Math.round((count / totalChoices) * 100);
+        const countBonus = Math.min(20, count * 5);
+        const finalScore = Math.min(100, frequencyScore + countBonus);
+
+        return {
+          name: capitalize(name),
+          score: finalScore,
+        };
+      })
+      .sort((a, b) => b.score - a.score);
+
+    const amount = args.amount || affinityScores.length;
+
+    return affinityScores.slice(0, amount);
   },
 });
 

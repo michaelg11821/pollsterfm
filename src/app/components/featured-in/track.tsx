@@ -19,7 +19,7 @@ function TrackFeaturedIn({
     track: trackName,
   });
 
-  return <FeaturedInBase featuredPolls={featuredPolls} />;
+  return <FeaturedInBase featuredPolls={featuredPolls} featuredType="track" />;
 }
 
 export default TrackFeaturedIn;

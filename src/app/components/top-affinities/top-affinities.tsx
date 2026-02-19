@@ -5,22 +5,42 @@ import TopArtistAffinities from "./artist";
 import TopTrackAffinities from "./track";
 import TopUserAffinities from "./user";
 
-type TopAffinitiesProps = {
-  category: "user" | "artist" | "album" | "track";
-  itemName: string;
-};
+type TopAffinitiesProps =
+  | {
+      category: "user";
+      itemName: string;
+    }
+  | {
+      category: "artist";
+      artistName: string;
+    }
+  | {
+      category: "album";
+      artistName: string;
+      albumName: string;
+    }
+  | {
+      category: "track";
+      artistName: string;
+      albumName: string;
+      trackName: string;
+    };
 
-function TopAffinities({ category, itemName }: TopAffinitiesProps) {
+function TopAffinities(props: TopAffinitiesProps) {
   return (
     <>
-      {category === "user" ? (
-        <TopUserAffinities username={itemName} />
-      ) : category === "artist" ? (
-        <TopArtistAffinities artist={itemName} />
-      ) : category === "album" ? (
-        <TopAlbumAffinities album={itemName} />
-      ) : category === "track" ? (
-        <TopTrackAffinities track={itemName} />
+      {props.category === "user" ? (
+        <TopUserAffinities username={props.itemName} />
+      ) : props.category === "artist" ? (
+        <TopArtistAffinities artist={props.artistName} />
+      ) : props.category === "album" ? (
+        <TopAlbumAffinities artist={props.artistName} album={props.albumName} />
+      ) : props.category === "track" ? (
+        <TopTrackAffinities
+          artist={props.artistName}
+          album={props.albumName}
+          track={props.trackName}
+        />
       ) : null}
     </>
   );

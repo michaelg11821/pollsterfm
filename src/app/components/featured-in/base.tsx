@@ -8,13 +8,23 @@ import LoadingIndicator from "../ui/loading-indicator";
 
 type FeaturedInBaseProps = {
   featuredPolls: Doc<"polls">[] | undefined;
+  featuredType: "artist" | "album" | "track";
 };
 
-function FeaturedInBase({ featuredPolls }: FeaturedInBaseProps) {
+function FeaturedInBase({ featuredPolls, featuredType }: FeaturedInBaseProps) {
   if (featuredPolls === undefined)
     return <LoadingIndicator loading={true} message="Loading..." />;
 
-  if (featuredPolls === null || featuredPolls.length === 0) return null;
+  if (featuredPolls === null || featuredPolls.length === 0) {
+    return (
+      <section>
+        <h2 className="mb-4 text-2xl font-bold">Featured In Polls</h2>
+        <p className="text-muted-foreground">
+          This {featuredType} is not featured in any polls yet.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section>

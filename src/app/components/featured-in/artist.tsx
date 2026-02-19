@@ -11,7 +11,7 @@ function ArtistFeaturedIn({ artistName }: ArtistFeaturedInProps) {
     artist: artistName,
   });
 
-  return <FeaturedInBase featuredPolls={featuredPolls} />;
+  return <FeaturedInBase featuredPolls={featuredPolls} featuredType="artist" />;
 }
 
 export default ArtistFeaturedIn;

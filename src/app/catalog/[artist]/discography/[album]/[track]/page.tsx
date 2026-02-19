@@ -81,7 +81,12 @@ async function Track({ params }: TrackProps) {
           </div>
           <aside className="flex flex-col gap-8 lg:col-span-1">
             <Suspense fallback={<TopAffinitiesSkeleton />}>
-              <TopAffinities category="track" itemName={track} />
+              <TopAffinities
+                category="track"
+                artistName={artist}
+                albumName={album}
+                trackName={track}
+              />
             </Suspense>
           </aside>
         </div>

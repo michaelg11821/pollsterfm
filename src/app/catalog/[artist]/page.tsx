@@ -56,7 +56,7 @@ async function Artist({ params }: ArtistProps) {
           </div>
           <aside className="flex flex-col gap-8 lg:col-span-1">
             <Suspense fallback={<TopAffinitiesSkeleton />}>
-              <TopAffinities category="artist" itemName={artist} />
+              <TopAffinities category="artist" artistName={artist} />
             </Suspense>
             <Suspense fallback={<SimilarArtistsSkeleton />}>
               <SimilarArtists artistName={artist} />
