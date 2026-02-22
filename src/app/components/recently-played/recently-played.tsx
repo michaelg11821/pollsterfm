@@ -28,7 +28,9 @@ async function RecentlyPlayed({ username, limit }: RecentlyPlayedProps) {
   }
 
   if (recentTracks === null || "error" in recentTracks) {
-    if (recentTracks.error === "PRIVATE_LASTFM_PROFILE") {
+    if (recentTracks.error === "LISTENING_HISTORY_PRIVATE") {
+      return <p>Listening history is set to private.</p>;
+    } else if (recentTracks.error === "PRIVATE_LASTFM_PROFILE") {
       return <p>Last.fm profile is set to private.</p>;
     }
 

@@ -3,6 +3,7 @@ import { paginationOptsValidator } from "convex/server";
 import { type Infer, v } from "convex/values";
 import {
   INTERNAL_SERVER_ERROR,
+  LISTENING_HISTORY_PRIVATE,
   NO_PLATFORM,
   NOT_FOUND,
   UNAUTHORIZED,
@@ -462,6 +463,36 @@ export const getAccountPlatform = query({
   },
 });
 
+export const isListeningHistoryPrivate = query({
+  args: {
+    username: v.string(),
+  },
+  handler: async (ctx, args): Promise<boolean | null> => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (user === null) {
+      return null;
+    }
+
+    const currentUserId = await getAuthUserId(ctx);
+
+    if (currentUserId) {
+      const currentUser = await ctx.db.get(currentUserId);
+
+      if (currentUser?.username === args.username) return false;
+    }
+
+    if (user.listeningHistoryPrivate === undefined) {
+      return null;
+    }
+
+    return user.listeningHistoryPrivate;
+  },
+});
+
 export const getRecentlyPlayedTracks = action({
   args: {
     username: v.string(),
@@ -474,8 +505,20 @@ export const getRecentlyPlayedTracks = action({
       const platform = await ctx.runQuery(api.user.getAccountPlatform, {
         username: args.username,
       });
+      const listeningHistoryPrivate = await ctx.runQuery(
+        api.user.isListeningHistoryPrivate,
+        {
+          username: args.username,
+        },
+      );
 
       if (!platform) return { error: NO_PLATFORM };
+
+      if (listeningHistoryPrivate === null)
+        throw new Error("failed to get visibility of listening history");
+
+      if (listeningHistoryPrivate === true)
+        return { error: LISTENING_HISTORY_PRIVATE };
 
       let rawTracks:
         | SpotifyRecentlyPlayedResponse["items"]
