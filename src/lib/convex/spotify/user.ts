@@ -1,11 +1,15 @@
-import { INTERNAL_SERVER_ERROR, SERVICE_ERROR } from "@/lib/constants/errors";
+import {
+  INTERNAL_SERVER_ERROR,
+  LISTENING_HISTORY_PRIVATE,
+  SERVICE_ERROR,
+} from "@/lib/constants/errors";
 import { v } from "convex/values";
 import type {
   SpotifyAccessTokenResponse,
   SpotifyCurrentlyPlayingResponse,
   SpotifyRecentlyPlayedResponse,
 } from "../../types/spotifyResponses";
-import { internal } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import {
   action,
   ActionCtx,
@@ -230,6 +234,17 @@ export const getRecentlyPlayedTracks = action({
     next: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const listeningHistoryPrivate = await ctx.runQuery(
+      api.user.isListeningHistoryPrivate,
+      {
+        username: args.username,
+      },
+    );
+
+    if (listeningHistoryPrivate === true) {
+      return { error: LISTENING_HISTORY_PRIVATE };
+    }
+
     return await getRecentlyPlayedSpotifyTracks(
       ctx,
       args.username,

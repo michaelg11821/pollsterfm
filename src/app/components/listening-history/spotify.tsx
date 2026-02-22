@@ -30,6 +30,7 @@ function SpotifyListeningHistory({
   const [loading, setLoading] = useState<boolean>(false);
   const [nextUrl, setNextUrl] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isPrivate, setIsPrivate] = useState<boolean>(false);
 
   const loaderRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef<boolean>(false);
@@ -53,6 +54,13 @@ function SpotifyListeningHistory({
       });
 
       if ("error" in response) {
+        if (response.error === "LISTENING_HISTORY_PRIVATE") {
+          setIsPrivate(true);
+          hasMoreRef.current = false;
+          setHasMore(false);
+          return;
+        }
+
         throw new Error(TRACK_FETCHING_ERROR);
       }
 
@@ -121,6 +129,10 @@ function SpotifyListeningHistory({
       />
     ));
   }, [tracks]);
+
+  if (isPrivate) {
+    return <p>Listening history is set to private.</p>;
+  }
 
   return (
     <>

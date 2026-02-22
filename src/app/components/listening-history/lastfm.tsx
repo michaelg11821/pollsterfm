@@ -40,6 +40,8 @@ async function LastfmListeningHistory({
 
   if ("error" in trackData) {
     switch (trackData.error) {
+      case "LISTENING_HISTORY_PRIVATE":
+        return <p>Listening history is set to private.</p>;
       case "PRIVATE_LASTFM_PROFILE":
         return <p>This user&apos;s listening history is private.</p>;
       case "SERVICE_ERROR":

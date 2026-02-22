@@ -1,11 +1,12 @@
 import {
   INTERNAL_SERVER_ERROR,
+  LISTENING_HISTORY_PRIVATE,
   PRIVATE_LASTFM_PROFILE,
   SERVICE_ERROR,
 } from "@/lib/constants/errors";
 import type { LastfmRecentlyPlayedResponse } from "@/lib/types/lastfmResponses";
 import { v } from "convex/values";
-import { internal } from "../_generated/api";
+import { api, internal } from "../_generated/api";
 import { action, internalQuery, type ActionCtx } from "../_generated/server";
 
 export const getLastfmUsername = internalQuery({
@@ -100,6 +101,17 @@ export const getRecentlyPlayedTracks = action({
     page: v.number(),
   },
   handler: async (ctx, args) => {
+    const listeningHistoryPrivate = await ctx.runQuery(
+      api.user.isListeningHistoryPrivate,
+      {
+        username: args.username,
+      },
+    );
+
+    if (listeningHistoryPrivate === true) {
+      return { error: LISTENING_HISTORY_PRIVATE };
+    }
+
     return await getRecentlyPlayedLastfmTracks(
       ctx,
       args.username,

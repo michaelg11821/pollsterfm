@@ -2,6 +2,7 @@ import { api } from "@/lib/convex/_generated/api";
 import { spotifyHistoryImported } from "@/lib/data-access/user/read";
 import { toastManager } from "@/lib/toast";
 import type { Platform } from "@/lib/types/pollster";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import { Info } from "lucide-react";
 import { Suspense } from "react";
@@ -17,9 +18,17 @@ type ListeningHistoryProps = {
 };
 
 async function ListeningHistory({ username, page }: ListeningHistoryProps) {
+  const token = await convexAuthNextjsToken();
+
   const platform: Platform | null = await fetchQuery(
     api.user.getAccountPlatform,
     { username },
+    { token },
+  );
+  const listeningHistoryPrivate = await fetchQuery(
+    api.user.isListeningHistoryPrivate,
+    { username },
+    { token },
   );
   const hasImported = await spotifyHistoryImported(username);
 
@@ -28,6 +37,10 @@ async function ListeningHistory({ username, page }: ListeningHistoryProps) {
       title: "Error",
       description: "This user does not have a platform associated with them.",
     });
+  }
+
+  if (listeningHistoryPrivate === true) {
+    return <p className="pt-2">Listening history is set to private.</p>;
   }
 
   return platform === "spotify" ? (
