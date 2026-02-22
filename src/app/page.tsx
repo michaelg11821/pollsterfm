@@ -6,7 +6,6 @@ import { fetchQuery } from "convex/nextjs";
 import Link from "next/link";
 import { Suspense } from "react";
 import HeroPoll from "./components/hero-poll/hero-poll";
-import HeroPollSkeleton from "./components/hero-poll/skeleton";
 import PopularPolls from "./components/popular-polls/popular-polls";
 import RandomAffinities from "./components/random-affinities/random-affinities";
 import RandomAffinitiesSkeleton from "./components/random-affinities/skeleton";
@@ -15,6 +14,7 @@ import { buttonVariants } from "./components/ui/button";
 export default async function Home() {
   const token = await convexAuthNextjsToken();
   const user = await fetchQuery(api.user.currentUser, {}, { token });
+
   return (
     <main>
       <section className="border-border overflow-hidden border-b py-16 md:py-24">
@@ -100,7 +100,7 @@ export default async function Home() {
                 )}
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-6 text-sm sm:gap-8 md:mt-10">
+              {/* <div className="mt-8 flex flex-wrap gap-6 text-sm sm:gap-8 md:mt-10">
                 <div>
                   <div className="text-foreground text-xl font-bold sm:text-2xl">
                     1,000+
@@ -125,13 +125,11 @@ export default async function Home() {
                     Votes cast
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="min-w-0 overflow-hidden lg:pl-8">
-              <Suspense fallback={<HeroPollSkeleton />}>
-                <HeroPoll />
-              </Suspense>
+              <HeroPoll />
             </div>
           </div>
         </div>
