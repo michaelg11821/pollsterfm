@@ -36,3 +36,7 @@ export type Poll = Doc<"polls">;
 export type PollActivity = Infer<typeof activityValidator>;
 
 export type Platform = (typeof platforms)[number];
+
+export type ReviewWithUser = Doc<"reviews"> & {
+  user: { username: string; image?: string };
+};

@@ -21,6 +21,7 @@ import type * as pollster_album from "../pollster/album.js";
 import type * as pollster_artist from "../pollster/artist.js";
 import type * as pollster_config from "../pollster/config.js";
 import type * as pollster_poll from "../pollster/poll.js";
+import type * as pollster_review from "../pollster/review.js";
 import type * as pollster_track from "../pollster/track.js";
 import type * as spotify_album from "../spotify/album.js";
 import type * as spotify_user from "../spotify/user.js";
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   "pollster/artist": typeof pollster_artist;
   "pollster/config": typeof pollster_config;
   "pollster/poll": typeof pollster_poll;
+  "pollster/review": typeof pollster_review;
   "pollster/track": typeof pollster_track;
   "spotify/album": typeof spotify_album;
   "spotify/user": typeof spotify_user;

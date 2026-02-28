@@ -22,7 +22,7 @@ function NavSkeleton() {
               </li>
               <li>
                 <Link
-                  href=""
+                  href="/reviews"
                   className="text-muted-foreground hover:text-foreground text-center transition-[color]"
                 >
                   Reviews

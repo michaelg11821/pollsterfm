@@ -1,5 +1,16 @@
 import { v } from "convex/values";
 
+export const reviewValidator = v.object({
+  userId: v.id("users"),
+  artist: v.string(),
+  album: v.union(v.string(), v.null()),
+  track: v.union(v.string(), v.null()),
+  image: v.string(),
+  rating: v.number(),
+  text: v.string(),
+  likes: v.number(),
+});
+
 export const pollChoiceValidator = v.object({
   image: v.string(),
   artist: v.string(),

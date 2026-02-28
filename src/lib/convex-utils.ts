@@ -2,7 +2,7 @@ import { formatDistanceToNowStrict, type Month } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { distance } from "fastest-levenshtein";
 import { oneDayMs, oneMonthMs, oneWeekMs } from "./constants/time";
-import type { Choice, ChoiceInfo } from "./types/pollster";
+import type { Choice, ChoiceInfo, ReviewWithUser } from "./types/pollster";
 
 /**
  * A helper function that parses the given ISO 8601 string and returns a string containing the strict formatted distance to now.
@@ -462,4 +462,39 @@ export function utsToIsoString(uts: string): string {
   const date = new Date(seconds * 1000);
 
   return date.toISOString();
+}
+
+export function getReviewItemName(review: ReviewWithUser) {
+  if (review.track) return review.track;
+  if (review.album) return review.album;
+
+  return review.artist;
+}
+
+export function getReviewItemType(review: ReviewWithUser) {
+  if (review.track) return "track";
+  if (review.album) return "album";
+
+  return "artist";
+}
+
+export function getReviewItemHref(review: ReviewWithUser) {
+  const artist = encodeURIComponent(review.artist);
+
+  if (review.track && review.album) {
+    return `/catalog/${artist}/discography/${encodeURIComponent(review.album)}/${encodeURIComponent(review.track)}`;
+  }
+
+  if (review.album) {
+    return `/catalog/${artist}/discography/${encodeURIComponent(review.album)}`;
+  }
+
+  return `/catalog/${artist}`;
+}
+
+export function getReviewType(review: ReviewWithUser) {
+  if (review.track) return "track";
+  if (review.album) return "album";
+
+  return "artist";
 }

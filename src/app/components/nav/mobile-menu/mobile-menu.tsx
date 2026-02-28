@@ -115,7 +115,7 @@ function MobileMenu({ profileIcon, username }: MenuProps) {
               </li>
               <li>
                 <Link
-                  href=""
+                  href="/reviews"
                   className="hover:bg-accent flex h-12.5 w-full cursor-pointer items-center rounded-[10px] border-none bg-inherit pl-5 text-left text-lg transition-[background-color]"
                 >
                   Reviews

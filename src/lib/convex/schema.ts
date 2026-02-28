@@ -1,7 +1,11 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { pollChoiceValidator, stripePaymentValidator } from "./validators";
+import {
+  pollChoiceValidator,
+  reviewValidator,
+  stripePaymentValidator,
+} from "./validators";
 
 const schema = defineSchema({
   ...authTables,
@@ -77,6 +81,11 @@ const schema = defineSchema({
     stripeCustomerId: v.optional(v.string()),
     payment: v.optional(v.union(stripePaymentValidator, v.null())),
   }).index("by_userId", ["userId"]),
+  reviews: defineTable(reviewValidator)
+    .index("by_userId", ["userId"])
+    .index("by_artist", ["artist"])
+    .index("by_album", ["artist", "album"])
+    .index("by_track", ["artist", "album", "track"]),
   pollChoices: defineTable(pollChoiceValidator)
     .index("by_pollId", ["pollId"])
     .index("by_artist", ["artist"])
