@@ -7,7 +7,7 @@ import type {
   TrackData,
 } from "@/lib/types/internalResponses";
 import type { CatalogItemType } from "@/lib/types/pollster";
-import { PlusCircle } from "lucide-react";
+import { PenLine, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import TopGenres from "../top-genres/top-genres";
@@ -54,6 +54,35 @@ function CatalogInfo({ itemType, data }: CatalogInfoProps) {
     if (data.image) baseParams.set("image", data.image);
 
     return `/create-poll?${baseParams.toString()}`;
+  }, [itemType, data]);
+
+  const createReviewUrl = useMemo(() => {
+    const params = new URLSearchParams();
+
+    params.set("type", itemType);
+
+    switch (itemType) {
+      case "artist":
+        params.set("artist", data.name);
+        break;
+      case "album": {
+        const albumData = data as AlbumData;
+        params.set("artist", albumData.artists[0]);
+        params.set("album", albumData.name);
+        break;
+      }
+      case "track": {
+        const trackData = data as TrackData;
+        params.set("artist", trackData.artists[0]);
+        params.set("album", trackData.albumName);
+        params.set("track", trackData.name);
+        break;
+      }
+    }
+
+    if (data.image) params.set("image", data.image);
+
+    return `/create-review?${params.toString()}`;
   }, [itemType, data]);
 
   const genresUrl = useMemo(() => {
@@ -173,16 +202,25 @@ function CatalogInfo({ itemType, data }: CatalogInfoProps) {
           </div>
         </div>
 
-        <Link
-          href={createPollUrl}
-          className={cn(
-            buttonVariants({ variant: "default" }),
-            "bg-primary self-center md:self-end",
-          )}
-        >
-          <PlusCircle className="h-4 w-4" />
-          Create Poll
-        </Link>
+        <div className="flex gap-2 self-center md:self-end">
+          <Link
+            href={createPollUrl}
+            className={cn(
+              buttonVariants({ variant: "default" }),
+              "bg-primary",
+            )}
+          >
+            <PlusCircle className="h-4 w-4" />
+            Create Poll
+          </Link>
+          <Link
+            href={createReviewUrl}
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            <PenLine className="h-4 w-4" />
+            Write Review
+          </Link>
+        </div>
       </div>
     </div>
   );

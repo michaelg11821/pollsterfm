@@ -5,7 +5,8 @@ import { api } from "@/lib/convex/_generated/api";
 import { cn } from "@/lib/next-utils";
 import type { ReviewWithUser } from "@/lib/types/pollster";
 import { useQuery } from "convex/react";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, PenLine } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import ReviewPreview from "../review-preview/review-preview";
 import { Button } from "../ui/button";
@@ -34,6 +35,12 @@ function Reviews() {
           <p className="text-lg">No reviews yet</p>
           <p className="text-sm">Be the first to share your thoughts</p>
         </div>
+        <Link href="/create-review">
+          <Button>
+            <PenLine className="h-4 w-4" />
+            Write a review
+          </Button>
+        </Link>
       </div>
     );
   }

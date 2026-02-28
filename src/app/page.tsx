@@ -54,6 +54,15 @@ export default async function Home() {
                       </svg>
                     </Link>
                     <Link
+                      href="/create-review"
+                      className={cn(
+                        buttonVariants({ variant: "outline", size: "lg" }),
+                        "w-full font-semibold sm:w-auto",
+                      )}
+                    >
+                      Write a review
+                    </Link>
+                    <Link
                       href="/polls"
                       className={cn(
                         buttonVariants({ variant: "outline", size: "lg" }),
@@ -256,27 +265,37 @@ export default async function Home() {
                 Got an opinion to share?
               </h2>
               <p className="text-muted-foreground mx-auto mb-6 max-w-md text-sm sm:text-base">
-                Create a poll and see how others vote on the music you care
-                about.
+                Create a poll or write a review about the music you care about.
               </p>
-              <Link
-                href="/polls/create"
-                className={cn(
-                  buttonVariants({ variant: "default", size: "lg" }),
-                  "group font-semibold",
-                )}
-              >
-                Create a poll
-                <svg
-                  className="relative ml-2 h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+              <div className="flex flex-wrap justify-center gap-3">
+                <Link
+                  href="/create-poll"
+                  className={cn(
+                    buttonVariants({ variant: "default", size: "lg" }),
+                    "group font-semibold",
+                  )}
                 >
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-              </Link>
+                  Create a poll
+                  <svg
+                    className="relative ml-2 h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </Link>
+                <Link
+                  href="/create-review"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "font-semibold",
+                  )}
+                >
+                  Write a review
+                </Link>
+              </div>
             </>
           ) : (
             <>
