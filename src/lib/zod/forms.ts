@@ -140,3 +140,27 @@ export const createPollSchema = z.discriminatedUnion("pollType", [
 ]);
 
 export type createPollSchemaType = z.infer<typeof createPollSchema>;
+
+const reviewItemSchema = z.object({
+  image: z
+    .url({ hostname: getImageHostnamesRegex(), error: "Image is from an untrusted source." })
+    .or(z.literal("")),
+  artist: z.string().min(1, { error: "Please select an artist." }),
+  album: z.string().nullable(),
+  track: z.string().nullable(),
+});
+
+export const createReviewSchema = z.object({
+  itemType: PollType,
+  item: reviewItemSchema,
+  rating: z
+    .number()
+    .min(1, { error: "Rating is required." })
+    .max(5, { error: "Rating cannot exceed 5." }),
+  text: z
+    .string()
+    .min(10, { error: "Review must be at least 10 characters." })
+    .max(2000, { error: "Review cannot exceed 2000 characters." }),
+});
+
+export type createReviewSchemaType = z.infer<typeof createReviewSchema>;

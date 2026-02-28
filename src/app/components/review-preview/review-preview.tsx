@@ -25,7 +25,7 @@ function ReviewPreview({ review }: ReviewPreviewProps) {
   const itemHref = getReviewItemHref(review);
 
   return (
-    <Card className="p-6 transition-[background-color]">
+    <Card className="overflow-hidden p-6 transition-[background-color]">
       <div className="flex gap-4">
         <Link href={itemHref} className="flex-shrink-0">
           <div className="relative h-20 w-20 overflow-hidden rounded-lg">
@@ -43,23 +43,25 @@ function ReviewPreview({ review }: ReviewPreviewProps) {
             <div className="min-w-0">
               <Link
                 href={itemHref}
-                className="hover:text-primary truncate font-semibold transition-colors"
+                className="hover:text-primary block truncate font-semibold transition-colors"
               >
                 {itemName}
               </Link>
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                <span>{review.artist}</span>
-                <Badge variant="secondary">{itemType}</Badge>
+                <span className="truncate">{review.artist}</span>
+                <Badge variant="secondary" className="flex-shrink-0">{itemType}</Badge>
               </div>
             </div>
-            <StarRating rating={review.rating} />
+            <div className="flex-shrink-0">
+              <StarRating rating={review.rating} />
+            </div>
           </div>
 
-          <p className="text-muted-foreground mt-2 line-clamp-3 text-sm">
+          <p className="text-muted-foreground mt-2 text-sm wrap-anywhere">
             {review.text}
           </p>
 
-          <div className="text-muted-foreground mt-3 flex items-center gap-4 text-sm">
+          <div className="text-muted-foreground mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
             <Link
               href={`/user/${review.user.username}`}
               className="hover:text-foreground flex items-center gap-1.5 transition-colors"

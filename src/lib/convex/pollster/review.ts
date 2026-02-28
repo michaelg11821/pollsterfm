@@ -1,6 +1,25 @@
 import { USER_NOT_FOUND } from "@/lib/constants/errors";
 import { v } from "convex/values";
 import { query } from "../_generated/server";
+import { authedMutation } from "../helpers";
+
+export const create = authedMutation({
+  args: {
+    artist: v.string(),
+    album: v.union(v.string(), v.null()),
+    track: v.union(v.string(), v.null()),
+    image: v.string(),
+    rating: v.number(),
+    text: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("reviews", {
+      ...args,
+      userId: ctx.userId,
+      likes: 0,
+    });
+  },
+});
 
 export const getReviews = query({
   args: {},
