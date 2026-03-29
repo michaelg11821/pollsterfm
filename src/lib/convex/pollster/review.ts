@@ -1,6 +1,6 @@
 import { USER_NOT_FOUND } from "@/lib/constants/errors";
 import { v } from "convex/values";
-import { query } from "../_generated/server";
+import { internalQuery, query } from "../_generated/server";
 import { authedMutation } from "../helpers";
 
 export const create = authedMutation({
@@ -86,5 +86,40 @@ export const getUserReviews = query({
       ...review,
       user: { username: user.username, image: user.image },
     }));
+  },
+});
+
+export const getAlbumAverageReviewScores = internalQuery({
+  args: {
+    artist: v.string(),
+    albums: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const artist = decodeURIComponent(args.artist);
+    const averageScores: Array<{
+      album: string;
+      averageReviewScore: number | null;
+    }> = [];
+
+    for (const album of args.albums) {
+      const reviews = await ctx.db
+        .query("reviews")
+        .withIndex("by_album", (q) => q.eq("artist", artist).eq("album", album))
+        .collect();
+
+      if (reviews.length === 0) {
+        averageScores.push({ album, averageReviewScore: null });
+        continue;
+      }
+
+      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+
+      averageScores.push({
+        album,
+        averageReviewScore: totalRating / reviews.length,
+      });
+    }
+
+    return averageScores;
   },
 });

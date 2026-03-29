@@ -13,7 +13,7 @@ export type TopAlbum = {
   name: string;
   images: TopAlbumImage[];
   releaseDate: string | null;
-  // rating
+  averageReviewScore?: number | null;
 };
 
 export type PollsterAlbum = TopAlbum;

@@ -83,7 +83,6 @@ const schema = defineSchema({
   }).index("by_userId", ["userId"]),
   reviews: defineTable(reviewValidator)
     .index("by_userId", ["userId"])
-    .index("by_artist", ["artist"])
     .index("by_album", ["artist", "album"])
     .index("by_track", ["artist", "album", "track"]),
   pollChoices: defineTable(pollChoiceValidator)

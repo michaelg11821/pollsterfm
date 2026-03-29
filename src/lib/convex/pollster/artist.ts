@@ -107,10 +107,12 @@ export const getTopAlbums = action({
     spotifyUrl: v.union(v.string(), v.null()),
     lastfmUrl: v.union(v.string(), v.null()),
   },
-  handler: async (_, args) => {
+  handler: async (ctx, args): Promise<TopAlbum[] | null> => {
     const { artistName, spotifyUrl, lastfmUrl } = args;
 
     try {
+      let normalizedTopAlbums: TopAlbum[];
+
       if ((spotifyUrl && !lastfmUrl) || (spotifyUrl && lastfmUrl)) {
         const parts = new URL(spotifyUrl).pathname.split("/");
         const spotifyId = parts[parts.length - 1];
@@ -119,26 +121,23 @@ export const getTopAlbums = action({
 
         if (!spotifyTopAlbums) throw new Error("no results from spotify");
 
-        const normalizedTopAlbums: TopAlbum[] = spotifyTopAlbums.map(
+        normalizedTopAlbums = spotifyTopAlbums.map(
           (album) => {
             return {
               name: album.name,
               images: album.images,
               releaseDate: album.release_date,
+              averageReviewScore: null,
             };
           },
         );
-
-        // and eventually get pollster ratings (in separate query)
-
-        return normalizedTopAlbums;
       } else if (!spotifyUrl && lastfmUrl) {
         const lastfmTopAlbums = await getLastfmArtistAlbums(artistName, 1, 5);
 
         if (!lastfmTopAlbums || !lastfmTopAlbums.album)
           throw new Error("no results from lastfm");
 
-        const normalizedTopAlbums: TopAlbum[] = lastfmTopAlbums.album
+        normalizedTopAlbums = lastfmTopAlbums.album
           .map((album) => {
             return {
               name: album.name,
@@ -148,16 +147,36 @@ export const getTopAlbums = action({
                 };
               }),
               releaseDate: null, // last fm does not provide release dates
+              averageReviewScore: null,
             };
           })
           .filter((album) => album.name !== "(null)");
-
-        // and eventually get pollster ratings in sep query
-
-        return normalizedTopAlbums;
       } else {
         return null;
       }
+
+      const averageScores: {
+        album: string;
+        averageReviewScore: number | null;
+      }[] = await ctx.runQuery(
+        internal.pollster.review.getAlbumAverageReviewScores,
+        {
+          artist: artistName,
+          albums: normalizedTopAlbums.map((album) => album.name),
+        },
+      );
+
+      const averageScoreByAlbum = new Map<string, number | null>(
+        averageScores.map(({ album, averageReviewScore }) => [
+          album,
+          averageReviewScore,
+        ]),
+      );
+
+      return normalizedTopAlbums.map((album) => ({
+        ...album,
+        averageReviewScore: averageScoreByAlbum.get(album.name) ?? null,
+      }));
     } catch (err: unknown) {
       console.error(`error getting top albums for ${artistName}:`, err);
 

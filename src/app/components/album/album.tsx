@@ -8,7 +8,7 @@ import Image from "next/image";
 
 type AlbumProps = {
   artistName: string;
-  albumData: TopAlbum; // add other types (ratings)
+  albumData: TopAlbum;
   className?: string;
   imgIndex?: number;
 };
@@ -42,7 +42,11 @@ function Album({ artistName, albumData, className, imgIndex = 0 }: AlbumProps) {
         </span>
         <div className="flex items-center">
           <Star className="text-primary fill-primary h-3.5 w-3.5 shrink-0" />
-          <span className="text-muted-foreground ml-1 text-sm">5</span>
+          <span className="text-muted-foreground ml-1 text-sm">
+            {albumData.averageReviewScore == null
+              ? "N/A"
+              : albumData.averageReviewScore.toFixed(1)}
+          </span>
         </div>
       </div>
     </Link>

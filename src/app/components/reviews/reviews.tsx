@@ -17,7 +17,6 @@ const filterOptions = [
   { id: "all", label: "All Reviews" },
   { id: "album", label: "Albums" },
   { id: "track", label: "Tracks" },
-  { id: "artist", label: "Artists" },
 ];
 
 function Reviews() {
