@@ -3,9 +3,9 @@ import Link from "next/link";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
+import SectionHeader from "../layout/section-header";
 import { Badge } from "../ui/badge";
-import { buttonVariants } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader } from "../ui/card";
 
 type SimilarArtistsProps = {
   artistName: string;
@@ -34,11 +34,12 @@ async function SimilarArtists({ artistName }: SimilarArtistsProps) {
 
   return (
     <Card>
-      <CardHeader className="mb-0 flex items-center justify-between">
-        <CardTitle className="text-xl font-bold">Similar Artists</CardTitle>
-        <Link href="#" className={buttonVariants({ variant: "ghost" })}>
-          View All
-        </Link>
+      <CardHeader className="mb-0">
+        <SectionHeader
+          variant="sidebar"
+          title="Similar Artists"
+          action={{ label: "View All", href: "#" }}
+        />
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">

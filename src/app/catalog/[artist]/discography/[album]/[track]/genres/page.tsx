@@ -1,5 +1,6 @@
 import Genres from "@/app/components/genres/genres";
 import GenresSkeleton from "@/app/components/genres/skeleton";
+import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
@@ -45,8 +46,8 @@ export async function generateMetadata({ params }: TrackGenresPageProps) {
   if (!trackData) redirect("/not-found");
 
   return {
-    title: `Genres for ${trackData.name} — ${artistData.name} | Pollster.fm`,
-    description: `Find more about ${trackData.name} by ${artistData.name} on Pollster.fm.`,
+    title: `Genres for ${trackData.name} | ${artistData.name} | ${SITE_NAME}`,
+    description: `Find more about ${trackData.name} by ${artistData.name} on ${SITE_NAME}.`,
   };
 }
 

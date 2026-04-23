@@ -1,10 +1,10 @@
+import BackLink from "@/app/components/layout/back-link";
+import PageShell from "@/app/components/layout/page-shell";
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
-import { ChevronLeft } from "lucide-react";
 import { type Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import CreateReview from "../components/create-review/create-review";
 
@@ -67,15 +67,11 @@ async function CreateReviewPage({ searchParams }: CreateReviewPageProps) {
   }
 
   return (
-    <main className="content-wrapper px-5 py-8 xl:px-0">
-      <Link
-        href="/reviews"
-        className="text-primary hover:text-ring/50 mb-4 inline-flex items-center text-sm no-underline transition-[color]"
-      >
-        <ChevronLeft className="mr-2 h-4 w-4" />
-        Back to reviews
-      </Link>
-      <h2 className="mb-6 text-3xl font-bold">New Review</h2>
+    <PageShell>
+      <div className="mb-6">
+        <BackLink href="/reviews" label="Back to reviews" />
+      </div>
+      <h1 className="mb-6 text-3xl font-bold">New Review</h1>
       <CreateReview
         initItemType={itemType}
         initArtist={artistStr}
@@ -83,7 +79,7 @@ async function CreateReviewPage({ searchParams }: CreateReviewPageProps) {
         initTrack={trackStr}
         initImage={imageStr}
       />
-    </main>
+    </PageShell>
   );
 }
 

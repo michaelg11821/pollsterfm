@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: TrackProps) {
   if (!trackData) redirect("/not-found");
 
   return {
-    title: `${trackData.name} — ${artistData.name} | ${SITE_NAME}`,
+    title: `${trackData.name} | ${artistData.name} | ${SITE_NAME}`,
     description: `Find more about ${trackData.name} by ${artistData.name} on ${SITE_NAME}.`,
   };
 }

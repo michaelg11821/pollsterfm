@@ -1,9 +1,9 @@
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
-import Link from "next/link";
 import Album from "../album/album";
-import { buttonVariants } from "../ui/button";
+import ItemGrid from "../layout/item-grid";
+import SectionHeader from "../layout/section-header";
 
 type TopAlbumsProps = {
   artistName: string;
@@ -36,18 +36,15 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
   const imgIndex = !artistData.spotifyUrl ? 3 : 0;
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Top Albums</h2>
-        <Link
-          href={`/catalog/${artistName}/discography`}
-          className={buttonVariants({ variant: "outline" })}
-        >
-          View Discography
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+    <section>
+      <SectionHeader
+        title="Top Albums"
+        action={{
+          label: "View Discography",
+          href: `/catalog/${artistName}/discography`,
+        }}
+      />
+      <ItemGrid>
         {topAlbumsData.map((album, index) => (
           <Album
             key={index}
@@ -56,8 +53,8 @@ async function TopAlbums({ artistName }: TopAlbumsProps) {
             imgIndex={imgIndex}
           />
         ))}
-      </div>
-    </div>
+      </ItemGrid>
+    </section>
   );
 }
 

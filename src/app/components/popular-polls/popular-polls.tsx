@@ -7,6 +7,7 @@ import { cn } from "@/lib/next-utils";
 import { Flame, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
+import EmptyState from "../layout/empty-state";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import PopularPollsSkeleton from "./skeleton";
@@ -28,14 +29,13 @@ function PopularPolls() {
 
   if (popularPolls.length === 0) {
     return (
-      <div className="py-16 text-center" ref={ref}>
-        <div className="text-muted-foreground">
-          <div className="bg-accent mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
-            <TrendingUp className="h-10 w-10" />
-          </div>
-          <p className="mb-2 text-xl font-semibold">No popular polls yet</p>
-          <p className="text-sm">Check back later for trending polls</p>
-        </div>
+      <div ref={ref}>
+        <EmptyState
+          withIcon
+          icon={TrendingUp}
+          title="No popular polls yet"
+          message="Check back later for trending polls."
+        />
       </div>
     );
   }

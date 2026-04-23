@@ -40,3 +40,24 @@ export type Platform = (typeof platforms)[number];
 export type ReviewWithUser = Doc<"reviews"> & {
   user: { username: string; image?: string };
 };
+
+export type AffinityArtist = {
+  artist: string;
+  image: string;
+  count: number;
+};
+
+export type AffinityAlbum = {
+  artist: string;
+  album: string;
+  image: string;
+  count: number;
+};
+
+export type AffinityTrack = {
+  artist: string;
+  album: string;
+  track: string;
+  image: string;
+  count: number;
+};

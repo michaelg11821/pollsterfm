@@ -8,7 +8,9 @@ function TopAffinitiesSkeleton() {
     <Card>
       <CardHeader className="mb-0 flex items-center justify-between">
         <h2 className="text-xl font-bold">Affinities</h2>
-        <div className={buttonVariants({ variant: "ghost" })}>View All</div>
+        <div className={buttonVariants({ variant: "ghost" })} aria-hidden>
+          View All
+        </div>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-3">

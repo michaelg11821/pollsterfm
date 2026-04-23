@@ -1,11 +1,11 @@
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchAction } from "convex/nextjs";
-import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import Album from "../album/album";
+import BackLink from "../layout/back-link";
+import ItemGrid from "../layout/item-grid";
 import {
   Pagination,
   PaginationContent,
@@ -94,13 +94,12 @@ async function Discography({ artistName, page = "1" }: DiscographyProps) {
 
   return (
     <>
-      <Link
-        href={`/catalog/${encodeURIComponent(artistData.name)}`}
-        className="text-primary hover:text-ring/50 mb-6 inline-flex items-center text-sm no-underline transition-[color]"
-      >
-        <ChevronLeft className="mr-2 h-4 w-4" />
-        Back to artist
-      </Link>
+      <div className="mb-6">
+        <BackLink
+          href={`/catalog/${encodeURIComponent(artistData.name)}`}
+          label="Back to artist"
+        />
+      </div>
 
       <div className="mb-8 flex items-center gap-6">
         <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl shadow-md/20 dark:shadow-none">
@@ -122,7 +121,7 @@ async function Discography({ artistName, page = "1" }: DiscographyProps) {
       </div>
 
       <div className="mt-0">
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <ItemGrid density="dense">
           {albumData.albums.map((album, i) => (
             <Album
               key={i}
@@ -131,7 +130,7 @@ async function Discography({ artistName, page = "1" }: DiscographyProps) {
               imgIndex={2}
             />
           ))}
-        </div>
+        </ItemGrid>
 
         <div className="mt-8 flex justify-center">
           <Pagination>

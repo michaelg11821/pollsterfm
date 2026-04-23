@@ -1,3 +1,4 @@
+import PageShell from "@/app/components/layout/page-shell";
 import UserPolls from "@/app/components/user-polls/user-polls";
 import { SITE_NAME } from "@/lib/constants/site-info";
 import type { Metadata } from "next";
@@ -26,9 +27,9 @@ async function UserPollsPage({ params }: UserPollsPageProps) {
   }
 
   return (
-    <main className="content-wrapper px-3.5 py-8 pb-0 lg:px-0">
+    <PageShell>
       <UserPolls username={username} />
-    </main>
+    </PageShell>
   );
 }
 

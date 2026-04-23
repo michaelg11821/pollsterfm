@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: AlbumPageProps) {
   if (!albumData) redirect("/not-found");
 
   return {
-    title: `${albumData.name} — ${artistData.name} | ${SITE_NAME}`,
+    title: `${albumData.name} | ${artistData.name} | ${SITE_NAME}`,
     description: `Find more about ${albumData.name} by ${artistData.name} on ${SITE_NAME}.`,
   };
 }

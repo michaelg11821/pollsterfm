@@ -1,20 +1,21 @@
 import AlbumSkeleton from "../album/skeleton";
+import ItemGrid from "../layout/item-grid";
 
 function TopAlbumsSkeleton() {
   return (
-    <div>
+    <section>
       <div className="mb-6 flex items-center justify-between">
         <div className="skeleton h-8 w-30 animate-pulse rounded-lg"></div>
-        <div className="h-9 w-30 animate-pulse rounded-md border bg-none"></div>
+        <div className="skeleton h-9 w-30 animate-pulse rounded-md"></div>
       </div>
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+      <ItemGrid>
         {Array(4)
           .fill(null)
           .map((_, index) => (
             <AlbumSkeleton key={index} />
           ))}
-      </div>
-    </div>
+      </ItemGrid>
+    </section>
   );
 }
 

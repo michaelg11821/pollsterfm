@@ -1,4 +1,5 @@
 import { cn } from "@/lib/next-utils";
+import ItemGrid from "../layout/item-grid";
 import { Card } from "../ui/card";
 
 type RandomAffinitiesSkeletonProps = {
@@ -14,25 +15,28 @@ function RandomAffinitiesSkeleton({
   const placeholderItems = Array(count).fill(null);
   const isCompact = compact ?? count <= 6;
 
+  if (isCompact) {
+    return (
+      <div className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3")}>
+        {placeholderItems.map((_, i) => (
+          <Card
+            key={`affinity-skeleton-${i}`}
+            className="skeleton h-20 animate-pulse items-center justify-center"
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={cn(
-        "grid gap-3",
-        isCompact
-          ? "grid-cols-2 sm:grid-cols-3"
-          : "grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6",
-      )}
-    >
+    <ItemGrid density="compact" gap="sm">
       {placeholderItems.map((_, i) => (
         <Card
           key={`affinity-skeleton-${i}`}
-          className={cn(
-            "skeleton animate-pulse items-center justify-center",
-            isCompact ? "h-20" : "h-32",
-          )}
+          className="skeleton h-32 animate-pulse items-center justify-center"
         />
       ))}
-    </div>
+    </ItemGrid>
   );
 }
 

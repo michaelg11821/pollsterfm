@@ -3,6 +3,7 @@ import { cn } from "@/lib/next-utils";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import AffinityCard from "../affinity-card/affinity-card";
+import ItemGrid from "../layout/item-grid";
 
 type RandomAffinitiesProps = {
   amount?: number;
@@ -19,23 +20,26 @@ async function RandomAffinities({ amount, compact }: RandomAffinitiesProps) {
 
   const isCompact = compact ?? (amount !== undefined && amount <= 6);
 
+  if (isCompact) {
+    return (
+      <div className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3")}>
+        {affinities.map((affinity, i) => (
+          <AffinityCard
+            key={`affinity-card-${i}`}
+            affinity={affinity}
+            compact
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={cn(
-        "grid gap-3",
-        isCompact
-          ? "grid-cols-2 sm:grid-cols-3"
-          : "grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6",
-      )}
-    >
+    <ItemGrid density="compact" gap="sm">
       {affinities.map((affinity, i) => (
-        <AffinityCard
-          key={`affinity-card-${i}`}
-          affinity={affinity}
-          compact={isCompact}
-        />
+        <AffinityCard key={`affinity-card-${i}`} affinity={affinity} />
       ))}
-    </div>
+    </ItemGrid>
   );
 }
 

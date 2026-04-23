@@ -498,3 +498,21 @@ export function getReviewType(review: ReviewWithUser) {
 
   return "artist";
 }
+
+export function getAffinityColor(affinity: string): string {
+  let hash = 0;
+  for (let i = 0; i < affinity.length; i++) {
+    hash = affinity.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  const colors = [
+    "from-primary/25 to-primary/10",
+    "from-chart-2/25 to-chart-2/10",
+    "from-chart-4/25 to-chart-4/10",
+    "from-chart-5/25 to-chart-5/10",
+    "from-chart-1/25 to-chart-1/10",
+    "from-chart-3/25 to-chart-3/10",
+  ];
+
+  return colors[Math.abs(hash) % colors.length];
+}

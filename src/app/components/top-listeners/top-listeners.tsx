@@ -1,8 +1,8 @@
 import Image from "next/image";
 
 import Link from "next/link";
+import SectionHeader from "../layout/section-header";
 import { Badge } from "../ui/badge";
-import { buttonVariants } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 
 const topListenersData = [
@@ -48,12 +48,10 @@ async function TopListeners({ category, itemName }: TopListenersProps) {
 
   return (
     <section>
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Top Listeners</h2>
-        <Link href="#" className={buttonVariants({ variant: "outline" })}>
-          View All
-        </Link>
-      </div>
+      <SectionHeader
+        title="Top Listeners"
+        action={{ label: "View All", href: "#" }}
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {topListenersData.map((user, i) => (
