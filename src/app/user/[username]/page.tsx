@@ -5,6 +5,10 @@ import RecentlyPlayed from "@/app/components/recently-played/recently-played";
 import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
 import TopAffinities from "@/app/components/top-affinities/top-affinities";
 import { Card, CardContent } from "@/app/components/ui/card";
+import UserActivitySkeleton from "@/app/components/user-activity/skeleton";
+import UserActivity from "@/app/components/user-activity/user-activity";
+import UserReviewsSkeleton from "@/app/components/user-reviews/skeleton";
+import UserReviews from "@/app/components/user-reviews/user-reviews";
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -58,6 +62,34 @@ async function Profile({ params }: ProfileProps) {
           <div className="content-wrapper px-5 xl:p-0">
             <Suspense fallback={<TopAffinitiesSkeleton />}>
               <TopAffinities category="user" itemName={username} />
+            </Suspense>
+          </div>
+        </section>
+        <section className="px-0 py-9">
+          <div className="content-wrapper px-5 xl:p-0">
+            <SectionHeader
+              variant="sidebar"
+              title="Activity"
+              className="mb-5"
+            />
+            <Card>
+              <CardContent>
+                <Suspense fallback={<UserActivitySkeleton limit={5} />}>
+                  <UserActivity username={username} limit={5} />
+                </Suspense>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+        <section className="px-0 py-9">
+          <div className="content-wrapper px-5 xl:p-0">
+            <SectionHeader
+              variant="sidebar"
+              title="Reviews"
+              className="mb-5"
+            />
+            <Suspense fallback={<UserReviewsSkeleton limit={5} />}>
+              <UserReviews username={username} limit={5} />
             </Suspense>
           </div>
         </section>

@@ -67,7 +67,7 @@ export const getReviewById = query({
 });
 
 export const getUserReviews = query({
-  args: { username: v.string() },
+  args: { username: v.string(), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     const user = await ctx.db
       .query("users")
@@ -76,11 +76,15 @@ export const getUserReviews = query({
 
     if (!user) throw new Error(USER_NOT_FOUND);
 
-    const reviews = await ctx.db
+    const reviewsQuery = ctx.db
       .query("reviews")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
-      .order("desc")
-      .collect();
+      .order("desc");
+
+    const reviews =
+      args.limit !== undefined
+        ? await reviewsQuery.take(args.limit)
+        : await reviewsQuery.collect();
 
     return reviews.map((review) => ({
       ...review,

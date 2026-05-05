@@ -439,6 +439,65 @@ export const getAffinities = query({
   },
 });
 
+export const getUserActivity = query({
+  args: {
+    username: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (user === null) {
+      return null;
+    }
+
+    const choices = await ctx.db
+      .query("userChoices")
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .order("desc")
+      .take(args.limit ?? 5);
+
+    const activity: {
+      _id: Id<"userChoices">;
+      _creationTime: number;
+      artist: string;
+      album: string | null;
+      track: string | null;
+      affinities: string[];
+      pollId: Id<"polls">;
+      pollQuestion: string;
+      image: string;
+    }[] = [];
+
+    for (const choice of choices) {
+      const poll = await ctx.db.get(choice.pollId);
+
+      if (!poll) continue;
+
+      const pollChoice = await ctx.db.get(choice.pollChoiceId);
+
+      if (!pollChoice) continue;
+
+      activity.push({
+        _id: choice._id,
+        _creationTime: choice._creationTime,
+        artist: choice.artist,
+        album: choice.album,
+        track: choice.track,
+        affinities: choice.affinities,
+        pollId: choice.pollId,
+        pollQuestion: poll.question,
+        image: pollChoice.image,
+      });
+    }
+
+    return activity;
+  },
+});
+
 export const getAccountPlatform = query({
   args: {
     username: v.string(),

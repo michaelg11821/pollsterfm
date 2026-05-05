@@ -29,12 +29,24 @@ async function RecentlyPlayed({ username, limit }: RecentlyPlayedProps) {
 
   if (recentTracks === null || "error" in recentTracks) {
     if (recentTracks.error === "LISTENING_HISTORY_PRIVATE") {
-      return <p>Listening history is set to private.</p>;
+      return (
+        <p className="text-muted-foreground text-sm">
+          Listening history is set to private.
+        </p>
+      );
     } else if (recentTracks.error === "PRIVATE_LASTFM_PROFILE") {
-      return <p>Last.fm profile is set to private.</p>;
+      return (
+        <p className="text-muted-foreground text-sm">
+          Last.fm profile is set to private.
+        </p>
+      );
     }
 
-    return <p>Could not retrieve recently played tracks.</p>;
+    return (
+      <p className="text-muted-foreground text-sm">
+        Could not retrieve recently played tracks.
+      </p>
+    );
   }
 
   return (
