@@ -14,7 +14,15 @@ function NavSkeleton() {
             <ul className="hidden list-none md:flex md:gap-6">
               <li>
                 <Link
-                  href=""
+                  href="/discover"
+                  className="text-muted-foreground hover:text-foreground text-center transition-[color]"
+                >
+                  Discover
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/polls"
                   className="text-muted-foreground hover:text-foreground text-center transition-[color]"
                 >
                   Polls
@@ -26,14 +34,6 @@ function NavSkeleton() {
                   className="text-muted-foreground hover:text-foreground text-center transition-[color]"
                 >
                   Reviews
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href=""
-                  className="text-muted-foreground hover:text-foreground text-center transition-[color]"
-                >
-                  Community
                 </Link>
               </li>
             </ul>
