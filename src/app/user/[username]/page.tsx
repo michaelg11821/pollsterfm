@@ -65,7 +65,7 @@ async function Profile({ params }: ProfileProps) {
             </Suspense>
           </div>
         </section>
-        <section className="px-0 py-9">
+        <section className="px-0 py-7">
           <div className="content-wrapper px-5 xl:p-0">
             <SectionHeader
               variant="sidebar"
