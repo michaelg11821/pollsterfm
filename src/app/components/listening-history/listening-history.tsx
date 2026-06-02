@@ -40,7 +40,11 @@ async function ListeningHistory({ username, page }: ListeningHistoryProps) {
   }
 
   if (listeningHistoryPrivate === true) {
-    return <p className="pt-2">Listening history is set to private.</p>;
+    return (
+      <p className="pt-2 text-muted-foreground text-sm">
+        Listening history is set to private.
+      </p>
+    );
   }
 
   return platform === "spotify" ? (
