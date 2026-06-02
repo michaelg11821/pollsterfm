@@ -1,10 +1,10 @@
+import PageShell from "@/app/components/layout/page-shell";
 import SectionHeader from "@/app/components/layout/section-header";
 import NowPlaying from "@/app/components/now-playing/now-playing";
 import ProfileHeader from "@/app/components/profile/profile";
 import RecentlyPlayed from "@/app/components/recently-played/recently-played";
 import TopAffinitiesSkeleton from "@/app/components/top-affinities/skeleton";
 import TopAffinities from "@/app/components/top-affinities/top-affinities";
-import { Card, CardContent } from "@/app/components/ui/card";
 import UserActivitySkeleton from "@/app/components/user-activity/skeleton";
 import UserActivity from "@/app/components/user-activity/user-activity";
 import UserReviewsSkeleton from "@/app/components/user-reviews/skeleton";
@@ -35,66 +35,38 @@ async function Profile({ params }: ProfileProps) {
   if (!username) return redirect("/not-found");
 
   return (
-    <main>
-      <div className="pt-2">
-        <ProfileHeader username={username} />
-        <section className="py-6">
-          <div className="content-wrapper px-5 xl:p-0">
-            <SectionHeader
-              variant="sidebar"
-              title="Recently Played"
-              action={{
-                label: "View More",
-                href: `/user/${username}/history`,
-                variant: "ghost",
-              }}
-              className="mb-5"
-            />
-            <Card>
-              <CardContent>
-                <NowPlaying username={username} />
-                <RecentlyPlayed username={username} limit={4} />
-              </CardContent>
-            </Card>
-          </div>
+    <PageShell variant="split" hero={<ProfileHeader username={username} />}>
+      <div className="flex flex-col gap-10">
+        <section>
+          <SectionHeader
+            title="Recently Played"
+            action={{
+              label: "View More",
+              href: `/user/${username}/history`,
+            }}
+          />
+          <NowPlaying username={username} />
+          <RecentlyPlayed username={username} limit={4} />
         </section>
-        <section className="px-0 py-9">
-          <div className="content-wrapper px-5 xl:p-0">
-            <Suspense fallback={<TopAffinitiesSkeleton />}>
-              <TopAffinities category="user" itemName={username} />
-            </Suspense>
-          </div>
+        <section>
+          <Suspense fallback={<TopAffinitiesSkeleton />}>
+            <TopAffinities category="user" itemName={username} />
+          </Suspense>
         </section>
-        <section className="px-0 py-7">
-          <div className="content-wrapper px-5 xl:p-0">
-            <SectionHeader
-              variant="sidebar"
-              title="Activity"
-              className="mb-5"
-            />
-            <Card>
-              <CardContent>
-                <Suspense fallback={<UserActivitySkeleton limit={5} />}>
-                  <UserActivity username={username} limit={5} />
-                </Suspense>
-              </CardContent>
-            </Card>
-          </div>
+        <section>
+          <SectionHeader title="Activity" />
+          <Suspense fallback={<UserActivitySkeleton limit={5} />}>
+            <UserActivity username={username} limit={5} />
+          </Suspense>
         </section>
-        <section className="px-0 py-9">
-          <div className="content-wrapper px-5 xl:p-0">
-            <SectionHeader
-              variant="sidebar"
-              title="Reviews"
-              className="mb-5"
-            />
-            <Suspense fallback={<UserReviewsSkeleton limit={5} />}>
-              <UserReviews username={username} limit={5} />
-            </Suspense>
-          </div>
+        <section>
+          <SectionHeader title="Reviews" />
+          <Suspense fallback={<UserReviewsSkeleton limit={5} />}>
+            <UserReviews username={username} limit={5} />
+          </Suspense>
         </section>
       </div>
-    </main>
+    </PageShell>
   );
 }
 
