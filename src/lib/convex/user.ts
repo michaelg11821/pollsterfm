@@ -538,11 +538,7 @@ export const isListeningHistoryPrivate = query({
 
     const currentUserId = await getAuthUserId(ctx);
 
-    if (currentUserId) {
-      const currentUser = await ctx.db.get(currentUserId);
-
-      if (currentUser?.username === args.username) return false;
-    }
+    if (currentUserId === user._id) return false;
 
     if (user.listeningHistoryPrivate === undefined) {
       return null;
