@@ -27,10 +27,6 @@ async function ImportHistoryPage() {
     );
   }
 
-  if (!paymentStatus.hasPaid) {
-    return redirect("/settings");
-  }
-
   return (
     <PageShell>
       <div className="mx-auto w-full max-w-2xl space-y-6">
@@ -39,7 +35,7 @@ async function ImportHistoryPage() {
           <h1 className="text-3xl font-bold">Import listening history</h1>
         </div>
 
-        <ListeningHistoryImport />
+        <ListeningHistoryImport requiresPlusUpgrade={!paymentStatus.hasPaid} />
       </div>
     </PageShell>
   );
