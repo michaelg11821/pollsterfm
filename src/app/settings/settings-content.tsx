@@ -6,6 +6,7 @@ import { useAction, useMutation, useQuery } from "convex/react";
 import {
   AlertTriangle,
   ChevronRight,
+  FileUp,
   Crown,
   EyeOff,
   Loader2,
@@ -13,6 +14,7 @@ import {
   Sparkles,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ThemeToggle from "../components/theme-toggle";
@@ -96,6 +98,8 @@ function SettingsContent() {
       </div>
     );
   }
+
+  const canImportSpotifyHistory = Boolean(user.spotifyAccessToken);
 
   return (
     <div className="space-y-2">
@@ -181,6 +185,28 @@ function SettingsContent() {
           </div>
           <ThemeToggle />
         </div>
+
+        {canImportSpotifyHistory && (
+          <Link
+            href="/settings/import-history"
+            className="flex items-center justify-between p-4 transition-colors hover:bg-muted/40"
+          >
+            <div className="flex items-center gap-3">
+              <div className="text-muted-foreground">
+                <FileUp className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="text-sm font-medium">
+                  Import listening history
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  Upload your Spotify history export for deeper insights
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="text-muted-foreground h-5 w-5" />
+          </Link>
+        )}
       </div>
 
       {/* Danger Zone */}

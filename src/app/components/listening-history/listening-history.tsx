@@ -5,6 +5,7 @@ import type { Platform } from "@/lib/types/pollster";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { fetchQuery } from "convex/nextjs";
 import { Info } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import LoadingIndicator from "../ui/loading-indicator";
@@ -56,7 +57,13 @@ async function ListeningHistory({ username, page }: ListeningHistoryProps) {
             Only showing {MAX_TRACKS_WITHOUT_IMPORT} recent tracks.
           </AlertTitle>
           <AlertDescription>
-            Import your Spotify or Apple Music streaming history to see more!
+            Import your Spotify or Apple Music streaming history to see more.{" "}
+            <Link
+              href="/settings/import-history"
+              className="underline underline-offset-2"
+            >
+              Upload history
+            </Link>
           </AlertDescription>
         </Alert>
       )}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
+import PageShell from "@/app/components/layout/page-shell";
 import { SITE_NAME } from "@/lib/constants/site-info";
 import { api } from "@/lib/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
@@ -20,12 +21,12 @@ async function Settings() {
     return redirect(`/sign-in?redirectTo=${encodeURIComponent("/settings")}`);
 
   return (
-    <main className="centered-main">
-      <div className="w-full max-w-lg space-y-6 px-4 py-10">
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+    <PageShell>
+      <div className="mx-auto w-full max-w-2xl space-y-6">
+        <h1 className="text-3xl font-bold">Settings</h1>
         <SettingsContent />
       </div>
-    </main>
+    </PageShell>
   );
 }
 
