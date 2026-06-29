@@ -20,7 +20,7 @@ function Footer() {
             <ul className="flex list-none flex-col gap-2">
               <li>
                 <Link
-                  href="#"
+                  href="/discover"
                   className="text-muted-foreground hover:text-foreground text-center transition-[color]"
                 >
                   Discover

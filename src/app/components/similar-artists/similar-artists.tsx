@@ -35,11 +35,7 @@ async function SimilarArtists({ artistName }: SimilarArtistsProps) {
   return (
     <Card>
       <CardHeader className="mb-0">
-        <SectionHeader
-          variant="sidebar"
-          title="Similar Artists"
-          action={{ label: "View All", href: "#" }}
-        />
+        <SectionHeader variant="sidebar" title="Similar Artists" />
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
@@ -56,10 +52,7 @@ async function SimilarArtists({ artistName }: SimilarArtistsProps) {
               </div>
               <div>
                 <p className="m-0">{artist.name}</p>
-                <Badge variant="default">
-                  {/*  TEMPORARY */}
-                  66% match
-                </Badge>
+                <Badge variant="secondary">Similar artist</Badge>
               </div>
             </Link>
           ))}

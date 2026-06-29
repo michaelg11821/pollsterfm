@@ -48,6 +48,26 @@ async function getCurrentUser(ctx: QueryCtx | MutationCtx) {
   return await ctx.db.get(userId);
 }
 
+type ListeningHistoryImportStatus =
+  | "queued"
+  | "processing"
+  | "succeeded"
+  | "failed";
+
+export function resolveListeningHistoryImportStatus(
+  latestImportStatus?: ListeningHistoryImportStatus,
+): "not_imported" | "queued" | "processing" | "failed" | "imported" {
+  if (!latestImportStatus) return "not_imported";
+
+  if (latestImportStatus === "succeeded") return "imported";
+
+  return latestImportStatus;
+}
+
+export function isPollExpired(expiresAt: number, now = Date.now()) {
+  return expiresAt <= now;
+}
+
 export const currentUser = query({
   args: {},
   handler: async (ctx) => {
@@ -263,11 +283,108 @@ export const deleteAccount = authedMutation({
 
     const notifications = await ctx.db
       .query("notifications")
-      .filter((q) => q.eq(q.field("userId"), userId))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .collect();
 
     for (const notification of notifications) {
       await ctx.db.delete(notification._id);
+    }
+
+    const userReviews = await ctx.db
+      .query("reviews")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .collect();
+
+    for (const review of userReviews) {
+      await ctx.db.delete(review._id);
+    }
+
+    const userVotes = await ctx.db
+      .query("userChoices")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .collect();
+
+    for (const vote of userVotes) {
+      const poll = await ctx.db.get(vote.pollId);
+
+      if (poll) {
+        await ctx.db.patch(poll._id, {
+          totalVotes: Math.max(0, poll.totalVotes - 1),
+        });
+      }
+
+      const pollChoice = await ctx.db.get(vote.pollChoiceId);
+
+      if (pollChoice) {
+        await ctx.db.patch(pollChoice._id, {
+          totalVotes: Math.max(0, pollChoice.totalVotes - 1),
+        });
+      }
+
+      await ctx.db.delete(vote._id);
+    }
+
+    const userActivity = await ctx.db
+      .query("pollActivity")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .collect();
+
+    for (const activity of userActivity) {
+      await ctx.db.delete(activity._id);
+    }
+
+    const createdPolls = await ctx.db
+      .query("polls")
+      .withIndex("authorId", (q) => q.eq("authorId", userId))
+      .collect();
+
+    for (const poll of createdPolls) {
+      const pollChoices = await ctx.db
+        .query("pollChoices")
+        .withIndex("by_pollId", (q) => q.eq("pollId", poll._id))
+        .collect();
+
+      for (const pollChoice of pollChoices) {
+        await ctx.db.delete(pollChoice._id);
+      }
+
+      const pollVotes = await ctx.db
+        .query("userChoices")
+        .withIndex("by_pollId", (q) => q.eq("pollId", poll._id))
+        .collect();
+
+      for (const pollVote of pollVotes) {
+        await ctx.db.delete(pollVote._id);
+      }
+
+      const pollActivity = await ctx.db
+        .query("pollActivity")
+        .withIndex("by_pollId", (q) => q.eq("pollId", poll._id))
+        .collect();
+
+      for (const activity of pollActivity) {
+        await ctx.db.delete(activity._id);
+      }
+
+      await ctx.db.delete(poll._id);
+    }
+
+    const listeningHistoryImports = await ctx.db
+      .query("listeningHistoryImportJobs")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .collect();
+
+    for (const job of listeningHistoryImports) {
+      await ctx.db.delete(job._id);
+    }
+
+    const importedListeningHistory = await ctx.db
+      .query("importedListeningHistory")
+      .withIndex("by_userId_and_playedAt", (q) => q.eq("userId", userId))
+      .collect();
+
+    for (const track of importedListeningHistory) {
+      await ctx.db.delete(track._id);
     }
 
     const userImages = await ctx.db
@@ -330,6 +447,10 @@ export const addVote = authedMutation({
 
     if (!poll) {
       throw new Error(NOT_FOUND);
+    }
+
+    if (isPollExpired(poll.expiresAt)) {
+      throw new Error("poll has expired");
     }
 
     if (ctx.userId === poll.authorId) {
@@ -519,6 +640,35 @@ export const getAccountPlatform = query({
     }
 
     return null;
+  },
+});
+
+export const getListeningHistoryImportStatus = query({
+  args: {
+    username: v.string(),
+  },
+  handler: async (
+    ctx,
+    args,
+  ): Promise<"not_imported" | "queued" | "processing" | "failed" | "imported"> => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("username", (q) => q.eq("username", args.username))
+      .unique();
+
+    if (user === null) {
+      return "not_imported";
+    }
+
+    const latestImportJob = (
+      await ctx.db
+        .query("listeningHistoryImportJobs")
+        .withIndex("by_userId", (q) => q.eq("userId", user._id))
+        .order("desc")
+        .take(1)
+    )[0];
+
+    return resolveListeningHistoryImportStatus(latestImportJob?.status);
   },
 });
 

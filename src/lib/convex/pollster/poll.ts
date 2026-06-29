@@ -23,6 +23,7 @@ export const create = authedMutation({
       return pollId;
     } catch (err: unknown) {
       console.error("error creating poll:", err);
+      return null;
     }
   },
 });

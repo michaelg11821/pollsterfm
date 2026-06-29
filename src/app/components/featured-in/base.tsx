@@ -32,7 +32,7 @@ function FeaturedInBase({ featuredPolls, featuredType }: FeaturedInBaseProps) {
     <section>
       <SectionHeader
         title="Featured In Polls"
-        action={{ label: "View All", href: "#" }}
+        action={{ label: "View All", href: "/polls" }}
       />
       <ItemGrid>
         {featuredPolls.map((poll) => (

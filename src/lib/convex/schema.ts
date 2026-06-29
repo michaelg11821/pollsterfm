@@ -70,7 +70,7 @@ const schema = defineSchema({
     description: v.string(),
     link: v.string(),
     userId: v.id("users"),
-  }),
+  }).index("by_userId", ["userId"]),
   userImageIds: defineTable({
     userId: v.id("users"),
     profileIconId: v.optional(v.id("_storage")),
@@ -80,7 +80,51 @@ const schema = defineSchema({
     userId: v.id("users"),
     stripeCustomerId: v.optional(v.string()),
     payment: v.optional(v.union(stripePaymentValidator, v.null())),
-  }).index("by_userId", ["userId"]),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_stripeCustomerId", ["stripeCustomerId"]),
+  listeningHistoryImportJobs: defineTable({
+    userId: v.id("users"),
+    provider: v.union(v.literal("spotify"), v.literal("appleMusic")),
+    status: v.union(
+      v.literal("queued"),
+      v.literal("processing"),
+      v.literal("succeeded"),
+      v.literal("failed"),
+    ),
+    sourceFileId: v.id("_storage"),
+    totalRows: v.optional(v.number()),
+    processedRows: v.number(),
+    insertedRows: v.number(),
+    duplicateRows: v.number(),
+    error: v.optional(v.string()),
+    startedAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_and_status", ["userId", "status"]),
+  importedListeningHistory: defineTable({
+    userId: v.id("users"),
+    provider: v.union(v.literal("spotify"), v.literal("appleMusic")),
+    providerTrackId: v.union(v.string(), v.null()),
+    trackName: v.string(),
+    artistName: v.string(),
+    albumName: v.union(v.string(), v.null()),
+    playedAt: v.number(),
+    durationMs: v.union(v.number(), v.null()),
+    importJobId: v.id("listeningHistoryImportJobs"),
+  })
+    .index("by_userId_and_playedAt", ["userId", "playedAt"])
+    .index("by_userId_and_provider_and_playedAt", [
+      "userId",
+      "provider",
+      "playedAt",
+    ])
+    .index("by_userId_and_providerTrackId_and_playedAt", [
+      "userId",
+      "providerTrackId",
+      "playedAt",
+    ]),
   reviews: defineTable(reviewValidator)
     .index("by_userId", ["userId"])
     .index("by_album", ["artist", "album"])

@@ -1,17 +1,13 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import {
-  action,
-  type ActionCtx,
   httpAction,
-  internalAction,
+  internalMutation,
+  internalQuery,
   query,
 } from "./_generated/server";
 
 import { v } from "convex/values";
-import Stripe from "stripe";
-import { NO_STRIPE_CUSTOMER, USER_NOT_FOUND } from "../constants/errors";
-import { allowedEvents } from "../constants/stripe";
-import type { Payment } from "../types/stripe";
+import { NO_STRIPE_CUSTOMER } from "../constants/errors";
 import { api, internal } from "./_generated/api";
 import { authedInternalMutation, authedInternalQuery } from "./helpers";
 import { stripePaymentValidator } from "./validators";
@@ -106,152 +102,59 @@ export const setPaymentData = authedInternalMutation({
   },
 });
 
-export const generateStripeCheckout = action({
-  handler: async (ctx): Promise<{ url: string | null }> => {
-    try {
-      const user = await ctx.runQuery(api.user.currentUser);
+export const getUserIdByStripeCustomerId = internalQuery({
+  args: {
+    stripeCustomerId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const stripeData = await ctx.db
+      .query("stripeCustomerData")
+      .withIndex("by_stripeCustomerId", (q) =>
+        q.eq("stripeCustomerId", args.stripeCustomerId),
+      )
+      .unique();
 
-      if (!user) throw new Error(USER_NOT_FOUND);
+    if (!stripeData) return null;
 
-      const stripe = new Stripe(process.env.STRIPE_SECRET!);
-      let stripeCustomerId = user.stripeCustomerId;
-
-      if (!stripeCustomerId) {
-        const newCustomer = await stripe.customers.create({
-          email: user.email,
-          metadata: {
-            userId: user._id,
-          },
-        });
-
-        await ctx.runMutation(internal.stripe.createStripeCustomer, {
-          stripeCustomerId: newCustomer.id,
-        });
-
-        stripeCustomerId = newCustomer.id;
-      }
-
-      const session = await stripe.checkout.sessions.create({
-        customer: stripeCustomerId,
-        line_items: [
-          {
-            price: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID!,
-            quantity: 1,
-          },
-        ],
-        mode: "payment",
-        payment_intent_data: {
-          metadata: {
-            priceId: process.env.STRIPE_POLLSTER_PLUS_PRICE_ID!,
-          },
-        },
-        success_url: `${process.env.SITE_URL}/success`,
-      });
-
-      if (!session.url) throw new Error("failed to create session");
-
-      return { url: session.url };
-    } catch (err) {
-      console.error("error generating stripe checkout:", err);
-
-      return { url: null };
-    }
+    return stripeData.userId;
   },
 });
 
-const stripePaymentDataSyncer = async (ctx: ActionCtx) => {
-  try {
-    const customerId = await ctx.runQuery(internal.stripe.getStripeCustomerId);
-    const stripe = new Stripe(process.env.STRIPE_SECRET!);
+export const _setPaymentDataByUserId = internalMutation({
+  args: {
+    userId: v.id("users"),
+    payment: stripePaymentValidator,
+  },
+  handler: async (ctx, args) => {
+    const stripeCustomerData = await ctx.db
+      .query("stripeCustomerData")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .unique();
 
-    if (!customerId)
-      return new Response(null, {
-        status: 302,
-        headers: {
-          Location: "/",
-        },
-      });
+    if (!stripeCustomerData) throw new Error(NO_STRIPE_CUSTOMER);
 
-    const paymentIntents = await stripe.paymentIntents.list({
-      customer: customerId,
-      limit: 10,
-      expand: ["data.payment_method"],
-    });
+    await ctx.db.patch(stripeCustomerData._id, { payment: args.payment });
+  },
+});
 
-    const successfulPayments = paymentIntents.data
-      .filter((pi) => pi.status === "succeeded")
-      .sort((a, b) => b.created - a.created);
+export const syncStripePaymentData = httpAction(async (ctx) => {
+  const user = await ctx.runQuery(api.user.currentUser);
 
-    if (successfulPayments.length === 0) {
-      await ctx.runMutation(internal.stripe.setPaymentData, {
-        payment: { status: "none" },
-      });
-
-      return new Response(null, {
-        status: 302,
-        headers: {
-          Location: "/",
-        },
-      });
-    }
-
-    const payment = successfulPayments[0];
-    const priceId = payment.metadata.priceId;
-
-    const paymentData: Payment = {
-      paymentId: payment.id,
-      status: payment.status,
-      created: payment.created,
-      priceId,
-      paymentMethod:
-        payment.payment_method && typeof payment.payment_method !== "string"
-          ? {
-              brand: payment.payment_method.card?.brand ?? null,
-              last4: payment.payment_method.card?.last4 ?? null,
-            }
-          : null,
-    };
-
-    await ctx.runMutation(internal.stripe.setPaymentData, {
-      payment: paymentData,
-    });
-  } catch (err: unknown) {
-    console.error("error syncing Stripe data:", err);
-  } finally {
+  if (!user?.stripeCustomerId) {
     return new Response(null, {
       status: 302,
-      headers: {
-        Location: "/",
-      },
+      headers: { Location: "/" },
     });
   }
-};
 
-export const syncStripePaymentData = httpAction(stripePaymentDataSyncer);
+  await ctx.runAction(internal.stripeNode.syncStripePaymentDataByCustomerId, {
+    stripeCustomerId: user.stripeCustomerId,
+  });
 
-export const processEvent = internalAction({
-  args: { payload: v.string(), signature: v.string() },
-  handler: async (ctx, { payload, signature }) => {
-    const stripe = new Stripe(process.env.STRIPE_SECRET!);
-
-    const event = stripe.webhooks.constructEvent(
-      payload,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!,
-    );
-
-    if (!allowedEvents.includes(event.type)) return;
-
-    const { customer: stripeCustomerId } = event?.data?.object as {
-      customer: string;
-    };
-
-    if (typeof stripeCustomerId !== "string") {
-      throw new Error(`id isn't string.\nevent type: ${event.type}`);
-    }
-
-    return await stripePaymentDataSyncer(ctx);
-  },
+  return new Response(null, {
+    status: 302,
+    headers: { Location: "/" },
+  });
 });
 
 export const stripeWebhook = httpAction(async (ctx, req) => {
@@ -261,21 +164,17 @@ export const stripeWebhook = httpAction(async (ctx, req) => {
 
     if (!signature) return Response.json({}, { status: 400 });
 
-    async function doEventProcessing() {
-      if (typeof signature !== "string") {
-        throw new Error("stripe header is not a string");
-      }
-
-      await ctx.scheduler.runAfter(0, internal.stripe.processEvent, {
-        payload: body,
-        signature,
-      });
+    if (typeof signature !== "string") {
+      throw new Error("stripe header is not a string");
     }
 
-    await doEventProcessing();
+    await ctx.scheduler.runAfter(0, internal.stripeNode.processEvent, {
+      payload: body,
+      signature,
+    });
   } catch (err: unknown) {
     console.error("error processing events:", err);
   } finally {
-    return Response.json({ recieved: true });
+    return Response.json({ received: true });
   }
 });

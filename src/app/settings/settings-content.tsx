@@ -38,7 +38,7 @@ function SettingsContent() {
   const paymentStatus = useQuery(api.stripe.getPaymentStatus);
   const updatePrivacy = useMutation(api.user.updateListeningHistoryPrivacy);
   const deleteAccount = useMutation(api.user.deleteAccount);
-  const generateStripeCheckout = useAction(api.stripe.generateStripeCheckout);
+  const generateStripeCheckout = useAction(api.stripeNode.generateStripeCheckout);
   const { signOut } = useAuthActions();
   const router = useRouter();
 
